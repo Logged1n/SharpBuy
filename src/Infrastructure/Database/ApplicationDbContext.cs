@@ -2,6 +2,7 @@
 using Domain.Addresses;
 using Domain.Carts;
 using Domain.Categories;
+using Domain.Inventories;
 using Domain.Orders;
 using Domain.Products;
 using Domain.Reviews;
@@ -32,6 +33,8 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
     public DbSet<Product> Products { get; set; }
 
     public DbSet<Review> Reviews { get; set; }
+
+    public DbSet<Inventory> Inventories { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

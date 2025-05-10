@@ -28,3 +28,15 @@ services:
       - ACCEPT_EULA=Y
     ports:
       - 8081:80
+
+  smtp4dev:
+    image: rnwood/smtp4dev:v3
+    container_name: smtp4dev
+    restart: always
+    ports:
+      - "5002:80"   # Interfejs webowy
+      - "2525:25"   # Port SMTP
+    volumes:
+      - ./.containers/smtp4dev-data:/var/lib/smtp4dev/data
+    environment:
+      - ServerOptions__HostName=smtp4dev

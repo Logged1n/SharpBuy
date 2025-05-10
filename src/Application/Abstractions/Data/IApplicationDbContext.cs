@@ -1,6 +1,7 @@
 ﻿using Domain.Addresses;
 using Domain.Carts;
 using Domain.Categories;
+using Domain.Inventories;
 using Domain.Orders;
 using Domain.Products;
 using Domain.Reviews;
@@ -20,6 +21,7 @@ public interface IApplicationDbContext
     DbSet<OrderItem> OrderItems { get; }
     DbSet<Product> Products { get; }
     DbSet<Review> Reviews { get; }
+    DbSet<Inventory> Inventories { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

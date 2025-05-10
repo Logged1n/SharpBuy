@@ -1,9 +1,11 @@
 ﻿using System.Text;
 using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
+using Application.Abstractions.Emails;
 using Infrastructure.Authentication;
 using Infrastructure.Authorization;
 using Infrastructure.Database;
+using Infrastructure.Emails;
 using Infrastructure.Time;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -22,6 +24,7 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration) =>
         services
+            .AddConfigurationInternal()
             .AddServices()
             .AddDatabase(configuration)
             .AddHealthChecks(configuration)
@@ -31,7 +34,7 @@ public static class DependencyInjection
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
-
+        services.AddScoped<IEmailService, EmailService>();
         return services;
     }
 
@@ -94,6 +97,15 @@ public static class DependencyInjection
 
         services.AddTransient<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
 
+        return services;
+    }
+
+    private static IServiceCollection AddConfigurationInternal(this IServiceCollection services)
+    {
+        services.AddOptions();
+        services.AddOptions<EmailOptions>()
+                  .Configure<IConfiguration>((configSection, configuration) => 
+                    configuration.GetSection("EmailOptions").Bind(configSection));
         return services;
     }
 }

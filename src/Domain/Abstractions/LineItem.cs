@@ -12,7 +12,7 @@ namespace Domain.Abstractions;
 /// <typeparam name="TParent">
 /// The parent entity type—either <see cref="Cart"/> or <see cref="Order"/>—to which this line item belongs.
 /// </typeparam>
-public abstract class LineItem<TParent> : Entity
+public abstract class LineItem<TParent>
     where TParent : Entity
 {
     /// <summary>
