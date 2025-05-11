@@ -1,6 +1,7 @@
 ﻿using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
+using Domain.Addresses;
 using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
@@ -23,7 +24,9 @@ internal sealed class RegisterUserCommandHandler(IApplicationDbContext context, 
             Email = command.Email,
             FirstName = command.FirstName,
             LastName = command.LastName,
-            PasswordHash = passwordHasher.Hash(command.Password)
+            PasswordHash = passwordHasher.Hash(command.Password),
+            PrimaryAddress = command.PrimaryAddress is not null ? new Address(command.PrimaryAddress) : null,
+            Addresses = command.AdditionalAddresses?.Select(a => new Address(a)).ToList() ?? new List<Address>(),
         };
 
         user.Raise(new UserRegisteredDomainEvent(user.Id));

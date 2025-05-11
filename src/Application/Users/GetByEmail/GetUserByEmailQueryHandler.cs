@@ -30,7 +30,7 @@ internal sealed class GetUserByEmailQueryHandler(IApplicationDbContext context, 
 
         if (user.Id != userContext.UserId)
         {
-            return Result.Failure<UserResponse>(UserErrors.Unauthorized());
+            return Result.Failure<UserResponse>(UserErrors.Unauthorized);
         }
 
         return user;

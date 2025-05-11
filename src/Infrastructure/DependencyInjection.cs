@@ -5,14 +5,15 @@ using Application.Abstractions.Emails;
 using Infrastructure.Authentication;
 using Infrastructure.Authorization;
 using Infrastructure.Database;
-using Infrastructure.Emails;
 using Infrastructure.Time;
+using Infrastructure.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SharedKernel;
 
@@ -24,7 +25,6 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration) =>
         services
-            .AddConfigurationInternal()
             .AddServices()
             .AddDatabase(configuration)
             .AddHealthChecks(configuration)
@@ -33,6 +33,16 @@ public static class DependencyInjection
 
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
+        services.AddOptions();
+        services.AddOptions<EmailOptions>()
+                  .Configure<IConfiguration>((configSection, configuration) =>
+                    configuration.GetSection("EmailOptions").Bind(configSection));
+        var emailOptions = new EmailOptions();
+
+        services.AddFluentEmail(emailOptions.FromAddress, emailOptions.FromName)
+            .AddSmtpSender(emailOptions.SmtpServer, emailOptions.SmtpPort);
+        services.AddHttpContextAccessor();
+        services.AddScoped<IEmailVerificationLinkFactory, EmailVerificationLinkFactory>();
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         services.AddScoped<IEmailService, EmailService>();
         return services;
@@ -97,15 +107,6 @@ public static class DependencyInjection
 
         services.AddTransient<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
 
-        return services;
-    }
-
-    private static IServiceCollection AddConfigurationInternal(this IServiceCollection services)
-    {
-        services.AddOptions();
-        services.AddOptions<EmailOptions>()
-                  .Configure<IConfiguration>((configSection, configuration) => 
-                    configuration.GetSection("EmailOptions").Bind(configSection));
         return services;
     }
 }

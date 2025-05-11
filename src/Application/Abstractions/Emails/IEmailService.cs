@@ -1,8 +1,8 @@
-﻿using Domain.Emails;
+﻿using SharedKernel;
 
 namespace Application.Abstractions.Emails;
 
 public interface IEmailService
 {
-    Task<bool> SendEmailAsync(Email email);
+    Task<Result> SendEmailAsync(string to, string subject, string body);
 }

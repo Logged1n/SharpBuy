@@ -23,6 +23,9 @@ internal sealed class LoginUserCommandHandler(
             return Result.Failure<string>(UserErrors.NotFoundByEmail);
         }
 
+        if(!user.IsEmailVerified)
+            return Result.Failure<string>(UserErrors.EmailNotVerified);
+
         bool verified = passwordHasher.Verify(command.Password, user.PasswordHash);
 
         if (!verified)

@@ -5,6 +5,7 @@
   <!--.NET 9 packages. Most of them will work on .NET 8. If you need to, make the updates here individually.-->
   <ItemGroup>
     <!-- Static code analysis -->
+    <PackageVersion Include="FluentEmail.Smtp" Version="3.0.2" />
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.7.0.110445" />
     <!-- SharedKernel -->
     <PackageVersion Include="MediatR.Contracts" Version="2.0.1" />

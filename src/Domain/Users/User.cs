@@ -18,4 +18,5 @@ public sealed class User : Entity
     public ICollection<Address> Addresses { get; set; } = [];
     public ICollection<Order> Orders { get; set; } = [];
     public ICollection<Review> Reviews { get; set; } = [];
+    public bool IsEmailVerified { get; set; }
 }

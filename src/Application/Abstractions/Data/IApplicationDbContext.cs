@@ -22,6 +22,7 @@ public interface IApplicationDbContext
     DbSet<Product> Products { get; }
     DbSet<Review> Reviews { get; }
     DbSet<Inventory> Inventories { get; }
+    DbSet<EmailVerificationToken> EmailVerificationTokens { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

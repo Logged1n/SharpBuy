@@ -15,6 +15,6 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.HasOne(u => u.Cart)
             .WithOne(c => c.Owner)
-            .HasForeignKey<Cart>(c => c.Id);
+            .HasForeignKey<Cart>(c => c.OwnerId);
     }
 }
