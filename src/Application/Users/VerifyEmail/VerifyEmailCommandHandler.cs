@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
 namespace Application.Users.VerifyEmail;
-internal sealed class VerifyEmailCommandHandler(IApplicationDbContext dbContext) : ICommandHandler<VerifyEmailCommand>
+internal sealed class VerifyEmailCommandHandler(IApplicationDbContext dbContext, IDateTimeProvider dateTimeProvider) : ICommandHandler<VerifyEmailCommand>
 {
     public async Task<Result> Handle(VerifyEmailCommand request, CancellationToken cancellationToken)
     {
@@ -14,10 +14,10 @@ internal sealed class VerifyEmailCommandHandler(IApplicationDbContext dbContext)
             .Include(e => e.User)
             .FirstOrDefaultAsync(t => t.Id == request.TokenId, cancellationToken);
 
-        if (token is null || token.ExpiresOnUtc < DateTime.UtcNow || token.User.IsEmailVerified)
+        if (token is null || token.ExpiresOnUtc < dateTimeProvider.UtcNow || token.User.EmailVerified)
             return Result.Failure(EmailErrors.InvalidToken);
 
-        token.User.IsEmailVerified = true;
+        token.User.EmailVerified = true;
         dbContext.EmailVerificationTokens.Remove(token);
         await dbContext.SaveChangesAsync(cancellationToken);
 

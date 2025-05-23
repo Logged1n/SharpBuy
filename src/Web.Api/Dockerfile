@@ -19,9 +19,9 @@ COPY ["src/Infrastructure/Infrastructure.csproj", "src/Infrastructure/"]
 COPY ["src/Application/Application.csproj", "src/Application/"]
 COPY ["src/Domain/Domain.csproj", "src/Domain/"]
 COPY ["src/SharedKernel/SharedKernel.csproj", "src/SharedKernel/"]
-RUN dotnet restore "./src/Web.API/Web.API.csproj"
+RUN dotnet restore "./src/Web.Api/Web.API.csproj"
 COPY . .
-WORKDIR "/src/src/Web.API"
+WORKDIR "/src/src/Web.Api"
 RUN dotnet build "./Web.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage

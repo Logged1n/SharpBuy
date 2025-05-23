@@ -34,13 +34,10 @@ public static class DependencyInjection
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
         services.AddOptions();
-        services.AddOptions<EmailOptions>()
-                  .Configure<IConfiguration>((configSection, configuration) =>
-                    configuration.GetSection("EmailOptions").Bind(configSection));
-        var emailOptions = new EmailOptions();
+        //services.AddOptions<EmailOptions>()
+        //          .Configure<IConfiguration>((configSection, configuration) =>
+        //            configuration.GetSection("EmailOptions").Bind(configSection));
 
-        services.AddFluentEmail(emailOptions.FromAddress, emailOptions.FromName)
-            .AddSmtpSender(emailOptions.SmtpServer, emailOptions.SmtpPort);
         services.AddHttpContextAccessor();
         services.AddScoped<IEmailVerificationLinkFactory, EmailVerificationLinkFactory>();
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
@@ -93,6 +90,9 @@ public static class DependencyInjection
         services.AddScoped<IUserContext, UserContext>();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<ITokenProvider, TokenProvider>();
+        IConfigurationSection emailOptions = configuration.GetSection("EmailOptions");
+        services.AddFluentEmail(emailOptions["FromAddress"], emailOptions["FromAddress"])
+           .AddSmtpSender(emailOptions["SmtpServer"], emailOptions.GetValue<int>("SmtpPort"));
 
         return services;
     }

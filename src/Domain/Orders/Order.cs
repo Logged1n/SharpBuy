@@ -8,7 +8,7 @@ namespace Domain.Orders;
 public sealed class Order : Entity
 {
     public Guid Id { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; }
     public DateTime ModifiedAt { get; set; }
     public OrderStatus Status { get; set; } = OrderStatus.Open;
     public User User { get; set; }

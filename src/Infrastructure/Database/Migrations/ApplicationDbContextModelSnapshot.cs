@@ -66,7 +66,6 @@ namespace Infrastructure.Database.Migrations
                         .HasColumnName("line1");
 
                     b.Property<string>("Line2")
-                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("line2");
 
@@ -372,6 +371,54 @@ namespace Infrastructure.Database.Migrations
                     b.ToTable("email_verification_tokens", "public");
                 });
 
+            modelBuilder.Entity("Domain.Users.Role", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id")
+                        .HasName("pk_roles");
+
+                    b.ToTable("roles", "public");
+                });
+
+            modelBuilder.Entity("Domain.Users.RoleClaim", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("ClaimType")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("claim_type");
+
+                    b.Property<string>("ClaimValue")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("claim_value");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("role_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_user_roles");
+
+                    b.HasIndex("RoleId")
+                        .HasDatabaseName("ix_user_roles_role_id");
+
+                    b.ToTable("user_roles", "public");
+                });
+
             modelBuilder.Entity("Domain.Users.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -384,14 +431,14 @@ namespace Infrastructure.Database.Migrations
                         .HasColumnType("text")
                         .HasColumnName("email");
 
+                    b.Property<bool>("EmailVerified")
+                        .HasColumnType("boolean")
+                        .HasColumnName("email_verified");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("first_name");
-
-                    b.Property<bool>("IsEmailVerified")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_email_verified");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -402,6 +449,11 @@ namespace Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("password_hash");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("phone_number");
 
                     b.Property<Guid?>("PrimaryAddressId")
                         .HasColumnType("uuid")
@@ -418,6 +470,55 @@ namespace Infrastructure.Database.Migrations
                         .HasDatabaseName("ix_users_primary_address_id");
 
                     b.ToTable("users", "public");
+                });
+
+            modelBuilder.Entity("Domain.Users.UserClaim", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("ClaimType")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("claim_type");
+
+                    b.Property<string>("ClaimValue")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("claim_value");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_user_claims");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_user_claims_user_id");
+
+                    b.ToTable("user_claims", "public");
+                });
+
+            modelBuilder.Entity("user_role", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("role_id");
+
+                    b.HasKey("UserId", "RoleId")
+                        .HasName("pk_user_role");
+
+                    b.HasIndex("RoleId")
+                        .HasDatabaseName("ix_user_role_role_id");
+
+                    b.ToTable("user_role", "public");
                 });
 
             modelBuilder.Entity("CategoryProduct", b =>
@@ -572,6 +673,18 @@ namespace Infrastructure.Database.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Domain.Users.RoleClaim", b =>
+                {
+                    b.HasOne("Domain.Users.Role", "Role")
+                        .WithMany("Claims")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_roles_roles_role_id");
+
+                    b.Navigation("Role");
+                });
+
             modelBuilder.Entity("Domain.Users.User", b =>
                 {
                     b.HasOne("Domain.Addresses.Address", "PrimaryAddress")
@@ -580,6 +693,35 @@ namespace Infrastructure.Database.Migrations
                         .HasConstraintName("fk_users_addresss_primary_address_id");
 
                     b.Navigation("PrimaryAddress");
+                });
+
+            modelBuilder.Entity("Domain.Users.UserClaim", b =>
+                {
+                    b.HasOne("Domain.Users.User", "User")
+                        .WithMany("Claims")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_claims_users_user_id");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("user_role", b =>
+                {
+                    b.HasOne("Domain.Users.Role", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_role_roles_role_id");
+
+                    b.HasOne("Domain.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_role_users_user_id");
                 });
 
             modelBuilder.Entity("Domain.Carts.Cart", b =>
@@ -597,12 +739,19 @@ namespace Infrastructure.Database.Migrations
                     b.Navigation("Reviews");
                 });
 
+            modelBuilder.Entity("Domain.Users.Role", b =>
+                {
+                    b.Navigation("Claims");
+                });
+
             modelBuilder.Entity("Domain.Users.User", b =>
                 {
                     b.Navigation("Addresses");
 
                     b.Navigation("Cart")
                         .IsRequired();
+
+                    b.Navigation("Claims");
 
                     b.Navigation("Orders");
 

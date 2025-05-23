@@ -12,11 +12,15 @@ public sealed class User : Entity
     public string Email { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
+    public string PhoneNumber { get; set; }
     public string PasswordHash { get; set; }
     public Cart Cart { get; set; }
     public Address? PrimaryAddress { get; set; }
     public ICollection<Address> Addresses { get; set; } = [];
     public ICollection<Order> Orders { get; set; } = [];
     public ICollection<Review> Reviews { get; set; } = [];
-    public bool IsEmailVerified { get; set; }
+    public bool EmailVerified { get; set; }
+
+    public ICollection<Role> Roles { get; set; } = [];
+    public ICollection<UserClaim> Claims { get; set; } = [];    
 }

@@ -13,6 +13,7 @@ internal sealed class Register : IEndpoint
         string Email,
         string FirstName,
         string LastName,
+        string PhoneNumber,
         string Password,
         AddressDto? PrimaryAddress,
         ICollection<AddressDto> AdditionalAddresses);
@@ -25,6 +26,7 @@ internal sealed class Register : IEndpoint
                 request.Email,
                 request.FirstName,
                 request.LastName,
+                request.PhoneNumber,
                 request.Password,
                 request.PrimaryAddress,
                 request.AdditionalAddresses);

@@ -38,6 +38,12 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
 
     public DbSet<EmailVerificationToken> EmailVerificationTokens { get; set; }
 
+    public DbSet<Role> Roles { get; set; }
+
+    public DbSet<UserClaim> UserClaims { get; set; }
+
+    public DbSet<RoleClaim> UserRoles { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);

@@ -1,5 +1,6 @@
 ﻿using Application.Users.VerifyEmail;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using SharedKernel;
 using Web.API.Infrastructure;
 
@@ -12,11 +13,11 @@ internal sealed class VerifyEmail : IEndpoint
         app.MapGet(
                 "/users/verify-email",
                 async (
-                    Guid id,
+                    [FromQuery]Guid token,
                     ISender sender,
                     CancellationToken cancellationToken) =>
                 {
-                    var command = new VerifyEmailCommand(id);
+                    var command = new VerifyEmailCommand(token);
 
                     Result result = await sender.Send(command, cancellationToken);
 

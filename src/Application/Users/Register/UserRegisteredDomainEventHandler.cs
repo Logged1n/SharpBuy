@@ -12,16 +12,20 @@ namespace Application.Users.Register;
 internal sealed class UserRegisteredDomainEventHandler : INotificationHandler<UserRegisteredDomainEvent>
 {
     private readonly ILogger<UserRegisteredDomainEventHandler> _logger;
+    private readonly IDateTimeProvider _dateTimeProvider;
     private readonly IEmailService _emailService;
     private readonly IApplicationDbContext _dbContext;
     private readonly IEmailVerificationLinkFactory _emailVerificationLinkFactory;
 
     public UserRegisteredDomainEventHandler(
         ILogger<UserRegisteredDomainEventHandler> logger,
-        IEmailService emailService, IApplicationDbContext dbContext,
+        IDateTimeProvider dateTimeProvider,
+        IEmailService emailService,
+        IApplicationDbContext dbContext,
         IEmailVerificationLinkFactory emailVerificationLinkFactory)
     {
         _logger = logger;
+        _dateTimeProvider = dateTimeProvider;
         _emailService = emailService;
         _dbContext = dbContext;
         _emailVerificationLinkFactory = emailVerificationLinkFactory;
@@ -43,7 +47,7 @@ internal sealed class UserRegisteredDomainEventHandler : INotificationHandler<Us
             Owner = user,
         });
 
-        DateTime utcNow = DateTime.UtcNow;
+        DateTime utcNow = _dateTimeProvider.UtcNow;
         var verificationToken = new EmailVerificationToken()
         {
             UserId = user.Id,
@@ -54,7 +58,7 @@ internal sealed class UserRegisteredDomainEventHandler : INotificationHandler<Us
         _dbContext.EmailVerificationTokens.Add(verificationToken);
 
         string verificationLink = _emailVerificationLinkFactory.Create(verificationToken);
-        string body = $"Hello {user.FirstName},<br/>Thank you for registering with us!<br/>We are excited to have you on board. To verify you account <a href='{verificationLink}'>click here</a>";
+        string body = $"Hello {user.FirstName},<br/>Thank you for registering with us!<br/>We are excited to have you on board. To verify your account <a href='{verificationLink}'>click here</a>.";
 
         Result result = await _emailService.SendEmailAsync(
             user.Email,
