@@ -3,13 +3,12 @@ using Application;
 using HealthChecks.UI.Client;
 using Infrastructure;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Serilog;
-using Web.API;
-using Web.API.Extensions;
+using Web.Api;
+using Web.Api.Extensions;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-builder.Host.UseSerilog((context, loggerConfig) => loggerConfig.ReadFrom.Configuration(context.Configuration));
+builder.AddServiceDefaults();
 
 builder.Services.AddSwaggerGenWithAuth();
 
@@ -21,6 +20,8 @@ builder.Services
 builder.Services.AddEndpoints(Assembly.GetExecutingAssembly());
 
 WebApplication app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 app.MapEndpoints();
 
@@ -38,8 +39,6 @@ app.MapHealthChecks("health", new HealthCheckOptions
 
 app.UseRequestContextLogging();
 
-app.UseSerilogRequestLogging();
-
 app.UseExceptionHandler();
 
 app.UseAuthentication();
@@ -49,7 +48,7 @@ app.UseAuthorization();
 await app.RunAsync();
 
 // REMARK: Required for functional and integration tests to work.
-namespace Web.API
+namespace Web.Api
 {
     public partial class Program;
 }

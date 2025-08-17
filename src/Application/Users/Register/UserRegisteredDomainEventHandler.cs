@@ -2,14 +2,13 @@
 using Application.Abstractions.Emails;
 using Domain.Carts;
 using Domain.Users;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SharedKernel;
 
 namespace Application.Users.Register;
 
-internal sealed class UserRegisteredDomainEventHandler : INotificationHandler<UserRegisteredDomainEvent>
+internal sealed class UserRegisteredDomainEventHandler : IDomainEventHandler<UserRegisteredDomainEvent>
 {
     private readonly ILogger<UserRegisteredDomainEventHandler> _logger;
     private readonly IDateTimeProvider _dateTimeProvider;

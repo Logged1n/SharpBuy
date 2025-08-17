@@ -7,8 +7,8 @@ public sealed record RegisterUserCommand(
     string Email,
     string FirstName,
     string LastName,
-    string PhoneNumber,
     string Password,
+    string PhoneNumber,
     AddressDto? PrimaryAddress,
     ICollection<AddressDto>? AdditionalAddresses)
     : ICommand<Guid>;

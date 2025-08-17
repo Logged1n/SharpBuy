@@ -1,6 +1,6 @@
-﻿using Web.API.Middleware;
+﻿using Web.Api.Middleware;
 
-namespace Web.API.Extensions;
+namespace Web.Api.Extensions;
 
 public static class MiddlewareExtensions
 {

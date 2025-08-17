@@ -1,4 +1,4 @@
-﻿namespace Web.API.Endpoints;
+﻿namespace Web.Api.Endpoints;
 
 public interface IEndpoint
 {

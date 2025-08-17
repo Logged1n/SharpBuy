@@ -1,4 +1,4 @@
-﻿namespace Web.API.Endpoints.Users;
+﻿namespace Web.Api.Endpoints.Users;
 
 internal static class Permissions
 {

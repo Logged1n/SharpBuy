@@ -68,6 +68,8 @@ csharp_style_expression_bodied_indexers = true:error
 csharp_style_expression_bodied_accessors = true:error
 csharp_style_expression_bodied_lambdas = true:error
 csharp_style_expression_bodied_local_functions = true:error
+csharp_prefer_system_threading_lock = true:suggestion
+dotnet_diagnostic.S2326.severity = none
 
 [*.{cs,vb}]
 dotnet_style_prefer_simplified_boolean_expressions = true:suggestion
@@ -409,10 +411,12 @@ dotnet_diagnostic.S6781.severity = none
 # Ignore paths
 [/src/Infrastructure/Database/Migrations/**]
 charset = unset
-end_of_line = unset
+end_of_line = crlf
 insert_final_newline = unset
 trim_trailing_whitespace = unset
 indent_style = unset
-indent_size = unset
+indent_size = 4
 csharp_style_namespace_declarations = file_scoped:none
-csharp_style_expression_bodied_lambdas = file_scoped:none
+csharp_style_expression_bodied_lambdas = true:none
+dotnet_style_operator_placement_when_wrapping = beginning_of_line
+tab_width = 4

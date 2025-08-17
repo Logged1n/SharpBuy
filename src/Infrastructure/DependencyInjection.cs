@@ -5,6 +5,7 @@ using Application.Abstractions.Emails;
 using Infrastructure.Authentication;
 using Infrastructure.Authorization;
 using Infrastructure.Database;
+using Infrastructure.DomainEvents;
 using Infrastructure.Time;
 using Infrastructure.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -13,7 +14,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SharedKernel;
 
@@ -37,11 +37,12 @@ public static class DependencyInjection
         //services.AddOptions<EmailOptions>()
         //          .Configure<IConfiguration>((configSection, configuration) =>
         //            configuration.GetSection("EmailOptions").Bind(configSection));
-
-        services.AddHttpContextAccessor();
         services.AddScoped<IEmailVerificationLinkFactory, EmailVerificationLinkFactory>();
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         services.AddScoped<IEmailService, EmailService>();
+
+        services.AddTransient<IDomainEventsDispatcher, DomainEventsDispatcher>();
+
         return services;
     }
 

@@ -1,37 +1,33 @@
-﻿using Application.Users.Register;
-using MediatR;
+﻿using Application.Abstractions.Messaging;
+using Application.Users.Register;
 using SharedKernel;
 using SharedKernel.Dtos;
-using Web.API.Extensions;
-using Web.API.Infrastructure;
+using Web.Api.Extensions;
+using Web.Api.Infrastructure;
 
-namespace Web.API.Endpoints.Users;
+namespace Web.Api.Endpoints.Users;
 
 internal sealed class Register : IEndpoint
 {
-    public sealed record Request(
-        string Email,
-        string FirstName,
-        string LastName,
-        string PhoneNumber,
-        string Password,
-        AddressDto? PrimaryAddress,
-        ICollection<AddressDto> AdditionalAddresses);
+    public sealed record Request(string Email, string FirstName, string LastName, string Password, string PhoneNumber, AddressDto PrimaryAddress, AddressDto[] Addresses);
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPost("users/register", async (Request request, ISender sender, CancellationToken cancellationToken) =>
+        app.MapPost("users/register", async (
+            Request request,
+            ICommandHandler<RegisterUserCommand, Guid> handler,
+            CancellationToken cancellationToken) =>
         {
             var command = new RegisterUserCommand(
                 request.Email,
                 request.FirstName,
                 request.LastName,
-                request.PhoneNumber,
                 request.Password,
+                request.PhoneNumber,
                 request.PrimaryAddress,
-                request.AdditionalAddresses);
+                request.Addresses);
 
-            Result<Guid> result = await sender.Send(command, cancellationToken);
+            Result<Guid> result = await handler.Handle(command, cancellationToken);
 
             return result.Match(Results.Ok, CustomResults.Problem);
         })

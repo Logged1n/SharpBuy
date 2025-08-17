@@ -1,4 +1,4 @@
-﻿namespace Web.API.Extensions;
+﻿namespace Web.Api.Extensions;
 
 public static class ApplicationBuilderExtensions
 {

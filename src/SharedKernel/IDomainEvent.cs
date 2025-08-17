@@ -1,5 +1,3 @@
-﻿using MediatR;
+﻿namespace SharedKernel;
 
-namespace SharedKernel;
-
-public interface IDomainEvent : INotification;
+public interface IDomainEvent;

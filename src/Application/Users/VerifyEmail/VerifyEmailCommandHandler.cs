@@ -1,7 +1,6 @@
 ﻿using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
 using Domain.Users;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 

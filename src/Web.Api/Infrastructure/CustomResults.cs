@@ -1,6 +1,6 @@
 ﻿using SharedKernel;
 
-namespace Web.API.Infrastructure;
+namespace Web.Api.Infrastructure;
 
 public static class CustomResults
 {
@@ -51,7 +51,7 @@ public static class CustomResults
         static int GetStatusCode(ErrorType errorType) =>
             errorType switch
             {
-                ErrorType.Validation => StatusCodes.Status400BadRequest,
+                ErrorType.Validation or ErrorType.Problem => StatusCodes.Status400BadRequest,
                 ErrorType.NotFound => StatusCodes.Status404NotFound,
                 ErrorType.Conflict => StatusCodes.Status409Conflict,
                 _ => StatusCodes.Status500InternalServerError

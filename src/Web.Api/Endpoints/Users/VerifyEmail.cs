@@ -1,10 +1,9 @@
-﻿using Application.Users.VerifyEmail;
-using MediatR;
+﻿using Application.Abstractions.Messaging;
+using Application.Users.VerifyEmail;
 using Microsoft.AspNetCore.Mvc;
 using SharedKernel;
-using Web.API.Infrastructure;
 
-namespace Web.API.Endpoints.Users;
+namespace Web.Api.Endpoints.Users;
 
 internal sealed class VerifyEmail : IEndpoint
 {
@@ -14,12 +13,12 @@ internal sealed class VerifyEmail : IEndpoint
                 "/users/verify-email",
                 async (
                     [FromQuery]Guid token,
-                    ISender sender,
+                    ICommandHandler<VerifyEmailCommand> commandHandler,
                     CancellationToken cancellationToken) =>
                 {
                     var command = new VerifyEmailCommand(token);
 
-                    Result result = await sender.Send(command, cancellationToken);
+                    Result result = await commandHandler.Handle(command, cancellationToken);
 
                     return result;
                 })
