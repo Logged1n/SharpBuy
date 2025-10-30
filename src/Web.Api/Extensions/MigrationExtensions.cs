@@ -11,7 +11,13 @@ public static class MigrationExtensions
 
         using ApplicationDbContext dbContext =
             scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        try
+        {
+            dbContext.Database.Migrate();
+        } catch
+        {
+            //App can continue even if migration fails
+        }
 
-        dbContext.Database.Migrate();
     }
 }
