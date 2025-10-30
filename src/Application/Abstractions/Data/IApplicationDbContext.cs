@@ -13,9 +13,6 @@ namespace Application.Abstractions.Data;
 public interface IApplicationDbContext
 {
     DbSet<User> Users { get; }
-    DbSet<Role> Roles { get; }
-    DbSet<UserClaim> UserClaims { get; }
-    DbSet<RoleClaim> UserRoles { get; }
     DbSet<Address> Addresss { get; }
     DbSet<Cart> Carts { get; }
     DbSet<CartItem> CartItems { get; }

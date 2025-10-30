@@ -60,7 +60,7 @@ internal sealed class UserRegisteredDomainEventHandler : IDomainEventHandler<Use
         string body = $"Hello {user.FirstName},<br/>Thank you for registering with us!<br/>We are excited to have you on board. To verify your account <a href='{verificationLink}'>click here</a>.";
 
         Result result = await _emailService.SendEmailAsync(
-            user.Email,
+            user.Email!,
             "Welcome to our service!",
             body);
 

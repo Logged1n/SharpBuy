@@ -8,15 +8,16 @@ using Domain.Products;
 using Domain.Reviews;
 using Domain.Users;
 using Infrastructure.DomainEvents;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
 namespace Infrastructure.Database;
 
 public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IDomainEventsDispatcher domainEventsDispatcher)
-    : DbContext(options), IApplicationDbContext
+    : IdentityDbContext<User, IdentityRole<Guid>, Guid>(options), IApplicationDbContext
 {
-    public DbSet<User> Users { get; set; }
     public DbSet<Address> Addresss { get; set; }
     public DbSet<Cart> Carts { get; set; }
     public DbSet<CartItem> CartItems { get; set; }
@@ -27,15 +28,13 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
     public DbSet<Review> Reviews { get; set; }
     public DbSet<Inventory> Inventories { get; set; }
     public DbSet<EmailVerificationToken> EmailVerificationTokens { get; set; }
-    public DbSet<Role> Roles { get; set; }
-    public DbSet<UserClaim> UserClaims { get; set; }
-    public DbSet<RoleClaim> UserRoles { get; set; }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating(ModelBuilder builder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+        base.OnModelCreating(builder);
+        builder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
-        modelBuilder.HasDefaultSchema(Schemas.Default);
+        builder.HasDefaultSchema(Schemas.Default);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

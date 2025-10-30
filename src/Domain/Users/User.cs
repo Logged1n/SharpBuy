@@ -2,18 +2,16 @@
 using Domain.Carts;
 using Domain.Orders;
 using Domain.Reviews;
+using Microsoft.AspNetCore.Identity;
 using SharedKernel;
 
 namespace Domain.Users;
 
-public sealed class User : Entity
+public sealed class User : IdentityUser<Guid>, IEntity
 {
-    public Guid Id { get; set; }
-    public string Email { get; set; }
+    public new Guid Id { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
-    public string PhoneNumber { get; set; }
-    public string PasswordHash { get; set; }
     public Cart Cart { get; set; }
     public Address? PrimaryAddress { get; set; }
     public ICollection<Address> Addresses { get; set; } = [];
@@ -21,6 +19,16 @@ public sealed class User : Entity
     public ICollection<Review> Reviews { get; set; } = [];
     public bool EmailVerified { get; set; }
 
-    public ICollection<Role> Roles { get; set; } = [];
-    public ICollection<UserClaim> Claims { get; set; } = [];    
+    private readonly List<IDomainEvent> _domainEvents = [];
+    public List<IDomainEvent> DomainEvents => [.. _domainEvents];
+
+    public void ClearDomainEvents()
+    {
+       _domainEvents.Clear();
+    }
+
+    public void Raise(IDomainEvent domainEvent)
+    {
+        _domainEvents.Add(domainEvent);
+    }
 }

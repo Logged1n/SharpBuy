@@ -27,7 +27,6 @@ public static class DependencyInjection
         services
             .AddServices()
             .AddDatabase(configuration)
-            .AddHealthChecks(configuration)
             .AddAuthenticationInternal(configuration)
             .AddAuthorizationInternal();
 
@@ -48,7 +47,7 @@ public static class DependencyInjection
 
     private static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
-        string? connectionString = configuration.GetConnectionString("Database");
+        string? connectionString = configuration.GetConnectionString("SharpBuy");
 
         services.AddDbContext<ApplicationDbContext>(
             options => options
@@ -57,15 +56,6 @@ public static class DependencyInjection
                 .UseSnakeCaseNamingConvention());
 
         services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
-
-        return services;
-    }
-
-    private static IServiceCollection AddHealthChecks(this IServiceCollection services, IConfiguration configuration)
-    {
-        services
-            .AddHealthChecks()
-            .AddNpgSql(configuration.GetConnectionString("Database")!);
 
         return services;
     }

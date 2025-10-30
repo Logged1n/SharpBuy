@@ -5,16 +5,14 @@ IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(ar
 IResourceBuilder<PostgresDatabaseResource> database = builder
     .AddPostgres("SQL-Database")
     .WithImage("postgres:17")
-    .WithHostPort(5432)
+    .WithHostPort(5002)
     .WithBindMount("../../.containers/db", "/var/lib/postgresql/data")
-    .AddDatabase("clean-architecture");
+    .AddDatabase("SharpBuy");
 
 IResourceBuilder<PapercutSmtpContainerResource> papercut = builder
-    .AddPapercutSmtp("SMTP-Papercut", httpPort: 2115, smtpPort: 1337)
-    .WithHttpHealthCheck(path: "/");
+    .AddPapercutSmtp("papercut");
 
-builder.AddProject<Projects.Web_Api>("Web-API")
-    .WithEnvironment("ConnectionStrings__Database", database)
+builder.AddProject<Projects.Web_Api> ("Web-API")
     .WithReference(papercut)
     .WithReference(database)
     .WaitFor(papercut)
