@@ -17,7 +17,7 @@ internal sealed class GetUserByIdQueryHandler(IApplicationDbContext context, IUs
             return Result.Failure<UserResponse>(UserErrors.Unauthorized);
         }
 
-        UserResponse? user = await context.Users
+        UserResponse? user = await context.DomainUsers
             .Where(u => u.Id == query.UserId)
             .Select(u => new UserResponse
             {

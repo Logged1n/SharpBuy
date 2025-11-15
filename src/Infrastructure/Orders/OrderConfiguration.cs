@@ -9,9 +9,17 @@ internal sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
     {
         builder.HasKey(o => o.Id);
 
-        builder.HasMany(o => o.Items)
-          .WithOne(li => li.Parent)
-          .HasForeignKey(li => li.ParentId)
-          .OnDelete(DeleteBehavior.Cascade);
+        builder.OwnsOne(o => o.Total, moneyBuilder =>
+        {
+            moneyBuilder.Property(m => m.Amount)
+                .HasColumnName("Total")
+                .HasPrecision(18, 2)
+                .IsRequired();
+
+            moneyBuilder.Property(m => m.Currency)
+                .HasColumnName("Currency")
+                .HasMaxLength(3)
+                .IsRequired();
+        });
     }
 }

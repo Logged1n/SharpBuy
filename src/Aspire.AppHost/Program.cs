@@ -12,10 +12,10 @@ IResourceBuilder<PostgresDatabaseResource> database = builder
 IResourceBuilder<PapercutSmtpContainerResource> papercut = builder
     .AddPapercutSmtp("papercut");
 
-builder.AddProject<Projects.Web_Api> ("Web-API")
-    .WithReference(papercut)
-    .WithReference(database)
+builder.AddProject<Projects.Web_Api>("Web-API")
     .WaitFor(papercut)
-    .WaitFor(database);
+    .WaitFor(database)
+    .WithReference(papercut)
+    .WithReference(database);
 
 await builder.Build().RunAsync();

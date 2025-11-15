@@ -33,9 +33,9 @@ public static class DependencyInjection
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
         services.AddOptions();
-        //services.AddOptions<EmailOptions>()
-        //          .Configure<IConfiguration>((configSection, configuration) =>
-        //            configuration.GetSection("EmailOptions").Bind(configSection));
+        services.AddOptions<EmailOptions>()
+                  .Configure<IConfiguration>((configSection, configuration) =>
+                    configuration.GetSection("EmailOptions").Bind(configSection));
         services.AddScoped<IEmailVerificationLinkFactory, EmailVerificationLinkFactory>();
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         services.AddScoped<IEmailService, EmailService>();
@@ -52,8 +52,7 @@ public static class DependencyInjection
         services.AddDbContext<ApplicationDbContext>(
             options => options
                 .UseNpgsql(connectionString, npgsqlOptions =>
-                    npgsqlOptions.MigrationsHistoryTable(HistoryRepository.DefaultTableName, Schemas.Default))
-                .UseSnakeCaseNamingConvention());
+                    npgsqlOptions.MigrationsHistoryTable(HistoryRepository.DefaultTableName, Schemas.Default)));
 
         services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
 

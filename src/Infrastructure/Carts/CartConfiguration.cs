@@ -1,4 +1,5 @@
 ﻿using Domain.Carts;
+using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,14 +10,12 @@ internal sealed class CartConfiguration : IEntityTypeConfiguration<Cart>
     {
         builder.HasKey(c => c.OwnerId);
 
-        builder.HasOne(c => c.Owner)
+        builder.Navigation(c => c.Items)
+           .UsePropertyAccessMode(PropertyAccessMode.Field);
+
+        builder.HasOne<User>()
             .WithOne(u => u.Cart)
             .HasForeignKey<Cart>(c => c.OwnerId)
-            .IsRequired();
-
-        builder.HasMany(c => c.Items)
-            .WithOne(li => li.Parent)
-            .HasForeignKey(li => li.ParentId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

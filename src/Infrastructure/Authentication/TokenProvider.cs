@@ -11,7 +11,7 @@ namespace Infrastructure.Authentication;
 
 internal sealed class TokenProvider(IConfiguration configuration, IDateTimeProvider dateTimeProvider) : ITokenProvider
 {
-    public string Create(User user)
+    public string Create(ApplicationUser user)
     {
         string secretKey = configuration["Jwt:Secret"]!;
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));

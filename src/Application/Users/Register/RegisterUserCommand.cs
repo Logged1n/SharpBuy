@@ -1,4 +1,5 @@
-﻿using Application.Abstractions.Messaging;
+﻿using System.Collections.Generic;
+using Application.Abstractions.Messaging;
 using SharedKernel.Dtos;
 
 namespace Application.Users.Register;
@@ -10,5 +11,5 @@ public sealed record RegisterUserCommand(
     string Password,
     string PhoneNumber,
     AddressDto? PrimaryAddress,
-    ICollection<AddressDto>? AdditionalAddresses)
+    IReadOnlyCollection<AddressDto>? AdditionalAddresses)
     : ICommand<Guid>;

@@ -13,29 +13,39 @@ internal sealed class RegisterUserCommandHandler(IApplicationDbContext context, 
 {
     public async Task<Result<Guid>> Handle(RegisterUserCommand command, CancellationToken cancellationToken)
     {
-        if (await context.Users.AnyAsync(u => u.Email == command.Email, cancellationToken))
+        if (await context.DomainUsers.AnyAsync(u => u.Email == command.Email, cancellationToken))
         {
             return Result.Failure<Guid>(UserErrors.EmailNotUnique);
         }
 
-        var user = new User
+        var domainUser = User.Create(
+            command.Email,
+            command.FirstName,
+            command.LastName,
+            command.PhoneNumber);
+
+        if (command.PrimaryAddress is not null)
         {
-            Id = Guid.NewGuid(),
-            Email = command.Email,
-            FirstName = command.FirstName,
-            LastName = command.LastName,
-            PhoneNumber = command.PhoneNumber,
-            PasswordHash = passwordHasher.Hash(command.Password),
-            PrimaryAddress = command.PrimaryAddress is not null ? new Address(command.PrimaryAddress) : null,
-            Addresses = command.AdditionalAddresses?.Select(a => new Address(a)).ToList() ?? new List<Address>(),
-        };
+            domainUser.AddAddress(
+                command.PrimaryAddress.Line1,
+                command.PrimaryAddress.Line2,
+                command.PrimaryAddress.City,
+                command.PrimaryAddress.PostalCode,
+                command.PrimaryAddress.Country);
+        }
+        context.Set<ApplicationUser>().Add(new ApplicationUser
+        {
+            DomainUserId = domainUser.Id,
+            DomainUser = domainUser,
+            PasswordHash = passwordHasher.Hash(command.Password)
+        });
 
-        user.Raise(new UserRegisteredDomainEvent(user.Id));
+        domainUser.Raise(new UserRegisteredDomainEvent(domainUser.Id));
 
-        context.Users.Add(user);
+        context.DomainUsers.Add(domainUser);
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return user.Id;
+        return domainUser.Id;
     }
 }

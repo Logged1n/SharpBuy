@@ -29,9 +29,10 @@ internal sealed class UserRegisteredDomainEventHandler : IDomainEventHandler<Use
         _dbContext = dbContext;
         _emailVerificationLinkFactory = emailVerificationLinkFactory;
     }
+
     public async Task Handle(UserRegisteredDomainEvent notification, CancellationToken cancellationToken)
     {
-        User? user = await _dbContext.Users
+        User? user = await _dbContext.DomainUsers
             .FirstOrDefaultAsync(u => u.Id == notification.UserId, cancellationToken);
 
         if(user is null)
@@ -40,11 +41,7 @@ internal sealed class UserRegisteredDomainEventHandler : IDomainEventHandler<Use
             return;
         }
 
-        _dbContext.Carts.Add(new Cart()
-        {
-            OwnerId = user.Id,
-            Owner = user,
-        });
+        _dbContext.Carts.Add(Cart.Create(user.Id));
 
         DateTime utcNow = _dateTimeProvider.UtcNow;
         var verificationToken = new EmailVerificationToken()

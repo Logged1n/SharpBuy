@@ -2,6 +2,7 @@
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
 using Domain.Users;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
@@ -14,16 +15,17 @@ internal sealed class LoginUserCommandHandler(
 {
     public async Task<Result<string>> Handle(LoginUserCommand command, CancellationToken cancellationToken)
     {
-        User? user = await context.Users
+        ApplicationUser? user = await context.Set<ApplicationUser>()
+            .Where(u => u.Email == command.Email)
             .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.Email == command.Email, cancellationToken);
+            .SingleOrDefaultAsync(cancellationToken);
 
         if (user is null)
         {
             return Result.Failure<string>(UserErrors.NotFoundByEmail);
         }
 
-        if(!user.EmailVerified)
+        if (!user.DomainUser.EmailVerified)
             return Result.Failure<string>(UserErrors.EmailNotVerified);
 
         bool verified = passwordHasher.Verify(command.Password, user.PasswordHash!);

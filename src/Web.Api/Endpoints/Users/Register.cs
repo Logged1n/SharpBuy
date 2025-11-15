@@ -29,7 +29,7 @@ internal sealed class Register : IEndpoint
 
             Result<Guid> result = await handler.Handle(command, cancellationToken);
 
-            return result.Match(Results.Ok, CustomResults.Problem);
+            return result.Match(Results.Created, CustomResults.Problem);
         })
         .WithTags(Tags.Users);
     }

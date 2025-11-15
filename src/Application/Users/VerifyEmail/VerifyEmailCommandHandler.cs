@@ -16,7 +16,7 @@ internal sealed class VerifyEmailCommandHandler(IApplicationDbContext dbContext,
         if (token is null || token.ExpiresOnUtc < dateTimeProvider.UtcNow || token.User.EmailVerified)
             return Result.Failure(EmailErrors.InvalidToken);
 
-        token.User.EmailVerified = true;
+        token.User.VerifyEmail();
         dbContext.EmailVerificationTokens.Remove(token);
         await dbContext.SaveChangesAsync(cancellationToken);
 

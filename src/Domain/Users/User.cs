@@ -2,33 +2,73 @@
 using Domain.Carts;
 using Domain.Orders;
 using Domain.Reviews;
-using Microsoft.AspNetCore.Identity;
 using SharedKernel;
+using SharedKernel.Dtos;
 
 namespace Domain.Users;
 
-public sealed class User : IdentityUser<Guid>, IEntity
+public sealed class User : Entity
 {
-    public new Guid Id { get; set; }
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public Cart Cart { get; set; }
-    public Address? PrimaryAddress { get; set; }
-    public ICollection<Address> Addresses { get; set; } = [];
-    public ICollection<Order> Orders { get; set; } = [];
-    public ICollection<Review> Reviews { get; set; } = [];
-    public bool EmailVerified { get; set; }
+    private readonly List<Address> _addresses = [];
+    private User() { }
 
-    private readonly List<IDomainEvent> _domainEvents = [];
-    public List<IDomainEvent> DomainEvents => [.. _domainEvents];
+    public Guid Id { get; private set; }
+    public string Email { get; private set; }
+    public string FirstName { get;private set; }
+    public string LastName { get; private set; }
+    public string PhoneNumber { get; private set; }
+    public Cart Cart { get; private set; }
+    public Guid? PrimaryAddressId { get; private set; }
+    public bool EmailVerified { get; private set; }
+    public DateTime CreatedAt { get; private set; }
+    public IReadOnlyCollection<Address> Addresses => _addresses.AsReadOnly();
+    public string FullName => $"{FirstName} {LastName}";
 
-    public void ClearDomainEvents()
+    public static User Create(
+        string email,
+        string firstName,
+        string lastName,
+        string phoneNumber)
     {
-       _domainEvents.Clear();
+        ArgumentException.ThrowIfNullOrWhiteSpace(email);
+        ArgumentException.ThrowIfNullOrWhiteSpace(firstName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(lastName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(phoneNumber);
+
+        var userId = Guid.NewGuid();
+        var cart = Cart.Create(userId);
+
+        return new User
+        {
+            Id = userId,
+            Email = email.ToUpperInvariant(),
+            FirstName = firstName,
+            LastName = lastName,
+            PhoneNumber = phoneNumber ?? string.Empty,
+            EmailVerified = false,
+            CreatedAt = DateTime.UtcNow,
+            Cart = cart
+        };
     }
 
-    public void Raise(IDomainEvent domainEvent)
+    public Result AddAddress(string line1, string? line2, string city, string postalCode, string country)
     {
-        _domainEvents.Add(domainEvent);
+        var address = Address.Create(line1, line2, city, postalCode, country);
+
+        _addresses.Add(address);
+
+        PrimaryAddressId ??= address.Id;
+
+        return Result.Success();
+    }
+
+    public Result VerifyEmail()
+    {
+        if (EmailVerified)
+            return Result.Failure(UserErrors.EmailAlreadyVerified);
+
+        EmailVerified = true;
+
+        return Result.Success();
     }
 }

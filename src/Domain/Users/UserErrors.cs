@@ -23,4 +23,8 @@ public static class UserErrors
     public static readonly Error EmailNotVerified = Error.Problem(
         "Users.EmailNotVerified",
         "This account has not verified email.");
+
+    public static readonly Error EmailAlreadyVerified = Error.Conflict(
+        "Users.EmailAlreadyVerified",
+        "The email is already verified.");
 }
