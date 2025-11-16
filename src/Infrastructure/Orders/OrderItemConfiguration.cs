@@ -59,6 +59,6 @@ internal sealed class OrderItemConfiguration : IEntityTypeConfiguration<OrderIte
             .IsUnique();
 
         builder.ToTable(t =>
-            t.HasCheckConstraint("CK_OrderItem_Quantity", "[Quantity] > 0"));
+            t.HasCheckConstraint("CK_OrderItem_Quantity", "\"Quantity\" > 0"));
     }
 }

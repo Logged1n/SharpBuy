@@ -18,7 +18,7 @@ using SharedKernel;
 
 namespace Infrastructure.Database;
 
-public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IDomainEventsDispatcher domainEventsDispatcher)
+public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IDomainEventsDispatcher? domainEventsDispatcher = null)
     : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>(options), IApplicationDbContext
 {
     public new DbSet<ApplicationUser> Users {  get; set; }
@@ -79,7 +79,7 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
             })
         .ToList();
 
-        await domainEventsDispatcher.DispatchAsync(domainEvents);
+        await domainEventsDispatcher!.DispatchAsync(domainEvents);
     }
     private static void ConfigureIdentityTables(ModelBuilder modelBuilder)
     {

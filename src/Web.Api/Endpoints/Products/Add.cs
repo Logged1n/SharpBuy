@@ -9,7 +9,7 @@ namespace Web.Api.Endpoints.Products;
 
 public sealed class Add : IEndpoint
 {
-    public sealed record Request(string Name, string Description, Money price, ICollection<Guid> categoryIds);
+    public sealed record Request(string Name, string Description, int Qunatity, Money price, ICollection<Guid> categoryIds, string MainPhotoPath);
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
@@ -21,8 +21,10 @@ public sealed class Add : IEndpoint
             var command = new AddProductCommand(
                 request.Name,
                 request.Description,
+                request.Qunatity,
                 request.price,
-                request.categoryIds);
+                request.categoryIds,
+                request.MainPhotoPath);
 
             Result<Guid> result = await handler.Handle(command, cancellationToken);
             return result.Match(Results.Created, CustomResults.Problem);

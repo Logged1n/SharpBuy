@@ -11,5 +11,7 @@ namespace Application.Products.Add;
 public sealed record AddProductCommand(
     string Name,
     string Description,
+    int Quantity,
     Money Price,
-    ICollection<Guid> CategoryIds) : ICommand<Guid>;
+    ICollection<Guid> CategoryIds,
+    string MainPhotoPath) : ICommand<Guid>;
