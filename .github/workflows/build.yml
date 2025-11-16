@@ -22,13 +22,13 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restore
-        run: dotnet restore SharpBuy.slnx
+        run: dotnet restore
 
       - name: Build
-        run: dotnet build SharpBuy.slnx --configuration Release --no-restore
+        run: dotnet build --configuration Release --no-restore
 
       - name: Test
-        run: dotnet test SharpBuy.slnx --configuration Release --no-restore --no-build
+        run: dotnet test --configuration Release --no-restore --no-build
 
       - name: Publish
-        run: dotnet publish SharpBuy.slnx --configuration Release --no-restore --no-build
+        run: dotnet publish --configuration Release --no-restore --no-build
