@@ -1,4 +1,5 @@
 using Infrastructure.Database;
+using Infrastructure.DomainEvents;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Testcontainers.PostgreSql;
@@ -24,6 +25,7 @@ public abstract class IntegrationTestBase : IAsyncLifetime
 
         var services = new ServiceCollection();
 
+        services.AddTransient<IDomainEventsDispatcher, DomainEventsDispatcher>();
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(_dbContainer.GetConnectionString()));
 

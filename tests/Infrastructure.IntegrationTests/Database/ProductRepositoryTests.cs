@@ -1,14 +1,11 @@
 using Domain.Products;
 using Domain.Categories;
+using Infrastructure.IntegrationTests;
 
 namespace Infrastructure.IntegrationTests.Database;
 
 public class ProductRepositoryTests : BaseIntegrationTest
 {
-    public ProductRepositoryTests(DatabaseFixture fixture) : base(fixture)
-    {
-    }
-
     [Fact]
     public async Task AddProduct_ShouldPersistToDatabase()
     {
@@ -22,19 +19,23 @@ public class ProductRepositoryTests : BaseIntegrationTest
             "/photos/test.jpg");
 
         // Act
-        DbContext.Products.Add(product);
-        await DbContext.SaveChangesAsync();
-
-        // Clear tracked entities
-        DbContext.ChangeTracker.Clear();
+        await ExecuteInTransactionAsync(async context =>
+        {
+            context.Products.Add(product);
+            return await context.SaveChangesAsync();
+        });
 
         // Assert
-        Product? savedProduct = await DbContext.Products.FindAsync(product.Id);
-        savedProduct.ShouldNotBeNull();
-        savedProduct!.Name.ShouldBe("Test Product");
-        savedProduct.Description.ShouldBe("Test Description");
-        savedProduct.Price.Amount.ShouldBe(99.99m);
-        savedProduct.Price.Currency.ShouldBe("USD");
+        await ExecuteInTransactionAsync(async context =>
+        {
+            Product? savedProduct = await context.Products.FindAsync(product.Id);
+            savedProduct.ShouldNotBeNull();
+            savedProduct!.Name.ShouldBe("Test Product");
+            savedProduct.Description.ShouldBe("Test Description");
+            savedProduct.Price.Amount.ShouldBe(99.99m);
+            savedProduct.Price.Currency.ShouldBe("USD");
+            return Task.CompletedTask;
+        });
     }
 
     [Fact]
@@ -43,9 +44,13 @@ public class ProductRepositoryTests : BaseIntegrationTest
         // Arrange
         var category1 = Category.Create("Electronics");
         var category2 = Category.Create("Computers");
+        Guid productId = Guid.Empty;
 
-        DbContext.Categories.AddRange(category1, category2);
-        await DbContext.SaveChangesAsync();
+        await ExecuteInTransactionAsync(async context =>
+        {
+            context.Categories.AddRange(category1, category2);
+            return await context.SaveChangesAsync();
+        });
 
         var product = Product.Create(
             "Laptop",
@@ -57,19 +62,26 @@ public class ProductRepositoryTests : BaseIntegrationTest
 
         product.AddToCategory(category1.Id);
         product.AddToCategory(category2.Id);
+        productId = product.Id;
 
         // Act
-        DbContext.Products.Add(product);
-        await DbContext.SaveChangesAsync();
-        DbContext.ChangeTracker.Clear();
+        await ExecuteInTransactionAsync(async context =>
+        {
+            context.Products.Add(product);
+            return await context.SaveChangesAsync();
+        });
 
         // Assert
-        Product? savedProduct = await DbContext.Products
-            .Include(p => p.Categories)
-            .FirstOrDefaultAsync(p => p.Id == product.Id);
+        await ExecuteInTransactionAsync(async context =>
+        {
+            Product? savedProduct = await context.Products
+                .Include(p => p.Categories)
+                .FirstOrDefaultAsync(p => p.Id == productId);
 
-        savedProduct.ShouldNotBeNull();
-        savedProduct!.Categories.Count.ShouldBe(2);
+            savedProduct.ShouldNotBeNull();
+            savedProduct!.Categories.Count.ShouldBe(2);
+            return Task.CompletedTask;
+        });
     }
 
     [Fact]
@@ -84,20 +96,28 @@ public class ProductRepositoryTests : BaseIntegrationTest
             "USD",
             "/photos/test.jpg");
 
-        DbContext.Products.Add(product);
-        await DbContext.SaveChangesAsync();
-        DbContext.ChangeTracker.Clear();
+        await ExecuteInTransactionAsync(async context =>
+        {
+            context.Products.Add(product);
+            return await context.SaveChangesAsync();
+        });
 
         // Act
-        Product? trackedProduct = await DbContext.Products.FindAsync(product.Id);
-        // Update via reflection since properties are private setters
-        typeof(Product).GetProperty("Name")!.SetValue(trackedProduct, "Updated Name");
-        await DbContext.SaveChangesAsync();
-        DbContext.ChangeTracker.Clear();
+        await ExecuteInTransactionAsync(async context =>
+        {
+            Product? trackedProduct = await context.Products.FindAsync(product.Id);
+            // Update via reflection since properties are private setters
+            typeof(Product).GetProperty("Name")!.SetValue(trackedProduct, "Updated Name");
+            return await context.SaveChangesAsync();
+        });
 
         // Assert
-        Product? updatedProduct = await DbContext.Products.FindAsync(product.Id);
-        updatedProduct!.Name.ShouldBe("Updated Name");
+        await ExecuteInTransactionAsync(async context =>
+        {
+            Product? updatedProduct = await context.Products.FindAsync(product.Id);
+            updatedProduct!.Name.ShouldBe("Updated Name");
+            return Task.CompletedTask;
+        });
     }
 
     [Fact]
@@ -112,18 +132,27 @@ public class ProductRepositoryTests : BaseIntegrationTest
             "USD",
             "/photos/test.jpg");
 
-        DbContext.Products.Add(product);
-        await DbContext.SaveChangesAsync();
-        DbContext.ChangeTracker.Clear();
+        await ExecuteInTransactionAsync(async context =>
+        {
+            context.Products.Add(product);
+            return await context.SaveChangesAsync();
+        });
 
         // Act
-        Product? trackedProduct = await DbContext.Products.FindAsync(product.Id);
-        DbContext.Products.Remove(trackedProduct!);
-        await DbContext.SaveChangesAsync();
+        await ExecuteInTransactionAsync(async context =>
+        {
+            Product? trackedProduct = await context.Products.FindAsync(product.Id);
+            context.Products.Remove(trackedProduct!);
+            return await context.SaveChangesAsync();
+        });
 
         // Assert
-        Product? deletedProduct = await DbContext.Products.FindAsync(product.Id);
-        deletedProduct.ShouldBeNull();
+        await ExecuteInTransactionAsync(async context =>
+        {
+            Product? deletedProduct = await context.Products.FindAsync(product.Id);
+            deletedProduct.ShouldBeNull();
+            return Task.CompletedTask;
+        });
     }
 
     [Fact]
@@ -134,18 +163,23 @@ public class ProductRepositoryTests : BaseIntegrationTest
         var product2 = Product.Create("Product B", "Desc", 10, 100m, "USD", "/photo.jpg");
         var product3 = Product.Create("Product C", "Desc", 10, 150m, "USD", "/photo.jpg");
 
-        DbContext.Products.AddRange(product1, product2, product3);
-        await DbContext.SaveChangesAsync();
-        DbContext.ChangeTracker.Clear();
+        await ExecuteInTransactionAsync(async context =>
+        {
+            context.Products.AddRange(product1, product2, product3);
+            return await context.SaveChangesAsync();
+        });
 
-        // Act
-        List<Product> expensiveProducts = await DbContext.Products
-            .Where(p => p.Price.Amount > 75m)
-            .ToListAsync();
+        // Act & Assert
+        await ExecuteInTransactionAsync(async context =>
+        {
+            List<Product> expensiveProducts = await context.Products
+                .Where(p => p.Price.Amount > 75m)
+                .ToListAsync();
 
-        // Assert
-        expensiveProducts.Count.ShouldBe(2);
-        expensiveProducts.ShouldContain(p => p.Name == "Product B");
-        expensiveProducts.ShouldContain(p => p.Name == "Product C");
+            expensiveProducts.Count.ShouldBe(2);
+            expensiveProducts.ShouldContain(p => p.Name == "Product B");
+            expensiveProducts.ShouldContain(p => p.Name == "Product C");
+            return Task.CompletedTask;
+        });
     }
 }

@@ -19,6 +19,7 @@ public sealed class Product : Entity
     public string Description { get; private set; }
     public Money Price { get; private set; }
     public Guid InventoryId { get; private set; }
+    public Inventory Inventory { get; private set; }
     public IReadOnlyCollection<ProductCategory> Categories => _categories.AsReadOnly();
     public string MainPhotoPath { get; private set; }
     public ICollection<string> PhotoPaths { get; private set; }
@@ -38,6 +39,7 @@ public sealed class Product : Entity
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(quantity);
 
         var productId = Guid.NewGuid();
+        var inventory = Inventory.Create(productId, quantity);
         return new Product()
         {
             Id = productId,
@@ -46,7 +48,8 @@ public sealed class Product : Entity
             Price = new Money(priceAmount, priceCurrency),
             MainPhotoPath = mainPhotoPath,
             PhotoPaths = [mainPhotoPath],
-            InventoryId = Inventory.Create(productId, quantity, 0).Id,
+            Inventory = inventory,
+            InventoryId = inventory.Id
         };
     }
 

@@ -18,6 +18,5 @@
     <Project Path="tests/ArchitectureTests/ArchitectureTests.csproj" />
     <Project Path="tests/Domain.UnitTests/Domain.UnitTests.csproj" />
     <Project Path="tests/Infrastructure.IntegrationTests/Infrastructure.IntegrationTests.csproj" />
-    <Project Path="tests/Web.Api.IntegrationTests/Web.Api.IntegrationTests.csproj" />
   </Folder>
 </Solution>

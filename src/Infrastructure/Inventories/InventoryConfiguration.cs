@@ -27,10 +27,10 @@ internal sealed class InventoryConfiguration : IEntityTypeConfiguration<Inventor
 
         builder.ToTable(t =>
         {
-            t.HasCheckConstraint("CK_Inventory_Quantity", "Quantity >= 0");
-            t.HasCheckConstraint("CK_Inventory_ReservedQuantity", "ReservedQuantity >= 0");
+            t.HasCheckConstraint("CK_Inventory_Quantity", "\"Quantity\" >= 0");
+            t.HasCheckConstraint("CK_Inventory_ReservedQuantity", "\"ReservedQuantity\" >= 0");
             t.HasCheckConstraint("CK_Inventory_Reserved_Not_Greater_Than_Quantity",
-                "ReservedQuantity <= Quantity");
+                "\"ReservedQuantity\" <= \"Quantity\"");
         });
     }
 }

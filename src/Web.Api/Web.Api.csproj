@@ -26,4 +26,10 @@
     <Folder Include="Endpoints\Categories\" />
   </ItemGroup>
 
+	<ItemGroup>
+		<None Update="appsettings.Testing.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
 </Project>

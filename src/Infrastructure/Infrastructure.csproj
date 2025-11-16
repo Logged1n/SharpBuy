@@ -20,6 +20,8 @@
 
 	<ItemGroup>
 		<InternalsVisibleTo Include="Application.IntegrationTests" />
+		<InternalsVisibleTo Include="Infrastructure.IntegrationTests" />
+		<InternalsVisibleTo Include="Web.Api.IntegrationTests"/>
 	</ItemGroup>
 
 </Project>

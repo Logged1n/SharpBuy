@@ -1,34 +1,99 @@
+using Infrastructure.Database;
+using Infrastructure.DomainEvents;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Testcontainers.PostgreSql;
+using Xunit;
+
 namespace Web.Api.IntegrationTests;
 
-/// <summary>
-/// Base class for API integration tests
-/// </summary>
-[Collection(nameof(WebApiCollection))]
 public abstract class BaseIntegrationTest : IAsyncLifetime
 {
-    protected readonly WebApiFactory Factory;
-    protected HttpClient HttpClient = null!;
+    private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder()
+        .WithImage("postgres:16-alpine")
+        .WithDatabase("SharpBuyTest")
+        .WithUsername("postgres")
+        .WithPassword("postgres")
+        .Build();
 
-    protected BaseIntegrationTest(WebApiFactory factory)
-    {
-        Factory = factory;
-    }
+    private WebApplicationFactory<Program> _factory = null!;
+    protected HttpClient HttpClient { get; private set; } = null!;
+    protected ApplicationDbContext DbContext { get; private set; } = null!;
 
     public async Task InitializeAsync()
     {
-        await Factory.ResetDatabaseAsync();
-        HttpClient = Factory.CreateClient();
+        await _dbContainer.StartAsync();
+
+        // Konfiguracja WebApplicationFactory
+        _factory = new WebApplicationFactory<Program>()
+            .WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["ConnectionStrings:Database"] = _dbContainer.GetConnectionString(),
+                    ["EmailOptions:SmtpServer"] = "localhost",
+                    ["EmailOptions:SmtpPort"] = "1025",
+                    ["EmailOptions:SmtpUsername"] = "test",
+                    ["EmailOptions:SmtpPassword"] = "test",
+                    ["EmailOptions:FromEmail"] = "test@example.com",
+                    ["EmailOptions:FromName"] = "Test",
+                    ["JwtOptions:Secret"] = "test-secret-key-for-testing-at-least-32-characters-long",
+                    ["JwtOptions:Issuer"] = "test-issuer",
+                    ["JwtOptions:Audience"] = "test-audience",
+                    ["JwtOptions:ExpirationMinutes"] = "60"
+                }));
+
+                builder.ConfigureServices(services =>
+                {
+                    services.AddTransient<IDomainEventsDispatcher, DomainEventsDispatcher>();
+                    services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(_dbContainer.GetConnectionString()));
+                });
+
+                builder.UseEnvironment("Testing");
+            });
+
+        HttpClient = _factory.CreateClient();
+
+        using IServiceScope scope = _factory.Services.CreateScope();
+        DbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        await DbContext.Database.EnsureCreatedAsync();
     }
 
-    public Task DisposeAsync()
+    public async Task DisposeAsync()
     {
+        await DbContext.Database.EnsureDeletedAsync();
+        await DbContext.DisposeAsync();
         HttpClient.Dispose();
-        return Task.CompletedTask;
+        await _factory.DisposeAsync();
+        await _dbContainer.DisposeAsync();
     }
 
-    /// <summary>
-    /// Helper method to get JWT token for authentication
-    /// </summary>
+    // Metody pomocnicze dla testów
+    protected async Task<Guid> RegisterUserAsync(
+        string email = "test@example.com",
+        string password = "Password123!",
+        string firstName = "Test",
+        string lastName = "User")
+    {
+        var registerRequest = new
+        {
+            Email = email,
+            Password = password,
+            FirstName = firstName,
+            LastName = lastName,
+            PhoneNumber = "+1234567890"
+        };
+
+        HttpResponseMessage response = await HttpClient.PostAsJsonAsync("/users/register", registerRequest);
+        response.EnsureSuccessStatusCode();
+
+        Guid userId = await response.Content.ReadFromJsonAsync<Guid>();
+        return userId;
+    }
+
     protected async Task<string> GetAuthTokenAsync(string email, string password)
     {
         var loginRequest = new
@@ -40,46 +105,24 @@ public abstract class BaseIntegrationTest : IAsyncLifetime
         HttpResponseMessage response = await HttpClient.PostAsJsonAsync("/users/login", loginRequest);
         response.EnsureSuccessStatusCode();
 
-        LoginResponse? result = await response.Content.ReadFromJsonAsync<LoginResponse>();
-        return result!.Token;
+        LoginResponse? loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
+        return loginResponse!.Token;
     }
 
-    /// <summary>
-    /// Helper method to register a new user
-    /// </summary>
-    protected async Task<Guid> RegisterUserAsync(
-        string email = "test@example.com",
-        string password = "Password123!",
-        string firstName = "John",
-        string lastName = "Doe",
-        string phoneNumber = "+1234567890")
+    protected async Task ExecuteInTransactionAsync(Func<ApplicationDbContext, Task> action)
     {
-        var registerRequest = new
+        await using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = await DbContext.Database.BeginTransactionAsync();
+        try
         {
-            Email = email,
-            Password = password,
-            FirstName = firstName,
-            LastName = lastName,
-            PhoneNumber = phoneNumber
-        };
-
-        HttpResponseMessage response = await HttpClient.PostAsJsonAsync("/users/register", registerRequest);
-        response.EnsureSuccessStatusCode();
-
-        string? locationHeader = response.Headers.Location?.ToString();
-#pragma warning disable S6608 // Prefer indexing instead of "Enumerable" methods on types implementing "IList"
-        string? userId = locationHeader?.Split('/').Last();
-#pragma warning restore S6608 // Prefer indexing instead of "Enumerable" methods on types implementing "IList"
-        return Guid.Parse(userId!);
+            await action(DbContext);
+            await transaction.CommitAsync();
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
     private record LoginResponse(string Token);
-}
-
-/// <summary>
-/// Collection definition for sharing WebApiFactory across test classes
-/// </summary>
-[CollectionDefinition(nameof(WebApiCollection))]
-public class WebApiCollection : ICollectionFixture<WebApiFactory>
-{
 }

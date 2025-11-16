@@ -2,9 +2,6 @@ namespace Web.Api.IntegrationTests.Endpoints;
 
 public class ProductEndpointsTests : BaseIntegrationTest
 {
-    public ProductEndpointsTests(WebApiFactory factory) : base(factory)
-    {
-    }
 
     [Fact]
     public async Task AddProduct_WithAuthentication_ShouldReturn201Created()
@@ -22,8 +19,10 @@ public class ProductEndpointsTests : BaseIntegrationTest
         {
             Name = "Test Product",
             Description = "Test Description",
+            Quantity = 10,
             Price = new { Amount = 99.99m, Currency = "USD" },
-            CategoryIds = new[] { category.Id }
+            CategoryIds = new[] { category.Id },
+            MainPhotoPath = "/photos/test.jpg"
         };
 
         // Act
@@ -44,8 +43,10 @@ public class ProductEndpointsTests : BaseIntegrationTest
         {
             Name = "Test Product",
             Description = "Test Description",
+            Quantity = 10,
             Price = new { Amount = 99.99m, Currency = "USD" },
-            CategoryIds = new[] { Guid.NewGuid() }
+            CategoryIds = new[] { Guid.NewGuid() },
+            MainPhotoPath = "/photos/test.jpg"
         };
 
         // Act
@@ -68,8 +69,10 @@ public class ProductEndpointsTests : BaseIntegrationTest
         {
             Name = "Test Product",
             Description = "Test Description",
+            Quantity = 10,
             Price = new { Amount = 99.99m, Currency = "USD" },
-            CategoryIds = new[] { Guid.NewGuid() } // Non-existent category
+            CategoryIds = new[] { Guid.NewGuid() }, // Non-existent category
+            MainPhotoPath = "/photos/test.jpg"
         };
 
         // Act
@@ -80,11 +83,12 @@ public class ProductEndpointsTests : BaseIntegrationTest
     }
 
     [Theory]
-    [InlineData("", "Description", 99.99)] // Empty name
-    [InlineData("Product", "", 99.99)]      // Empty description
-    [InlineData("Product", "Description", 0)] // Zero price
+    [InlineData("", "Description", 10, 99.99)] // Empty name
+    [InlineData("Product", "", 10, 99.99)]      // Empty description
+    [InlineData("Product", "Description", 0, 99.99)] // Zero quantity
+    [InlineData("Product", "Description", 10, 0)] // Zero price
     public async Task AddProduct_WithInvalidData_ShouldReturn400BadRequest(
-        string name, string description, decimal price)
+        string name, string description, int quantity, decimal price)
     {
         // Arrange
         await RegisterUserAsync();
@@ -98,8 +102,10 @@ public class ProductEndpointsTests : BaseIntegrationTest
         {
             Name = name,
             Description = description,
+            Quantity = quantity,
             Price = new { Amount = price, Currency = "USD" },
-            CategoryIds = new[] { category.Id }
+            CategoryIds = new[] { category.Id },
+            MainPhotoPath = "/photos/test.jpg"
         };
 
         // Act
