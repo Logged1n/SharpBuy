@@ -20,25 +20,6 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-      - name: Debug - Show structure
-        run: |
-          echo "=== Current directory ==="
-          pwd
-          echo ""
-          echo "=== Root files ==="
-          ls -la
-          echo ""
-          echo "=== Looking for src folder ==="
-          ls -la src/ || echo "src/ does not exist!"
-          echo ""
-          echo "=== Looking for Web.Api ==="
-          ls -la src/Web.Api/ || echo "src/Web.Api/ does not exist!"
-          echo ""
-          echo "=== All .csproj files in repo ==="
-          find . -name "*.csproj" -type f
-          echo ""
-          echo "=== Content of solution file ==="
-          cat SharpBuy.slnx || cat SharpBuy.sln || echo "No solution file found"
 
       - name: Restore
         run: dotnet restore
