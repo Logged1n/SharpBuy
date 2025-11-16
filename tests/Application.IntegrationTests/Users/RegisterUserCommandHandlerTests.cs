@@ -1,5 +1,8 @@
 using Application.Users.Register;
+using Domain.Addresses;
+using Domain.Carts;
 using Domain.Users;
+using Infrastructure.Authentication;
 using SharedKernel.Dtos;
 
 namespace Application.IntegrationTests.Users;
@@ -25,14 +28,14 @@ public class RegisterUserCommandHandlerTests : BaseIntegrationTest
             null);
 
         // Act
-        var result = await handler.Handle(command, CancellationToken.None);
+        Result<Guid> result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldNotBe(Guid.Empty);
 
         // Verify user was created in database
-        var user = await DbContext.DomainUsers
+        User? user = await DbContext.DomainUsers
             .Include(u => u.Cart)
             .FirstOrDefaultAsync(u => u.Id == result.Value);
 
@@ -50,8 +53,8 @@ public class RegisterUserCommandHandlerTests : BaseIntegrationTest
     public async Task Handle_WithDuplicateEmail_ShouldReturnFailure()
     {
         // Arrange
-        var email = "duplicate@example.com";
-        var existingUser = User.Create(email, "John", "Doe", "+1234567890");
+        string email = "duplicate@example.com";
+        User existingUser = User.Create(email, "John", "Doe", "+1234567890");
         DbContext.DomainUsers.Add(existingUser);
         await DbContext.SaveChangesAsync();
 
@@ -66,7 +69,7 @@ public class RegisterUserCommandHandlerTests : BaseIntegrationTest
             null);
 
         // Act
-        var result = await handler.Handle(command, CancellationToken.None);
+        Result<Guid> result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.IsFailure.ShouldBeTrue();
@@ -95,12 +98,12 @@ public class RegisterUserCommandHandlerTests : BaseIntegrationTest
             address);
 
         // Act
-        var result = await handler.Handle(command, CancellationToken.None);
+        Result<Guid> result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
 
-        var user = await DbContext.DomainUsers
+        User? user = await DbContext.DomainUsers
             .Include(u => u.Addresses)
             .FirstOrDefaultAsync(u => u.Id == result.Value);
 
@@ -108,7 +111,7 @@ public class RegisterUserCommandHandlerTests : BaseIntegrationTest
         user.Addresses.ShouldHaveSingleItem();
         user.PrimaryAddressId.ShouldNotBeNull();
 
-        var userAddress = user.Addresses.First();
+        Address userAddress = user.Addresses.First();
         userAddress.Line1.ShouldBe("123 Main St");
         userAddress.Line2.ShouldBe("Apt 4");
         userAddress.City.ShouldBe("New York");
@@ -131,12 +134,12 @@ public class RegisterUserCommandHandlerTests : BaseIntegrationTest
             null);
 
         // Act
-        var result = await handler.Handle(command, CancellationToken.None);
+        Result<Guid> result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
 
-        var applicationUser = await DbContext.Set<Infrastructure.Authentication.ApplicationUser>()
+        ApplicationUser? applicationUser = await DbContext.Set<ApplicationUser>()
             .FirstOrDefaultAsync(u => u.DomainUserId == result.Value);
 
         applicationUser.ShouldNotBeNull();
@@ -158,12 +161,12 @@ public class RegisterUserCommandHandlerTests : BaseIntegrationTest
             null);
 
         // Act
-        var result = await handler.Handle(command, CancellationToken.None);
+        Result<Guid> result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
 
-        var cart = await DbContext.Carts
+        Cart? cart = await DbContext.Carts
             .FirstOrDefaultAsync(c => c.OwnerId == result.Value);
 
         cart.ShouldNotBeNull();

@@ -15,8 +15,8 @@ public class AddProductCommandHandlerTests : BaseIntegrationTest
     public async Task Handle_WithValidData_ShouldCreateProduct()
     {
         // Arrange
-        var category1 = Category.Create("Electronics");
-        var category2 = Category.Create("Computers");
+        Category category1 = Category.Create("Electronics");
+        Category category2 = Category.Create("Computers");
         DbContext.Categories.AddRange(category1, category2);
         await DbContext.SaveChangesAsync();
 
@@ -30,14 +30,14 @@ public class AddProductCommandHandlerTests : BaseIntegrationTest
             "/photos/laptop.jpg");
 
         // Act
-        var result = await handler.Handle(command, CancellationToken.None);
+        Result<Guid> result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldNotBe(Guid.Empty);
 
         // Verify product was created in database
-        var product = await DbContext.Products.FindAsync(result.Value);
+        Product? product = await DbContext.Products.FindAsync(result.Value);
         product.ShouldNotBeNull();
         product.Name.ShouldBe("Gaming Laptop");
         product.Description.ShouldBe("High-performance gaming laptop");
@@ -50,7 +50,7 @@ public class AddProductCommandHandlerTests : BaseIntegrationTest
     public async Task Handle_WithEmptyName_ShouldThrowArgumentException()
     {
         // Arrange
-        var category = Category.Create("Electronics");
+        Category category = Category.Create("Electronics");
         DbContext.Categories.Add(category);
         await DbContext.SaveChangesAsync();
 
@@ -72,7 +72,7 @@ public class AddProductCommandHandlerTests : BaseIntegrationTest
     public async Task Handle_WithNegativeQuantity_ShouldThrowArgumentOutOfRangeException()
     {
         // Arrange
-        var category = Category.Create("Electronics");
+        Category category = Category.Create("Electronics");
         DbContext.Categories.Add(category);
         await DbContext.SaveChangesAsync();
 
@@ -94,7 +94,7 @@ public class AddProductCommandHandlerTests : BaseIntegrationTest
     public async Task Handle_WithZeroQuantity_ShouldThrowArgumentOutOfRangeException()
     {
         // Arrange
-        var category = Category.Create("Electronics");
+        Category category = Category.Create("Electronics");
         DbContext.Categories.Add(category);
         await DbContext.SaveChangesAsync();
 
@@ -116,7 +116,7 @@ public class AddProductCommandHandlerTests : BaseIntegrationTest
     public async Task Handle_WithEmptyPhotoPath_ShouldThrowArgumentException()
     {
         // Arrange
-        var category = Category.Create("Electronics");
+        Category category = Category.Create("Electronics");
         DbContext.Categories.Add(category);
         await DbContext.SaveChangesAsync();
 
@@ -138,14 +138,14 @@ public class AddProductCommandHandlerTests : BaseIntegrationTest
     public async Task Handle_MultipleCalls_ShouldCreateMultipleProducts()
     {
         // Arrange
-        var category = Category.Create("Electronics");
+        Category category = Category.Create("Electronics");
         DbContext.Categories.Add(category);
         await DbContext.SaveChangesAsync();
 
         var handler = new AddProductCommandHandler(DbContext);
 
         // Act
-        var result1 = await handler.Handle(new AddProductCommand(
+        Result<Guid> result1 = await handler.Handle(new AddProductCommand(
             "Product 1",
             "Description 1",
             10,
@@ -153,7 +153,7 @@ public class AddProductCommandHandlerTests : BaseIntegrationTest
             [category.Id],
             "/photo1.jpg"), CancellationToken.None);
 
-        var result2 = await handler.Handle(new AddProductCommand(
+        Result<Guid> result2 = await handler.Handle(new AddProductCommand(
             "Product 2",
             "Description 2",
             5,
@@ -166,7 +166,7 @@ public class AddProductCommandHandlerTests : BaseIntegrationTest
         result2.IsSuccess.ShouldBeTrue();
         result1.Value.ShouldNotBe(result2.Value);
 
-        var products = DbContext.Products.ToList();
+        List<Product> products = DbContext.Products.ToList();
         products.Count.ShouldBe(2);
     }
 }
