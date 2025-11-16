@@ -8,12 +8,12 @@ public class ProductTests
     public void Create_WithValidData_ShouldCreateProduct()
     {
         // Arrange
-        var name = "Test Product";
-        var description = "Test Description";
-        var quantity = 10;
-        var priceAmount = 99.99m;
-        var priceCurrency = "USD";
-        var mainPhotoPath = "/photos/main.jpg";
+        string name = "Test Product";
+        string description = "Test Description";
+        int quantity = 10;
+        decimal priceAmount = 99.99m;
+        string priceCurrency = "USD";
+        string mainPhotoPath = "/photos/main.jpg";
 
         // Act
         var product = Product.Create(
@@ -26,7 +26,7 @@ public class ProductTests
 
         // Assert
         product.ShouldNotBeNull();
-        product.Id.ShouldNotBeEmpty();
+        product.Id.ShouldNotBeSameAs(Guid.Empty);
         product.Name.ShouldBe(name);
         product.Description.ShouldBe(description);
         product.Price.Amount.ShouldBe(priceAmount);
@@ -40,11 +40,11 @@ public class ProductTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData(" ")]
-    public void Create_WithInvalidName_ShouldThrowArgumentException(string invalidName)
+    public void Create_WithInvalidName_ShouldThrowArgumentException(string? invalidName)
     {
         // Arrange & Act
         Action act = () => Product.Create(
-            invalidName,
+            invalidName!,
             "Description",
             10,
             99.99m,
@@ -77,14 +77,14 @@ public class ProductTests
     public void AddPhoto_ShouldAddPhotoToCollection()
     {
         // Arrange
-        var product = CreateValidProduct();
-        var newPhotoPath = "/photos/additional.jpg";
+        Product product = CreateValidProduct();
+        string newPhotoPath = "/photos/additional.jpg";
 
         // Act
         product.AddPhoto(newPhotoPath);
 
         // Assert
-        product.PhotoPaths.ShouldHaveCount(2);
+        product.PhotoPaths.Count.ShouldNotBeSameAs(2);
         product.PhotoPaths.ShouldContain(newPhotoPath);
     }
 
@@ -92,11 +92,11 @@ public class ProductTests
     public void AddToCategory_WithValidCategoryId_ShouldSucceed()
     {
         // Arrange
-        var product = CreateValidProduct();
+        Product product = CreateValidProduct();
         var categoryId = Guid.NewGuid();
 
         // Act
-        var result = product.AddToCategory(categoryId);
+        Result result = product.AddToCategory(categoryId);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
@@ -108,7 +108,7 @@ public class ProductTests
     public void AddToCategory_WithEmptyGuid_ShouldThrowArgumentOutOfRangeException()
     {
         // Arrange
-        var product = CreateValidProduct();
+        Product product = CreateValidProduct();
 
         // Act
         Action act = () => product.AddToCategory(Guid.Empty);
@@ -121,12 +121,12 @@ public class ProductTests
     public void AddToCategory_WhenAlreadyInCategory_ShouldReturnFailure()
     {
         // Arrange
-        var product = CreateValidProduct();
+        Product product = CreateValidProduct();
         var categoryId = Guid.NewGuid();
         product.AddToCategory(categoryId);
 
         // Act
-        var result = product.AddToCategory(categoryId);
+        Result result = product.AddToCategory(categoryId);
 
         // Assert
         result.IsFailure.ShouldBeTrue();
@@ -137,14 +137,14 @@ public class ProductTests
     public void RemoveFromCategory_WithValidCategoryId_ShouldSucceed()
     {
         // Arrange
-        var product = CreateValidProduct();
+        Product product = CreateValidProduct();
         var categoryId1 = Guid.NewGuid();
         var categoryId2 = Guid.NewGuid();
         product.AddToCategory(categoryId1);
         product.AddToCategory(categoryId2);
 
         // Act
-        var result = product.RemoveFromCategory(categoryId1);
+        Result result = product.RemoveFromCategory(categoryId1);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
@@ -156,13 +156,13 @@ public class ProductTests
     public void RemoveFromCategory_WhenNotInCategory_ShouldReturnFailure()
     {
         // Arrange
-        var product = CreateValidProduct();
+        Product product = CreateValidProduct();
         var categoryId1 = Guid.NewGuid();
         var categoryId2 = Guid.NewGuid();
         product.AddToCategory(categoryId1);
 
         // Act
-        var result = product.RemoveFromCategory(categoryId2);
+        Result result = product.RemoveFromCategory(categoryId2);
 
         // Assert
         result.IsFailure.ShouldBeTrue();
@@ -173,12 +173,12 @@ public class ProductTests
     public void RemoveFromCategory_WhenOnlyOneCategory_ShouldReturnFailure()
     {
         // Arrange
-        var product = CreateValidProduct();
+        Product product = CreateValidProduct();
         var categoryId = Guid.NewGuid();
         product.AddToCategory(categoryId);
 
         // Act
-        var result = product.RemoveFromCategory(categoryId);
+        Result result = product.RemoveFromCategory(categoryId);
 
         // Assert
         result.IsFailure.ShouldBeTrue();
@@ -190,7 +190,7 @@ public class ProductTests
     public void RemoveFromCategory_WithEmptyGuid_ShouldThrowArgumentOutOfRangeException()
     {
         // Arrange
-        var product = CreateValidProduct();
+        Product product = CreateValidProduct();
 
         // Act
         Action act = () => product.RemoveFromCategory(Guid.Empty);

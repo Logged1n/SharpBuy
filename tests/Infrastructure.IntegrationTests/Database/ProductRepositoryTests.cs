@@ -29,7 +29,7 @@ public class ProductRepositoryTests : BaseIntegrationTest
         DbContext.ChangeTracker.Clear();
 
         // Assert
-        var savedProduct = await DbContext.Products.FindAsync(product.Id);
+        Product? savedProduct = await DbContext.Products.FindAsync(product.Id);
         savedProduct.ShouldNotBeNull();
         savedProduct!.Name.ShouldBe("Test Product");
         savedProduct.Description.ShouldBe("Test Description");
@@ -64,12 +64,12 @@ public class ProductRepositoryTests : BaseIntegrationTest
         DbContext.ChangeTracker.Clear();
 
         // Assert
-        var savedProduct = await DbContext.Products
+        Product? savedProduct = await DbContext.Products
             .Include(p => p.Categories)
             .FirstOrDefaultAsync(p => p.Id == product.Id);
 
         savedProduct.ShouldNotBeNull();
-        savedProduct!.Categories.ShouldHaveCount(2);
+        savedProduct!.Categories.Count.ShouldBe(2);
     }
 
     [Fact]
@@ -89,14 +89,14 @@ public class ProductRepositoryTests : BaseIntegrationTest
         DbContext.ChangeTracker.Clear();
 
         // Act
-        var trackedProduct = await DbContext.Products.FindAsync(product.Id);
+        Product? trackedProduct = await DbContext.Products.FindAsync(product.Id);
         // Update via reflection since properties are private setters
         typeof(Product).GetProperty("Name")!.SetValue(trackedProduct, "Updated Name");
         await DbContext.SaveChangesAsync();
         DbContext.ChangeTracker.Clear();
 
         // Assert
-        var updatedProduct = await DbContext.Products.FindAsync(product.Id);
+        Product? updatedProduct = await DbContext.Products.FindAsync(product.Id);
         updatedProduct!.Name.ShouldBe("Updated Name");
     }
 
@@ -117,12 +117,12 @@ public class ProductRepositoryTests : BaseIntegrationTest
         DbContext.ChangeTracker.Clear();
 
         // Act
-        var trackedProduct = await DbContext.Products.FindAsync(product.Id);
+        Product? trackedProduct = await DbContext.Products.FindAsync(product.Id);
         DbContext.Products.Remove(trackedProduct!);
         await DbContext.SaveChangesAsync();
 
         // Assert
-        var deletedProduct = await DbContext.Products.FindAsync(product.Id);
+        Product? deletedProduct = await DbContext.Products.FindAsync(product.Id);
         deletedProduct.ShouldBeNull();
     }
 
@@ -139,12 +139,12 @@ public class ProductRepositoryTests : BaseIntegrationTest
         DbContext.ChangeTracker.Clear();
 
         // Act
-        var expensiveProducts = await DbContext.Products
+        List<Product> expensiveProducts = await DbContext.Products
             .Where(p => p.Price.Amount > 75m)
             .ToListAsync();
 
         // Assert
-        expensiveProducts.ShouldHaveCount(2);
+        expensiveProducts.Count.ShouldBe(2);
         expensiveProducts.ShouldContain(p => p.Name == "Product B");
         expensiveProducts.ShouldContain(p => p.Name == "Product C");
     }

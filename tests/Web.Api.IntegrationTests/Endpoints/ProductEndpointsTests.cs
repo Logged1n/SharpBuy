@@ -11,12 +11,12 @@ public class ProductEndpointsTests : BaseIntegrationTest
     {
         // Arrange
         await RegisterUserAsync();
-        var token = await GetAuthTokenAsync("test@example.com", "Password123!");
+        string token = await GetAuthTokenAsync("test@example.com", "Password123!");
         HttpClient.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
         // Create categories first
-        var category = await CreateCategoryAsync(token);
+        CategoryResponse category = await CreateCategoryAsync(token);
 
         var productRequest = new
         {
@@ -27,13 +27,13 @@ public class ProductEndpointsTests : BaseIntegrationTest
         };
 
         // Act
-        var response = await HttpClient.PostAsJsonAsync("/products", productRequest);
+        HttpResponseMessage response = await HttpClient.PostAsJsonAsync("/products", productRequest);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
 
-        var productId = await response.Content.ReadFromJsonAsync<Guid>();
-        productId.ShouldNotBeEmpty();
+        Guid productId = await response.Content.ReadFromJsonAsync<Guid>();
+        productId.ShouldNotBe(Guid.Empty);
     }
 
     [Fact]
@@ -49,7 +49,7 @@ public class ProductEndpointsTests : BaseIntegrationTest
         };
 
         // Act
-        var response = await HttpClient.PostAsJsonAsync("/products", productRequest);
+        HttpResponseMessage response = await HttpClient.PostAsJsonAsync("/products", productRequest);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
@@ -60,7 +60,7 @@ public class ProductEndpointsTests : BaseIntegrationTest
     {
         // Arrange
         await RegisterUserAsync();
-        var token = await GetAuthTokenAsync("test@example.com", "Password123!");
+        string token = await GetAuthTokenAsync("test@example.com", "Password123!");
         HttpClient.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
@@ -73,7 +73,7 @@ public class ProductEndpointsTests : BaseIntegrationTest
         };
 
         // Act
-        var response = await HttpClient.PostAsJsonAsync("/products", productRequest);
+        HttpResponseMessage response = await HttpClient.PostAsJsonAsync("/products", productRequest);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -88,11 +88,11 @@ public class ProductEndpointsTests : BaseIntegrationTest
     {
         // Arrange
         await RegisterUserAsync();
-        var token = await GetAuthTokenAsync("test@example.com", "Password123!");
+        string token = await GetAuthTokenAsync("test@example.com", "Password123!");
         HttpClient.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-        var category = await CreateCategoryAsync(token);
+        CategoryResponse category = await CreateCategoryAsync(token);
 
         var productRequest = new
         {
@@ -103,7 +103,7 @@ public class ProductEndpointsTests : BaseIntegrationTest
         };
 
         // Act
-        var response = await HttpClient.PostAsJsonAsync("/products", productRequest);
+        HttpResponseMessage response = await HttpClient.PostAsJsonAsync("/products", productRequest);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -115,10 +115,10 @@ public class ProductEndpointsTests : BaseIntegrationTest
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
         var categoryRequest = new { Name = "Electronics" };
-        var response = await HttpClient.PostAsJsonAsync("/categories", categoryRequest);
+        HttpResponseMessage response = await HttpClient.PostAsJsonAsync("/categories", categoryRequest);
         response.EnsureSuccessStatusCode();
 
-        var categoryId = await response.Content.ReadFromJsonAsync<Guid>();
+        Guid categoryId = await response.Content.ReadFromJsonAsync<Guid>();
         return new CategoryResponse(categoryId, "Electronics");
     }
 

@@ -25,7 +25,7 @@ public class UserRepositoryTests : BaseIntegrationTest
         DbContext.ChangeTracker.Clear();
 
         // Assert
-        var savedUser = await DbContext.DomainUsers
+        User? savedUser = await DbContext.DomainUsers
             .Include(u => u.Cart)
             .FirstOrDefaultAsync(u => u.Id == user.Id);
 
@@ -55,14 +55,14 @@ public class UserRepositoryTests : BaseIntegrationTest
         DbContext.ChangeTracker.Clear();
 
         // Assert
-        var savedUser = await DbContext.DomainUsers
+        User? savedUser = await DbContext.DomainUsers
             .Include(u => u.Addresses)
             .FirstOrDefaultAsync(u => u.Id == user.Id);
 
         savedUser.ShouldNotBeNull();
         savedUser!.Addresses.ShouldHaveSingleItem();
         savedUser.PrimaryAddressId.ShouldNotBeNull();
-        savedUser.Addresses.First().Id.ShouldBe(savedUser.PrimaryAddressId);
+        savedUser.Addresses.First().Id.ShouldBeSameAs(savedUser.PrimaryAddressId);
     }
 
     [Fact]
@@ -80,13 +80,13 @@ public class UserRepositoryTests : BaseIntegrationTest
         DbContext.ChangeTracker.Clear();
 
         // Act
-        var trackedUser = await DbContext.DomainUsers.FindAsync(user.Id);
+        User? trackedUser = await DbContext.DomainUsers.FindAsync(user.Id);
         trackedUser!.VerifyEmail();
         await DbContext.SaveChangesAsync();
         DbContext.ChangeTracker.Clear();
 
         // Assert
-        var verifiedUser = await DbContext.DomainUsers.FindAsync(user.Id);
+        User? verifiedUser = await DbContext.DomainUsers.FindAsync(user.Id);
         verifiedUser!.EmailVerified.ShouldBeTrue();
     }
 
@@ -102,7 +102,7 @@ public class UserRepositoryTests : BaseIntegrationTest
         DbContext.ChangeTracker.Clear();
 
         // Act
-        var foundUser = await DbContext.DomainUsers
+        User? foundUser = await DbContext.DomainUsers
             .FirstOrDefaultAsync(u => u.Email == "USER1@EXAMPLE.COM");
 
         // Assert
@@ -120,7 +120,7 @@ public class UserRepositoryTests : BaseIntegrationTest
         DbContext.ChangeTracker.Clear();
 
         // Act
-        var trackedUser = await DbContext.DomainUsers
+        User? trackedUser = await DbContext.DomainUsers
             .Include(u => u.Cart)
             .FirstOrDefaultAsync(u => u.Id == user.Id);
 
@@ -132,7 +132,7 @@ public class UserRepositoryTests : BaseIntegrationTest
         DbContext.ChangeTracker.Clear();
 
         // Assert
-        var userWithCart = await DbContext.DomainUsers
+        User? userWithCart = await DbContext.DomainUsers
             .Include(u => u.Cart)
             .ThenInclude(c => c.Items)
             .FirstOrDefaultAsync(u => u.Id == user.Id);

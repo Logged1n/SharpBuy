@@ -31,7 +31,7 @@ public sealed class Cart : Entity
         if (item != null)
             return Result.Failure(CartErrors.ItemAlreadyExists(productId));
 
-        Items.Add(CartItem.Create(OwnerId, productId, unitPrice, quantity));
+        _items.Add(CartItem.Create(OwnerId, productId, unitPrice, quantity));
 
         return Result.Success();
     }
@@ -42,7 +42,7 @@ public sealed class Cart : Entity
         if (item == null)
             return Result.Failure(CartErrors.ItemNotFound(productId));
 
-        Items.Remove(item);
+        _items.Remove(item);
 
         return Result.Success();
     }
@@ -52,7 +52,7 @@ public sealed class Cart : Entity
         if (quantity <= 0)
             return Result.Failure(CartItemErrors.InvalidQuantity);
 
-        CartItem? item = Items.FirstOrDefault(oi => oi.ProductId == productId);
+        CartItem? item = _items.FirstOrDefault(oi => oi.ProductId == productId);
         if (item == null)
             return Result.Failure(CartErrors.ItemNotFound(productId));
 

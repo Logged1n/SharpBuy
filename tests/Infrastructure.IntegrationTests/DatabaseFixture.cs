@@ -1,3 +1,4 @@
+using Infrastructure.DomainEvents;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using Respawn;
@@ -8,7 +9,9 @@ namespace Infrastructure.IntegrationTests;
 /// <summary>
 /// Fixture for managing PostgreSQL test container and database lifecycle
 /// </summary>
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
 public class DatabaseFixture : IAsyncLifetime
+#pragma warning restore CA1001 // Types that own disposable fields should be disposable
 {
     private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder()
         .WithImage("postgres:17")
@@ -34,9 +37,9 @@ public class DatabaseFixture : IAsyncLifetime
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(ConnectionString).UseSnakeCaseNamingConvention());
 
-        var serviceProvider = services.BuildServiceProvider();
-        using var scope = serviceProvider.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        using IServiceScope scope = serviceProvider.CreateScope();
+        ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         await dbContext.Database.MigrateAsync();
 
         // Initialize Respawner for database cleanup between tests
@@ -60,7 +63,7 @@ public class DatabaseFixture : IAsyncLifetime
 
     public ApplicationDbContext CreateDbContext()
     {
-        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+        DbContextOptions<ApplicationDbContext> options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseNpgsql(ConnectionString)
             .UseSnakeCaseNamingConvention()
             .Options;
@@ -72,15 +75,11 @@ public class DatabaseFixture : IAsyncLifetime
 /// <summary>
 /// No-op domain event dispatcher for testing
 /// </summary>
-public class NoOpDomainEventDispatcher : Infrastructure.DomainEvents.IDomainEventDispatcher
+public class NoOpDomainEventDispatcher : IDomainEventsDispatcher
 {
-    public Task DispatchAsync(ApplicationDbContext context, CancellationToken cancellationToken = default)
+
+    public Task DispatchAsync(IEnumerable<IDomainEvent> domainEvents, CancellationToken cancellationToken = default)
     {
-        // Clear domain events without dispatching
-        foreach (var entry in context.ChangeTracker.Entries<SharedKernel.Entity>())
-        {
-            entry.Entity.ClearDomainEvents();
-        }
         return Task.CompletedTask;
     }
 }

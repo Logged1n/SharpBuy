@@ -8,17 +8,17 @@ public class UserTests
     public void Create_WithValidData_ShouldCreateUser()
     {
         // Arrange
-        var email = "test@example.com";
-        var firstName = "John";
-        var lastName = "Doe";
-        var phoneNumber = "+1234567890";
+        string email = "test@example.com";
+        string firstName = "John";
+        string lastName = "Doe";
+        string phoneNumber = "+1234567890";
 
         // Act
         var user = User.Create(email, firstName, lastName, phoneNumber);
 
         // Assert
         user.ShouldNotBeNull();
-        user.Id.ShouldNotBeEmpty();
+        user.Id.ShouldNotBe(Guid.Empty);
         user.Email.ShouldBe(email.ToUpperInvariant());
         user.FirstName.ShouldBe(firstName);
         user.LastName.ShouldBe(lastName);
@@ -33,10 +33,10 @@ public class UserTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData(" ")]
-    public void Create_WithInvalidEmail_ShouldThrowArgumentException(string invalidEmail)
+    public void Create_WithInvalidEmail_ShouldThrowArgumentException(string? invalidEmail)
     {
         // Act
-        Action act = () => User.Create(invalidEmail, "John", "Doe", "123456");
+        Action act = () => User.Create(invalidEmail!, "John", "Doe", "123456");
 
         // Assert
         Should.Throw<ArgumentException>(act);
@@ -46,10 +46,10 @@ public class UserTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData(" ")]
-    public void Create_WithInvalidFirstName_ShouldThrowArgumentException(string invalidFirstName)
+    public void Create_WithInvalidFirstName_ShouldThrowArgumentException(string? invalidFirstName)
     {
         // Act
-        Action act = () => User.Create("test@example.com", invalidFirstName, "Doe", "123456");
+        Action act = () => User.Create("test@example.com", invalidFirstName!, "Doe", "123456");
 
         // Assert
         Should.Throw<ArgumentException>(act);
@@ -59,10 +59,10 @@ public class UserTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData(" ")]
-    public void Create_WithInvalidLastName_ShouldThrowArgumentException(string invalidLastName)
+    public void Create_WithInvalidLastName_ShouldThrowArgumentException(string? invalidLastName)
     {
         // Act
-        Action act = () => User.Create("test@example.com", "John", invalidLastName, "123456");
+        Action act = () => User.Create("test@example.com", "John", invalidLastName!, "123456");
 
         // Assert
         Should.Throw<ArgumentException>(act);
@@ -72,14 +72,14 @@ public class UserTests
     public void AddAddress_WithValidData_ShouldSucceed()
     {
         // Arrange
-        var user = CreateValidUser();
-        var line1 = "123 Main St";
-        var city = "New York";
-        var postalCode = "10001";
-        var country = "USA";
+        User user = CreateValidUser();
+        string line1 = "123 Main St";
+        string city = "New York";
+        string postalCode = "10001";
+        string country = "USA";
 
         // Act
-        var result = user.AddAddress(line1, null, city, postalCode, country);
+        Result result = user.AddAddress(line1, null, city, postalCode, country);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
@@ -92,15 +92,15 @@ public class UserTests
     public void AddAddress_MultipleAddresses_ShouldKeepFirstAsPrimary()
     {
         // Arrange
-        var user = CreateValidUser();
+        User user = CreateValidUser();
         user.AddAddress("123 Main St", null, "New York", "10001", "USA");
-        var firstAddressId = user.PrimaryAddressId;
+        Guid? firstAddressId = user.PrimaryAddressId;
 
         // Act
         user.AddAddress("456 Oak Ave", null, "Los Angeles", "90001", "USA");
 
         // Assert
-        user.Addresses.ShouldHaveCount(2);
+        user.Addresses.Count.ShouldBe(2);
         user.PrimaryAddressId.ShouldBe(firstAddressId);
     }
 
@@ -108,10 +108,10 @@ public class UserTests
     public void VerifyEmail_WhenNotVerified_ShouldSucceed()
     {
         // Arrange
-        var user = CreateValidUser();
+        User user = CreateValidUser();
 
         // Act
-        var result = user.VerifyEmail();
+        Result result = user.VerifyEmail();
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
@@ -122,11 +122,11 @@ public class UserTests
     public void VerifyEmail_WhenAlreadyVerified_ShouldReturnFailure()
     {
         // Arrange
-        var user = CreateValidUser();
+        User user = CreateValidUser();
         user.VerifyEmail();
 
         // Act
-        var result = user.VerifyEmail();
+        Result result = user.VerifyEmail();
 
         // Assert
         result.IsFailure.ShouldBeTrue();
@@ -137,7 +137,7 @@ public class UserTests
     public void Email_ShouldBeStoredInUppercase()
     {
         // Arrange
-        var email = "test@example.com";
+        string email = "test@example.com";
 
         // Act
         var user = User.Create(email, "John", "Doe", "123456");

@@ -420,3 +420,11 @@ csharp_style_namespace_declarations = file_scoped:none
 csharp_style_expression_bodied_lambdas = true:none
 dotnet_style_operator_placement_when_wrapping = beginning_of_line
 tab_width = 4
+
+[**/Migrations/*.cs]
+generated_code = true
+dotnet_analyzer_diagnostic.severity = none
+
+[**/Migrations/*.Designer.cs]
+generated_code = true
+dotnet_analyzer_diagnostic.severity = none

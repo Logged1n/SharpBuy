@@ -11,8 +11,8 @@ public static class DbSetMock
     {
         data ??= [];
 
-        var queryable = data.AsQueryable();
-        var dbSet = Substitute.For<DbSet<T>, IQueryable<T>>();
+        IQueryable<T> queryable = data.AsQueryable();
+        DbSet<T> dbSet = Substitute.For<DbSet<T>, IQueryable<T>>();
 
         ((IQueryable<T>)dbSet).Provider.Returns(queryable.Provider);
         ((IQueryable<T>)dbSet).Expression.Returns(queryable.Expression);

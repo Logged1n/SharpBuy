@@ -37,10 +37,10 @@ public abstract class BaseIntegrationTest : IAsyncLifetime
             Password = password
         };
 
-        var response = await HttpClient.PostAsJsonAsync("/users/login", loginRequest);
+        HttpResponseMessage response = await HttpClient.PostAsJsonAsync("/users/login", loginRequest);
         response.EnsureSuccessStatusCode();
 
-        var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
+        LoginResponse? result = await response.Content.ReadFromJsonAsync<LoginResponse>();
         return result!.Token;
     }
 
@@ -63,11 +63,13 @@ public abstract class BaseIntegrationTest : IAsyncLifetime
             PhoneNumber = phoneNumber
         };
 
-        var response = await HttpClient.PostAsJsonAsync("/users/register", registerRequest);
+        HttpResponseMessage response = await HttpClient.PostAsJsonAsync("/users/register", registerRequest);
         response.EnsureSuccessStatusCode();
 
-        var locationHeader = response.Headers.Location?.ToString();
-        var userId = locationHeader?.Split('/').Last();
+        string? locationHeader = response.Headers.Location?.ToString();
+#pragma warning disable S6608 // Prefer indexing instead of "Enumerable" methods on types implementing "IList"
+        string? userId = locationHeader?.Split('/').Last();
+#pragma warning restore S6608 // Prefer indexing instead of "Enumerable" methods on types implementing "IList"
         return Guid.Parse(userId!);
     }
 

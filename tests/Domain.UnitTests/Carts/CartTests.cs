@@ -33,13 +33,13 @@ public class CartTests
     public void AddCartItem_WithValidData_ShouldSucceed()
     {
         // Arrange
-        var cart = CreateValidCart();
+        Cart cart = CreateValidCart();
         var productId = Guid.NewGuid();
         var unitPrice = new Money(29.99m, "USD");
-        var quantity = 2;
+        int quantity = 2;
 
         // Act
-        var result = cart.AddCartItem(productId, unitPrice, quantity);
+        Result result = cart.AddCartItem(productId, unitPrice, quantity);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
@@ -54,12 +54,12 @@ public class CartTests
     public void AddCartItem_WithInvalidQuantity_ShouldReturnFailure(int invalidQuantity)
     {
         // Arrange
-        var cart = CreateValidCart();
+        Cart cart = CreateValidCart();
         var productId = Guid.NewGuid();
         var unitPrice = new Money(29.99m, "USD");
 
         // Act
-        var result = cart.AddCartItem(productId, unitPrice, invalidQuantity);
+        Result result = cart.AddCartItem(productId, unitPrice, invalidQuantity);
 
         // Assert
         result.IsFailure.ShouldBeTrue();
@@ -71,13 +71,13 @@ public class CartTests
     public void AddCartItem_WhenItemAlreadyExists_ShouldReturnFailure()
     {
         // Arrange
-        var cart = CreateValidCart();
+        Cart cart = CreateValidCart();
         var productId = Guid.NewGuid();
         var unitPrice = new Money(29.99m, "USD");
         cart.AddCartItem(productId, unitPrice, 1);
 
         // Act
-        var result = cart.AddCartItem(productId, unitPrice, 2);
+        Result result = cart.AddCartItem(productId, unitPrice, 2);
 
         // Assert
         result.IsFailure.ShouldBeTrue();
@@ -89,13 +89,13 @@ public class CartTests
     public void RemoveCartItem_WithValidProductId_ShouldSucceed()
     {
         // Arrange
-        var cart = CreateValidCart();
+        Cart cart = CreateValidCart();
         var productId = Guid.NewGuid();
         var unitPrice = new Money(29.99m, "USD");
         cart.AddCartItem(productId, unitPrice, 1);
 
         // Act
-        var result = cart.RemoveCartItem(productId);
+        Result result = cart.RemoveCartItem(productId);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
@@ -106,11 +106,11 @@ public class CartTests
     public void RemoveCartItem_WhenItemNotFound_ShouldReturnFailure()
     {
         // Arrange
-        var cart = CreateValidCart();
+        Cart cart = CreateValidCart();
         var productId = Guid.NewGuid();
 
         // Act
-        var result = cart.RemoveCartItem(productId);
+        Result result = cart.RemoveCartItem(productId);
 
         // Assert
         result.IsFailure.ShouldBeTrue();
@@ -121,13 +121,13 @@ public class CartTests
     public void ChangeItemQuantity_WithValidData_ShouldSucceed()
     {
         // Arrange
-        var cart = CreateValidCart();
+        Cart cart = CreateValidCart();
         var productId = Guid.NewGuid();
         var unitPrice = new Money(29.99m, "USD");
         cart.AddCartItem(productId, unitPrice, 1);
 
         // Act
-        var result = cart.ChnageItemQuantity(productId, 5);
+        Result result = cart.ChnageItemQuantity(productId, 5);
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
@@ -140,13 +140,13 @@ public class CartTests
     public void ChangeItemQuantity_WithInvalidQuantity_ShouldReturnFailure(int invalidQuantity)
     {
         // Arrange
-        var cart = CreateValidCart();
+        Cart cart = CreateValidCart();
         var productId = Guid.NewGuid();
         var unitPrice = new Money(29.99m, "USD");
         cart.AddCartItem(productId, unitPrice, 1);
 
         // Act
-        var result = cart.ChnageItemQuantity(productId, invalidQuantity);
+        Result result = cart.ChnageItemQuantity(productId, invalidQuantity);
 
         // Assert
         result.IsFailure.ShouldBeTrue();
@@ -157,11 +157,11 @@ public class CartTests
     public void ChangeItemQuantity_WhenItemNotFound_ShouldReturnFailure()
     {
         // Arrange
-        var cart = CreateValidCart();
+        Cart cart = CreateValidCart();
         var productId = Guid.NewGuid();
 
         // Act
-        var result = cart.ChnageItemQuantity(productId, 5);
+        Result result = cart.ChnageItemQuantity(productId, 5);
 
         // Assert
         result.IsFailure.ShouldBeTrue();
@@ -172,7 +172,7 @@ public class CartTests
     public void Total_WithMultipleItems_ShouldCalculateCorrectly()
     {
         // Arrange
-        var cart = CreateValidCart();
+        Cart cart = CreateValidCart();
         var product1Id = Guid.NewGuid();
         var product2Id = Guid.NewGuid();
         var price1 = new Money(10.00m, "USD");
@@ -182,7 +182,7 @@ public class CartTests
         cart.AddCartItem(product2Id, price2, 3); // 60.00
 
         // Act
-        var total = cart.Total;
+        Money total = cart.Total;
 
         // Assert
         total.Amount.ShouldBe(80.00m);

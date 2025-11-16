@@ -41,9 +41,9 @@ public class WebApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
                     .UseSnakeCaseNamingConvention());
 
             // Build service provider and ensure database is created
-            var serviceProvider = services.BuildServiceProvider();
-            using var scope = serviceProvider.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            ServiceProvider serviceProvider = services.BuildServiceProvider();
+            using IServiceScope scope = serviceProvider.CreateScope();
+            ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             dbContext.Database.Migrate();
         });
 

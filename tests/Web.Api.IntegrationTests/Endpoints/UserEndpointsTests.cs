@@ -20,21 +20,21 @@ public class UserEndpointsTests : BaseIntegrationTest
         };
 
         // Act
-        var response = await HttpClient.PostAsJsonAsync("/users/register", registerRequest);
+        HttpResponseMessage response = await HttpClient.PostAsJsonAsync("/users/register", registerRequest);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
         response.Headers.Location.ShouldNotBeNull();
 
-        var userId = await response.Content.ReadFromJsonAsync<Guid>();
-        userId.ShouldNotBeEmpty();
+        Guid userId = await response.Content.ReadFromJsonAsync<Guid>();
+        userId.ShouldNotBe(Guid.Empty);
     }
 
     [Fact]
     public async Task RegisterUser_WithDuplicateEmail_ShouldReturn409Conflict()
     {
         // Arrange
-        var email = "duplicate@example.com";
+        string email = "duplicate@example.com";
         await RegisterUserAsync(email);
 
         var registerRequest = new
@@ -47,7 +47,7 @@ public class UserEndpointsTests : BaseIntegrationTest
         };
 
         // Act
-        var response = await HttpClient.PostAsJsonAsync("/users/register", registerRequest);
+        HttpResponseMessage response = await HttpClient.PostAsJsonAsync("/users/register", registerRequest);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
@@ -67,7 +67,7 @@ public class UserEndpointsTests : BaseIntegrationTest
         };
 
         // Act
-        var response = await HttpClient.PostAsJsonAsync("/users/register", registerRequest);
+        HttpResponseMessage response = await HttpClient.PostAsJsonAsync("/users/register", registerRequest);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -77,8 +77,8 @@ public class UserEndpointsTests : BaseIntegrationTest
     public async Task Login_WithValidCredentials_ShouldReturn200WithToken()
     {
         // Arrange
-        var email = "logintest@example.com";
-        var password = "Password123!";
+        string email = "logintest@example.com";
+        string password = "Password123!";
         await RegisterUserAsync(email, password);
 
         var loginRequest = new
@@ -88,12 +88,12 @@ public class UserEndpointsTests : BaseIntegrationTest
         };
 
         // Act
-        var response = await HttpClient.PostAsJsonAsync("/users/login", loginRequest);
+        HttpResponseMessage response = await HttpClient.PostAsJsonAsync("/users/login", loginRequest);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
+        LoginResponse? loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
         loginResponse.ShouldNotBeNull();
         loginResponse!.Token.ShouldNotBeNullOrEmpty();
     }
@@ -109,7 +109,7 @@ public class UserEndpointsTests : BaseIntegrationTest
         };
 
         // Act
-        var response = await HttpClient.PostAsJsonAsync("/users/login", loginRequest);
+        HttpResponseMessage response = await HttpClient.PostAsJsonAsync("/users/login", loginRequest);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
@@ -119,18 +119,18 @@ public class UserEndpointsTests : BaseIntegrationTest
     public async Task GetUserById_WithValidId_ShouldReturn200WithUser()
     {
         // Arrange
-        var userId = await RegisterUserAsync("getuser@example.com");
-        var token = await GetAuthTokenAsync("getuser@example.com", "Password123!");
+        Guid userId = await RegisterUserAsync("getuser@example.com");
+        string token = await GetAuthTokenAsync("getuser@example.com", "Password123!");
         HttpClient.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
         // Act
-        var response = await HttpClient.GetAsync($"/users/{userId}");
+        HttpResponseMessage response = await HttpClient.GetAsync($"/users/{userId}");
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        var user = await response.Content.ReadFromJsonAsync<UserResponse>();
+        UserResponse? user = await response.Content.ReadFromJsonAsync<UserResponse>();
         user.ShouldNotBeNull();
         user!.Id.ShouldBe(userId);
         user.Email.ShouldBe("GETUSER@EXAMPLE.COM"); // Email is uppercase
@@ -143,7 +143,7 @@ public class UserEndpointsTests : BaseIntegrationTest
         var userId = Guid.NewGuid();
 
         // Act
-        var response = await HttpClient.GetAsync($"/users/{userId}");
+        HttpResponseMessage response = await HttpClient.GetAsync($"/users/{userId}");
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
@@ -154,14 +154,14 @@ public class UserEndpointsTests : BaseIntegrationTest
     {
         // Arrange
         await RegisterUserAsync("authuser@example.com");
-        var token = await GetAuthTokenAsync("authuser@example.com", "Password123!");
+        string token = await GetAuthTokenAsync("authuser@example.com", "Password123!");
         HttpClient.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
         var nonExistentUserId = Guid.NewGuid();
 
         // Act
-        var response = await HttpClient.GetAsync($"/users/{nonExistentUserId}");
+        HttpResponseMessage response = await HttpClient.GetAsync($"/users/{nonExistentUserId}");
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
