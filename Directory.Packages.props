@@ -4,27 +4,26 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- Static code analysis -->
-    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.12.0.118525" />
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.15.0.120848" />
     <!-- Application -->
     <PackageVersion Include="Scrutor" Version="6.1.0" />
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="9.0.10" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="9.0.11" />
     <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.10" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.10" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.11" />
     <!-- Infrastructure -->
     <PackageVersion Include="AspNetCore.HealthChecks.NpgSql" Version="9.0.0" />
     <PackageVersion Include="EFCore.NamingConventions" Version="9.0.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.10" />
-    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="9.0.6" />
-    <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="9.0.10" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     <PackageVersion Include="FluentEmail.Smtp" Version="3.0.2" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.10" />
     <!-- Web.Api -->
-    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.6" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.6" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.10" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.10" />
     <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.2" />
-    <PackageVersion Include="Swashbuckle.AspNetCore" Version="9.0.1" />
+    <PackageVersion Include="Swashbuckle.AspNetCore" Version="9.0.6" />
     <!-- Testing -->
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
@@ -40,9 +39,9 @@
     <PackageVersion Include="Testcontainers.PostgreSql" Version="4.2.0" />
     <PackageVersion Include="Respawn" Version="6.2.1" />
     <!--Aspire AppHost-->
-    <PackageVersion Include="Aspire.Hosting.AppHost" Version="9.3.1" />
-	<PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="9.3.1" />
-	<PackageVersion Include="CommunityToolkit.Aspire.Hosting.PapercutSmtp" Version="9.8.0" />
+    <PackageVersion Include="Aspire.Hosting.AppHost" Version="9.5.2" />
+    <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="9.5.2" />
+    <PackageVersion Include="CommunityToolkit.Aspire.Hosting.PapercutSmtp" Version="9.9.0" />
     <!--Aspire ServiceDefaults-->
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.6.0" />
     <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="9.3.1" />

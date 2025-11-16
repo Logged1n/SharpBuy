@@ -1,30 +1,33 @@
+using Application.Abstractions.Authentication;
 using Application.Users.Register;
 using Domain.Addresses;
 using Domain.Carts;
 using Domain.Users;
 using Infrastructure.Authentication;
+using Microsoft.EntityFrameworkCore;
+using SharedKernel;
 using SharedKernel.Dtos;
+using Shouldly;
+using Tests.Integration.Infrastructure;
+using Xunit;
 
 namespace Application.IntegrationTests.Users;
 
-public class RegisterUserCommandHandlerTests : BaseIntegrationTest
+public class RegisterUserCommandHandlerTests : IntegrationTestBase
 {
-    public RegisterUserCommandHandlerTests(DatabaseFixture fixture) : base(fixture)
-    {
-    }
-
     [Fact]
     public async Task Handle_WithValidData_ShouldCreateUser()
     {
         // Arrange
-        var passwordHasher = new TestPasswordHasher();
+        var passwordHasher = new PasswordHasher();
         var handler = new RegisterUserCommandHandler(DbContext, passwordHasher);
         var command = new RegisterUserCommand(
             "test@example.com",
-            "SecurePassword123!",
             "John",
             "Doe",
+            "SecurePassword123!",
             "+1234567890",
+            null,
             null);
 
         // Act
@@ -54,18 +57,19 @@ public class RegisterUserCommandHandlerTests : BaseIntegrationTest
     {
         // Arrange
         string email = "duplicate@example.com";
-        User existingUser = User.Create(email, "John", "Doe", "+1234567890");
+        var existingUser = User.Create(email, "John", "Doe", "+1234567890");
         DbContext.DomainUsers.Add(existingUser);
         await DbContext.SaveChangesAsync();
 
-        var passwordHasher = new TestPasswordHasher();
+        var passwordHasher = new PasswordHasher();
         var handler = new RegisterUserCommandHandler(DbContext, passwordHasher);
         var command = new RegisterUserCommand(
             email,
-            "Password123!",
             "Jane",
             "Smith",
+            "Password123!",
             "+9876543210",
+            null,
             null);
 
         // Act
@@ -80,7 +84,7 @@ public class RegisterUserCommandHandlerTests : BaseIntegrationTest
     public async Task Handle_WithAddress_ShouldCreateUserWithAddress()
     {
         // Arrange
-        var passwordHasher = new TestPasswordHasher();
+        var passwordHasher = new PasswordHasher();
         var handler = new RegisterUserCommandHandler(DbContext, passwordHasher);
         var address = new AddressDto(
             "123 Main St",
@@ -91,11 +95,12 @@ public class RegisterUserCommandHandlerTests : BaseIntegrationTest
 
         var command = new RegisterUserCommand(
             "test@example.com",
-            "Password123!",
             "John",
             "Doe",
+            "Password123!",
             "+1234567890",
-            address);
+            address,
+            null);
 
         // Act
         Result<Guid> result = await handler.Handle(command, CancellationToken.None);
@@ -123,14 +128,15 @@ public class RegisterUserCommandHandlerTests : BaseIntegrationTest
     public async Task Handle_ShouldHashPassword()
     {
         // Arrange
-        var passwordHasher = new TestPasswordHasher();
+        var passwordHasher = new PasswordHasher();
         var handler = new RegisterUserCommandHandler(DbContext, passwordHasher);
         var command = new RegisterUserCommand(
             "test@example.com",
-            "MySecretPassword",
             "John",
             "Doe",
+            "MySecretPassword",
             "+1234567890",
+            null,
             null);
 
         // Act
@@ -150,14 +156,15 @@ public class RegisterUserCommandHandlerTests : BaseIntegrationTest
     public async Task Handle_ShouldCreateCartForUser()
     {
         // Arrange
-        var passwordHasher = new TestPasswordHasher();
+        var passwordHasher = new PasswordHasher();
         var handler = new RegisterUserCommandHandler(DbContext, passwordHasher);
         var command = new RegisterUserCommand(
             "test@example.com",
-            "Password123!",
             "John",
             "Doe",
+            "Password123!",
             "+1234567890",
+            null,
             null);
 
         // Act

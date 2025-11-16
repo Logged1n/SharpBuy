@@ -1,22 +1,23 @@
 using Application.Products.Add;
 using Domain.Categories;
 using Domain.Products;
+using Microsoft.EntityFrameworkCore;
+using Shouldly;
+using SharedKernel;
 using SharedKernel.ValueObjects;
+using Tests.Integration.Infrastructure;
+using Xunit;
 
 namespace Application.IntegrationTests.Products;
 
-public class AddProductCommandHandlerTests : BaseIntegrationTest
+public class AddProductCommandHandlerTests : IntegrationTestBase
 {
-    public AddProductCommandHandlerTests(DatabaseFixture fixture) : base(fixture)
-    {
-    }
-
     [Fact]
     public async Task Handle_WithValidData_ShouldCreateProduct()
     {
         // Arrange
-        Category category1 = Category.Create("Electronics");
-        Category category2 = Category.Create("Computers");
+        var category1 = Category.Create("Electronics");
+        var category2 = Category.Create("Computers");
         DbContext.Categories.AddRange(category1, category2);
         await DbContext.SaveChangesAsync();
 
@@ -50,7 +51,7 @@ public class AddProductCommandHandlerTests : BaseIntegrationTest
     public async Task Handle_WithEmptyName_ShouldThrowArgumentException()
     {
         // Arrange
-        Category category = Category.Create("Electronics");
+        var category = Category.Create("Electronics");
         DbContext.Categories.Add(category);
         await DbContext.SaveChangesAsync();
 
@@ -72,7 +73,7 @@ public class AddProductCommandHandlerTests : BaseIntegrationTest
     public async Task Handle_WithNegativeQuantity_ShouldThrowArgumentOutOfRangeException()
     {
         // Arrange
-        Category category = Category.Create("Electronics");
+        var category = Category.Create("Electronics");
         DbContext.Categories.Add(category);
         await DbContext.SaveChangesAsync();
 
@@ -94,7 +95,7 @@ public class AddProductCommandHandlerTests : BaseIntegrationTest
     public async Task Handle_WithZeroQuantity_ShouldThrowArgumentOutOfRangeException()
     {
         // Arrange
-        Category category = Category.Create("Electronics");
+        var category = Category.Create("Electronics");
         DbContext.Categories.Add(category);
         await DbContext.SaveChangesAsync();
 
@@ -116,7 +117,7 @@ public class AddProductCommandHandlerTests : BaseIntegrationTest
     public async Task Handle_WithEmptyPhotoPath_ShouldThrowArgumentException()
     {
         // Arrange
-        Category category = Category.Create("Electronics");
+        var category = Category.Create("Electronics");
         DbContext.Categories.Add(category);
         await DbContext.SaveChangesAsync();
 
@@ -138,7 +139,7 @@ public class AddProductCommandHandlerTests : BaseIntegrationTest
     public async Task Handle_MultipleCalls_ShouldCreateMultipleProducts()
     {
         // Arrange
-        Category category = Category.Create("Electronics");
+        var category = Category.Create("Electronics");
         DbContext.Categories.Add(category);
         await DbContext.SaveChangesAsync();
 
@@ -166,7 +167,7 @@ public class AddProductCommandHandlerTests : BaseIntegrationTest
         result2.IsSuccess.ShouldBeTrue();
         result1.Value.ShouldNotBe(result2.Value);
 
-        List<Product> products = DbContext.Products.ToList();
+        List<Product> products = await DbContext.Products.ToListAsync();
         products.Count.ShouldBe(2);
     }
 }
