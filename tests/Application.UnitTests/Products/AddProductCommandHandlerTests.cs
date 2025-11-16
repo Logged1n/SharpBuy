@@ -47,8 +47,8 @@ public class AddProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeEmpty();
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldNotBeEmpty();
         await _dbContext.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
@@ -79,8 +79,8 @@ public class AddProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Should().Be(ProductErrors.InconsistentData);
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(ProductErrors.InconsistentData);
         await _dbContext.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 }

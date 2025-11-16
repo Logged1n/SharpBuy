@@ -30,10 +30,10 @@ public class ProductEndpointsTests : BaseIntegrationTest
         var response = await HttpClient.PostAsJsonAsync("/products", productRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
 
         var productId = await response.Content.ReadFromJsonAsync<Guid>();
-        productId.Should().NotBeEmpty();
+        productId.ShouldNotBeEmpty();
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class ProductEndpointsTests : BaseIntegrationTest
         var response = await HttpClient.PostAsJsonAsync("/products", productRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -76,7 +76,7 @@ public class ProductEndpointsTests : BaseIntegrationTest
         var response = await HttpClient.PostAsJsonAsync("/products", productRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Theory]
@@ -106,7 +106,7 @@ public class ProductEndpointsTests : BaseIntegrationTest
         var response = await HttpClient.PostAsJsonAsync("/products", productRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     private async Task<CategoryResponse> CreateCategoryAsync(string token)

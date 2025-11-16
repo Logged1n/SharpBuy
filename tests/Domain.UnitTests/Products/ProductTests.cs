@@ -25,15 +25,15 @@ public class ProductTests
             mainPhotoPath);
 
         // Assert
-        product.Should().NotBeNull();
-        product.Id.Should().NotBeEmpty();
-        product.Name.Should().Be(name);
-        product.Description.Should().Be(description);
-        product.Price.Amount.Should().Be(priceAmount);
-        product.Price.Currency.Should().Be(priceCurrency);
-        product.MainPhotoPath.Should().Be(mainPhotoPath);
-        product.PhotoPaths.Should().ContainSingle();
-        product.PhotoPaths.Should().Contain(mainPhotoPath);
+        product.ShouldNotBeNull();
+        product.Id.ShouldNotBeEmpty();
+        product.Name.ShouldBe(name);
+        product.Description.ShouldBe(description);
+        product.Price.Amount.ShouldBe(priceAmount);
+        product.Price.Currency.ShouldBe(priceCurrency);
+        product.MainPhotoPath.ShouldBe(mainPhotoPath);
+        product.PhotoPaths.ShouldHaveSingleItem();
+        product.PhotoPaths.ShouldContain(mainPhotoPath);
     }
 
     [Theory]
@@ -52,7 +52,7 @@ public class ProductTests
             "/photo.jpg");
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Theory]
@@ -70,7 +70,7 @@ public class ProductTests
             "/photo.jpg");
 
         // Assert
-        act.Should().Throw<ArgumentOutOfRangeException>();
+        Should.Throw<ArgumentOutOfRangeException>(act);
     }
 
     [Fact]
@@ -84,8 +84,8 @@ public class ProductTests
         product.AddPhoto(newPhotoPath);
 
         // Assert
-        product.PhotoPaths.Should().HaveCount(2);
-        product.PhotoPaths.Should().Contain(newPhotoPath);
+        product.PhotoPaths.ShouldHaveCount(2);
+        product.PhotoPaths.ShouldContain(newPhotoPath);
     }
 
     [Fact]
@@ -99,9 +99,9 @@ public class ProductTests
         var result = product.AddToCategory(categoryId);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        product.Categories.Should().ContainSingle();
-        product.Categories.First().CategoryId.Should().Be(categoryId);
+        result.IsSuccess.ShouldBeTrue();
+        product.Categories.ShouldHaveSingleItem();
+        product.Categories.First().CategoryId.ShouldBe(categoryId);
     }
 
     [Fact]
@@ -114,7 +114,7 @@ public class ProductTests
         Action act = () => product.AddToCategory(Guid.Empty);
 
         // Assert
-        act.Should().Throw<ArgumentOutOfRangeException>();
+        Should.Throw<ArgumentOutOfRangeException>(act);
     }
 
     [Fact]
@@ -129,8 +129,8 @@ public class ProductTests
         var result = product.AddToCategory(categoryId);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Should().Be(ProductErrors.AlreadyInCategory(product.Id, categoryId));
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(ProductErrors.AlreadyInCategory(product.Id, categoryId));
     }
 
     [Fact]
@@ -147,9 +147,9 @@ public class ProductTests
         var result = product.RemoveFromCategory(categoryId1);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        product.Categories.Should().ContainSingle();
-        product.Categories.First().CategoryId.Should().Be(categoryId2);
+        result.IsSuccess.ShouldBeTrue();
+        product.Categories.ShouldHaveSingleItem();
+        product.Categories.First().CategoryId.ShouldBe(categoryId2);
     }
 
     [Fact]
@@ -165,8 +165,8 @@ public class ProductTests
         var result = product.RemoveFromCategory(categoryId2);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Should().Be(ProductErrors.NotInCategory(product.Id, categoryId2));
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(ProductErrors.NotInCategory(product.Id, categoryId2));
     }
 
     [Fact]
@@ -181,9 +181,9 @@ public class ProductTests
         var result = product.RemoveFromCategory(categoryId);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Should().Be(ProductErrors.NoCategoriesAssigned);
-        product.Categories.Should().ContainSingle();
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(ProductErrors.NoCategoriesAssigned);
+        product.Categories.ShouldHaveSingleItem();
     }
 
     [Fact]
@@ -196,7 +196,7 @@ public class ProductTests
         Action act = () => product.RemoveFromCategory(Guid.Empty);
 
         // Assert
-        act.Should().Throw<ArgumentOutOfRangeException>();
+        Should.Throw<ArgumentOutOfRangeException>(act);
     }
 
     private static Product CreateValidProduct()

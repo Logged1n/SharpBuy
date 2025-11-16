@@ -29,12 +29,12 @@ public class UserRepositoryTests : BaseIntegrationTest
             .Include(u => u.Cart)
             .FirstOrDefaultAsync(u => u.Id == user.Id);
 
-        savedUser.Should().NotBeNull();
-        savedUser!.Email.Should().Be("TEST@EXAMPLE.COM"); // Email is uppercase
-        savedUser.FirstName.Should().Be("John");
-        savedUser.LastName.Should().Be("Doe");
-        savedUser.Cart.Should().NotBeNull();
-        savedUser.Cart.OwnerId.Should().Be(user.Id);
+        savedUser.ShouldNotBeNull();
+        savedUser!.Email.ShouldBe("TEST@EXAMPLE.COM"); // Email is uppercase
+        savedUser.FirstName.ShouldBe("John");
+        savedUser.LastName.ShouldBe("Doe");
+        savedUser.Cart.ShouldNotBeNull();
+        savedUser.Cart.OwnerId.ShouldBe(user.Id);
     }
 
     [Fact]
@@ -59,10 +59,10 @@ public class UserRepositoryTests : BaseIntegrationTest
             .Include(u => u.Addresses)
             .FirstOrDefaultAsync(u => u.Id == user.Id);
 
-        savedUser.Should().NotBeNull();
-        savedUser!.Addresses.Should().ContainSingle();
-        savedUser.PrimaryAddressId.Should().NotBeNull();
-        savedUser.Addresses.First().Id.Should().Be(savedUser.PrimaryAddressId);
+        savedUser.ShouldNotBeNull();
+        savedUser!.Addresses.ShouldHaveSingleItem();
+        savedUser.PrimaryAddressId.ShouldNotBeNull();
+        savedUser.Addresses.First().Id.ShouldBe(savedUser.PrimaryAddressId);
     }
 
     [Fact]
@@ -87,7 +87,7 @@ public class UserRepositoryTests : BaseIntegrationTest
 
         // Assert
         var verifiedUser = await DbContext.DomainUsers.FindAsync(user.Id);
-        verifiedUser!.EmailVerified.Should().BeTrue();
+        verifiedUser!.EmailVerified.ShouldBeTrue();
     }
 
     [Fact]
@@ -106,8 +106,8 @@ public class UserRepositoryTests : BaseIntegrationTest
             .FirstOrDefaultAsync(u => u.Email == "USER1@EXAMPLE.COM");
 
         // Assert
-        foundUser.Should().NotBeNull();
-        foundUser!.FirstName.Should().Be("John");
+        foundUser.ShouldNotBeNull();
+        foundUser!.FirstName.ShouldBe("John");
     }
 
     [Fact]
@@ -137,8 +137,8 @@ public class UserRepositoryTests : BaseIntegrationTest
             .ThenInclude(c => c.Items)
             .FirstOrDefaultAsync(u => u.Id == user.Id);
 
-        userWithCart!.Cart.Items.Should().ContainSingle();
-        userWithCart.Cart.Items.First().ProductId.Should().Be(productId);
-        userWithCart.Cart.Items.First().Quantity.Should().Be(2);
+        userWithCart!.Cart.Items.ShouldHaveSingleItem();
+        userWithCart.Cart.Items.First().ProductId.ShouldBe(productId);
+        userWithCart.Cart.Items.First().Quantity.ShouldBe(2);
     }
 }

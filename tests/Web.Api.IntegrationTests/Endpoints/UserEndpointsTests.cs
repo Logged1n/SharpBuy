@@ -23,11 +23,11 @@ public class UserEndpointsTests : BaseIntegrationTest
         var response = await HttpClient.PostAsJsonAsync("/users/register", registerRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
-        response.Headers.Location.Should().NotBeNull();
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        response.Headers.Location.ShouldNotBeNull();
 
         var userId = await response.Content.ReadFromJsonAsync<Guid>();
-        userId.Should().NotBeEmpty();
+        userId.ShouldNotBeEmpty();
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public class UserEndpointsTests : BaseIntegrationTest
         var response = await HttpClient.PostAsJsonAsync("/users/register", registerRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+        response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
     }
 
     [Fact]
@@ -70,7 +70,7 @@ public class UserEndpointsTests : BaseIntegrationTest
         var response = await HttpClient.PostAsJsonAsync("/users/register", registerRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -91,11 +91,11 @@ public class UserEndpointsTests : BaseIntegrationTest
         var response = await HttpClient.PostAsJsonAsync("/users/login", loginRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
-        loginResponse.Should().NotBeNull();
-        loginResponse!.Token.Should().NotBeNullOrEmpty();
+        loginResponse.ShouldNotBeNull();
+        loginResponse!.Token.ShouldNotBeNullOrEmpty();
     }
 
     [Fact]
@@ -112,7 +112,7 @@ public class UserEndpointsTests : BaseIntegrationTest
         var response = await HttpClient.PostAsJsonAsync("/users/login", loginRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -128,12 +128,12 @@ public class UserEndpointsTests : BaseIntegrationTest
         var response = await HttpClient.GetAsync($"/users/{userId}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         var user = await response.Content.ReadFromJsonAsync<UserResponse>();
-        user.Should().NotBeNull();
-        user!.Id.Should().Be(userId);
-        user.Email.Should().Be("GETUSER@EXAMPLE.COM"); // Email is uppercase
+        user.ShouldNotBeNull();
+        user!.Id.ShouldBe(userId);
+        user.Email.ShouldBe("GETUSER@EXAMPLE.COM"); // Email is uppercase
     }
 
     [Fact]
@@ -146,7 +146,7 @@ public class UserEndpointsTests : BaseIntegrationTest
         var response = await HttpClient.GetAsync($"/users/{userId}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -164,7 +164,7 @@ public class UserEndpointsTests : BaseIntegrationTest
         var response = await HttpClient.GetAsync($"/users/{nonExistentUserId}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     private record LoginResponse(string Token);

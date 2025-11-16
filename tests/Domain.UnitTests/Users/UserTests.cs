@@ -17,16 +17,16 @@ public class UserTests
         var user = User.Create(email, firstName, lastName, phoneNumber);
 
         // Assert
-        user.Should().NotBeNull();
-        user.Id.Should().NotBeEmpty();
-        user.Email.Should().Be(email.ToUpperInvariant());
-        user.FirstName.Should().Be(firstName);
-        user.LastName.Should().Be(lastName);
-        user.PhoneNumber.Should().Be(phoneNumber);
-        user.EmailVerified.Should().BeFalse();
-        user.Cart.Should().NotBeNull();
-        user.Cart.OwnerId.Should().Be(user.Id);
-        user.FullName.Should().Be($"{firstName} {lastName}");
+        user.ShouldNotBeNull();
+        user.Id.ShouldNotBeEmpty();
+        user.Email.ShouldBe(email.ToUpperInvariant());
+        user.FirstName.ShouldBe(firstName);
+        user.LastName.ShouldBe(lastName);
+        user.PhoneNumber.ShouldBe(phoneNumber);
+        user.EmailVerified.ShouldBeFalse();
+        user.Cart.ShouldNotBeNull();
+        user.Cart.OwnerId.ShouldBe(user.Id);
+        user.FullName.ShouldBe($"{firstName} {lastName}");
     }
 
     [Theory]
@@ -39,7 +39,7 @@ public class UserTests
         Action act = () => User.Create(invalidEmail, "John", "Doe", "123456");
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Theory]
@@ -52,7 +52,7 @@ public class UserTests
         Action act = () => User.Create("test@example.com", invalidFirstName, "Doe", "123456");
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Theory]
@@ -65,7 +65,7 @@ public class UserTests
         Action act = () => User.Create("test@example.com", "John", invalidLastName, "123456");
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -82,10 +82,10 @@ public class UserTests
         var result = user.AddAddress(line1, null, city, postalCode, country);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        user.Addresses.Should().ContainSingle();
-        user.PrimaryAddressId.Should().NotBeNull();
-        user.PrimaryAddressId.Should().Be(user.Addresses.First().Id);
+        result.IsSuccess.ShouldBeTrue();
+        user.Addresses.ShouldHaveSingleItem();
+        user.PrimaryAddressId.ShouldNotBeNull();
+        user.PrimaryAddressId.ShouldBe(user.Addresses.First().Id);
     }
 
     [Fact]
@@ -100,8 +100,8 @@ public class UserTests
         user.AddAddress("456 Oak Ave", null, "Los Angeles", "90001", "USA");
 
         // Assert
-        user.Addresses.Should().HaveCount(2);
-        user.PrimaryAddressId.Should().Be(firstAddressId);
+        user.Addresses.ShouldHaveCount(2);
+        user.PrimaryAddressId.ShouldBe(firstAddressId);
     }
 
     [Fact]
@@ -114,8 +114,8 @@ public class UserTests
         var result = user.VerifyEmail();
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        user.EmailVerified.Should().BeTrue();
+        result.IsSuccess.ShouldBeTrue();
+        user.EmailVerified.ShouldBeTrue();
     }
 
     [Fact]
@@ -129,8 +129,8 @@ public class UserTests
         var result = user.VerifyEmail();
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Should().Be(UserErrors.EmailAlreadyVerified);
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(UserErrors.EmailAlreadyVerified);
     }
 
     [Fact]
@@ -143,7 +143,7 @@ public class UserTests
         var user = User.Create(email, "John", "Doe", "123456");
 
         // Assert
-        user.Email.Should().Be(email.ToUpperInvariant());
+        user.Email.ShouldBe(email.ToUpperInvariant());
     }
 
     private static User CreateValidUser()

@@ -14,9 +14,9 @@ public class CartTests
         var cart = Cart.Create(ownerId);
 
         // Assert
-        cart.Should().NotBeNull();
-        cart.OwnerId.Should().Be(ownerId);
-        cart.Items.Should().BeEmpty();
+        cart.ShouldNotBeNull();
+        cart.OwnerId.ShouldBe(ownerId);
+        cart.Items.ShouldBeEmpty();
     }
 
     [Fact]
@@ -26,7 +26,7 @@ public class CartTests
         Action act = () => Cart.Create(Guid.Empty);
 
         // Assert
-        act.Should().Throw<ArgumentOutOfRangeException>();
+        Should.Throw<ArgumentOutOfRangeException>(act);
     }
 
     [Fact]
@@ -42,10 +42,10 @@ public class CartTests
         var result = cart.AddCartItem(productId, unitPrice, quantity);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        cart.Items.Should().ContainSingle();
-        cart.Items.First().ProductId.Should().Be(productId);
-        cart.Items.First().Quantity.Should().Be(quantity);
+        result.IsSuccess.ShouldBeTrue();
+        cart.Items.ShouldHaveSingleItem();
+        cart.Items.First().ProductId.ShouldBe(productId);
+        cart.Items.First().Quantity.ShouldBe(quantity);
     }
 
     [Theory]
@@ -62,9 +62,9 @@ public class CartTests
         var result = cart.AddCartItem(productId, unitPrice, invalidQuantity);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Should().Be(CartItemErrors.InvalidQuantity);
-        cart.Items.Should().BeEmpty();
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(CartItemErrors.InvalidQuantity);
+        cart.Items.ShouldBeEmpty();
     }
 
     [Fact]
@@ -80,9 +80,9 @@ public class CartTests
         var result = cart.AddCartItem(productId, unitPrice, 2);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Should().Be(CartErrors.ItemAlreadyExists(productId));
-        cart.Items.Should().ContainSingle();
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(CartErrors.ItemAlreadyExists(productId));
+        cart.Items.ShouldHaveSingleItem();
     }
 
     [Fact]
@@ -98,8 +98,8 @@ public class CartTests
         var result = cart.RemoveCartItem(productId);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        cart.Items.Should().BeEmpty();
+        result.IsSuccess.ShouldBeTrue();
+        cart.Items.ShouldBeEmpty();
     }
 
     [Fact]
@@ -113,8 +113,8 @@ public class CartTests
         var result = cart.RemoveCartItem(productId);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Should().Be(CartErrors.ItemNotFound(productId));
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(CartErrors.ItemNotFound(productId));
     }
 
     [Fact]
@@ -130,8 +130,8 @@ public class CartTests
         var result = cart.ChnageItemQuantity(productId, 5);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        cart.Items.First().Quantity.Should().Be(5);
+        result.IsSuccess.ShouldBeTrue();
+        cart.Items.First().Quantity.ShouldBe(5);
     }
 
     [Theory]
@@ -149,8 +149,8 @@ public class CartTests
         var result = cart.ChnageItemQuantity(productId, invalidQuantity);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Should().Be(CartItemErrors.InvalidQuantity);
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(CartItemErrors.InvalidQuantity);
     }
 
     [Fact]
@@ -164,8 +164,8 @@ public class CartTests
         var result = cart.ChnageItemQuantity(productId, 5);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Should().Be(CartErrors.ItemNotFound(productId));
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(CartErrors.ItemNotFound(productId));
     }
 
     [Fact]
@@ -185,8 +185,8 @@ public class CartTests
         var total = cart.Total;
 
         // Assert
-        total.Amount.Should().Be(80.00m);
-        total.Currency.Should().Be("USD");
+        total.Amount.ShouldBe(80.00m);
+        total.Currency.ShouldBe("USD");
     }
 
     private static Cart CreateValidCart()

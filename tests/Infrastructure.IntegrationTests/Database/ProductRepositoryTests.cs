@@ -30,11 +30,11 @@ public class ProductRepositoryTests : BaseIntegrationTest
 
         // Assert
         var savedProduct = await DbContext.Products.FindAsync(product.Id);
-        savedProduct.Should().NotBeNull();
-        savedProduct!.Name.Should().Be("Test Product");
-        savedProduct.Description.Should().Be("Test Description");
-        savedProduct.Price.Amount.Should().Be(99.99m);
-        savedProduct.Price.Currency.Should().Be("USD");
+        savedProduct.ShouldNotBeNull();
+        savedProduct!.Name.ShouldBe("Test Product");
+        savedProduct.Description.ShouldBe("Test Description");
+        savedProduct.Price.Amount.ShouldBe(99.99m);
+        savedProduct.Price.Currency.ShouldBe("USD");
     }
 
     [Fact]
@@ -68,8 +68,8 @@ public class ProductRepositoryTests : BaseIntegrationTest
             .Include(p => p.Categories)
             .FirstOrDefaultAsync(p => p.Id == product.Id);
 
-        savedProduct.Should().NotBeNull();
-        savedProduct!.Categories.Should().HaveCount(2);
+        savedProduct.ShouldNotBeNull();
+        savedProduct!.Categories.ShouldHaveCount(2);
     }
 
     [Fact]
@@ -97,7 +97,7 @@ public class ProductRepositoryTests : BaseIntegrationTest
 
         // Assert
         var updatedProduct = await DbContext.Products.FindAsync(product.Id);
-        updatedProduct!.Name.Should().Be("Updated Name");
+        updatedProduct!.Name.ShouldBe("Updated Name");
     }
 
     [Fact]
@@ -123,7 +123,7 @@ public class ProductRepositoryTests : BaseIntegrationTest
 
         // Assert
         var deletedProduct = await DbContext.Products.FindAsync(product.Id);
-        deletedProduct.Should().BeNull();
+        deletedProduct.ShouldBeNull();
     }
 
     [Fact]
@@ -144,8 +144,8 @@ public class ProductRepositoryTests : BaseIntegrationTest
             .ToListAsync();
 
         // Assert
-        expensiveProducts.Should().HaveCount(2);
-        expensiveProducts.Should().Contain(p => p.Name == "Product B");
-        expensiveProducts.Should().Contain(p => p.Name == "Product C");
+        expensiveProducts.ShouldHaveCount(2);
+        expensiveProducts.ShouldContain(p => p.Name == "Product B");
+        expensiveProducts.ShouldContain(p => p.Name == "Product C");
     }
 }
