@@ -398,3 +398,9 @@ FodyWeavers.xsd
 *.sln.iml
 
 .containers/
+
+# Node.js
+node_modules/
+pnpm-lock.yaml
+.next/
+.env.local
