@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Database.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -57,9 +57,6 @@ namespace Infrastructure.Database.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_inventories", x => x.id);
-                    table.CheckConstraint("CK_Inventory_Quantity", "\"Quantity\" >= 0");
-                    table.CheckConstraint("CK_Inventory_Reserved_Not_Greater_Than_Quantity", "\"ReservedQuantity\" <= \"Quantity\"");
-                    table.CheckConstraint("CK_Inventory_ReservedQuantity", "\"ReservedQuantity\" >= 0");
                 });
 
             migrationBuilder.CreateTable(
@@ -267,7 +264,6 @@ namespace Infrastructure.Database.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_order_items", x => x.id);
-                    table.CheckConstraint("CK_OrderItem_Quantity", "\"Quantity\" > 0");
                     table.ForeignKey(
                         name: "fk_order_items_orders_order_id",
                         column: x => x.order_id,
@@ -327,7 +323,7 @@ namespace Infrastructure.Database.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_reviews", x => x.id);
-                    table.CheckConstraint("CK_Review_Score", "\"Score\" >= 0 AND \"Score\" <= 5");
+                    table.CheckConstraint("CK_Review_Score", "\"score\" >= 0 AND \"score\" <= 5");
                     table.ForeignKey(
                         name: "fk_reviews_domain_users_user_id",
                         column: x => x.user_id,
@@ -454,7 +450,6 @@ namespace Infrastructure.Database.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_cart_items", x => new { x.cart_id, x.product_id });
-                    table.CheckConstraint("CK_CartItem_Quantity", "\"Quantity\" > 0");
                     table.ForeignKey(
                         name: "fk_cart_items_carts_cart_id",
                         column: x => x.cart_id,

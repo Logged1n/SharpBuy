@@ -18,6 +18,12 @@ builder.Services
 
 builder.Services.AddEndpoints(Assembly.GetExecutingAssembly());
 
+//TODO: Move to infra project
+builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowAnyOrigin()));
+
 WebApplication app = builder.Build();
 
 app.MapDefaultEndpoints();
@@ -29,6 +35,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerWithUi();
 
     app.ApplyMigrations();
+
+    app.UseCors();
 }
 
 app.UseRequestContextLogging();

@@ -219,10 +219,7 @@ namespace Infrastructure.Database.Migrations
                     b.HasIndex("ProductId")
                         .HasDatabaseName("ix_cart_items_product_id");
 
-                    b.ToTable("CartItems", "public", t =>
-                        {
-                            t.HasCheckConstraint("CK_CartItem_Quantity", "\"Quantity\" > 0");
-                        });
+                    b.ToTable("CartItems", "public");
                 });
 
             modelBuilder.Entity("Domain.Categories.Category", b =>
@@ -274,14 +271,7 @@ namespace Infrastructure.Database.Migrations
                     b.HasIndex("ProductId")
                         .HasDatabaseName("ix_inventories_product_id");
 
-                    b.ToTable("inventories", "public", t =>
-                        {
-                            t.HasCheckConstraint("CK_Inventory_Quantity", "\"Quantity\" >= 0");
-
-                            t.HasCheckConstraint("CK_Inventory_ReservedQuantity", "\"ReservedQuantity\" >= 0");
-
-                            t.HasCheckConstraint("CK_Inventory_Reserved_Not_Greater_Than_Quantity", "\"ReservedQuantity\" <= \"Quantity\"");
-                        });
+                    b.ToTable("inventories", "public");
                 });
 
             modelBuilder.Entity("Domain.Orders.Order", b =>
@@ -363,10 +353,7 @@ namespace Infrastructure.Database.Migrations
                         .IsUnique()
                         .HasDatabaseName("ix_order_items_order_id_product_id");
 
-                    b.ToTable("OrderItems", "public", t =>
-                        {
-                            t.HasCheckConstraint("CK_OrderItem_Quantity", "\"Quantity\" > 0");
-                        });
+                    b.ToTable("OrderItems", "public");
                 });
 
             modelBuilder.Entity("Domain.ProductCategories.ProductCategory", b =>
@@ -490,7 +477,7 @@ namespace Infrastructure.Database.Migrations
 
                     b.ToTable("reviews", "public", t =>
                         {
-                            t.HasCheckConstraint("CK_Review_Score", "\"Score\" >= 0 AND \"Score\" <= 5");
+                            t.HasCheckConstraint("CK_Review_Score", "\"score\" >= 0 AND \"score\" <= 5");
                         });
                 });
 

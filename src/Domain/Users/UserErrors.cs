@@ -24,6 +24,10 @@ public static class UserErrors
         "Users.EmailNotVerified",
         "This account has not verified email.");
 
+    public static Error IdentityFailed(IEnumerable<string> erros) => Error.Failure(
+        "Users.IdentityFailed",
+        $"Identity operation failed. Errors {string.Join(",\n", erros.Select(e => e))}");
+
     public static readonly Error EmailAlreadyVerified = Error.Conflict(
         "Users.EmailAlreadyVerified",
         "The email is already verified.");

@@ -14,6 +14,7 @@ namespace Application.Abstractions.Data;
 
 public interface IApplicationDbContext
 {
+    DbSet<ApplicationUser> ApplicationUsers { get; }
     DbSet<User> DomainUsers { get; }
     DbSet<Product> Products { get; }
     DbSet<Category> Categories { get; }

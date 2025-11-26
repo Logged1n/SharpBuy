@@ -40,7 +40,7 @@ internal sealed class CartItemConfiguration : IEntityTypeConfiguration<CartItem>
         builder.HasIndex(ci => ci.ProductId);
         builder.HasIndex(ci => ci.AddedAt);
 
-        builder.ToTable(t =>
-            t.HasCheckConstraint("CK_CartItem_Quantity", "\"Quantity\" > 0"));
+        //builder.ToTable(t =>
+        //    t.HasCheckConstraint("CK_CartItem_Quantity", "\"quantity\" > 0"));
     }
 }

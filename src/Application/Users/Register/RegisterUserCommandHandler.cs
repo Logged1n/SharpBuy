@@ -1,28 +1,47 @@
 ﻿using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
-using Domain.Addresses;
 using Domain.Users;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
 namespace Application.Users.Register;
 
-internal sealed class RegisterUserCommandHandler(IApplicationDbContext context, IPasswordHasher passwordHasher)
+internal sealed class RegisterUserCommandHandler(
+    IApplicationDbContext context,
+    UserManager<ApplicationUser> userManager)
     : ICommandHandler<RegisterUserCommand, Guid>
 {
     public async Task<Result<Guid>> Handle(RegisterUserCommand command, CancellationToken cancellationToken)
     {
         if (await context.DomainUsers.AnyAsync(u => u.Email == command.Email, cancellationToken))
-        {
             return Result.Failure<Guid>(UserErrors.EmailNotUnique);
-        }
 
         var domainUser = User.Create(
             command.Email,
             command.FirstName,
             command.LastName,
             command.PhoneNumber);
+
+        // Domain events
+        domainUser.Raise(new UserRegisteredDomainEvent(domainUser.Id));
+        context.DomainUsers.Add(domainUser);
+        await context.SaveChangesAsync(cancellationToken);
+
+        var appUser = new ApplicationUser
+        {
+            UserName = command.Email,
+            Email = command.Email,
+            PhoneNumber = command.PhoneNumber,
+            DomainUserId = domainUser.Id,
+            DomainUser = domainUser
+        };
+
+        IdentityResult createResult = await userManager.CreateAsync(appUser, command.Password);
+
+        if (!createResult.Succeeded)
+            return Result.Failure<Guid>(UserErrors.IdentityFailed(createResult.Errors.Select(e => e.Description)));
 
         if (command.PrimaryAddress is not null)
         {
@@ -33,18 +52,6 @@ internal sealed class RegisterUserCommandHandler(IApplicationDbContext context, 
                 command.PrimaryAddress.PostalCode,
                 command.PrimaryAddress.Country);
         }
-        context.Set<ApplicationUser>().Add(new ApplicationUser
-        {
-            DomainUserId = domainUser.Id,
-            DomainUser = domainUser,
-            PasswordHash = passwordHasher.Hash(command.Password)
-        });
-
-        domainUser.Raise(new UserRegisteredDomainEvent(domainUser.Id));
-
-        context.DomainUsers.Add(domainUser);
-
-        await context.SaveChangesAsync(cancellationToken);
 
         return domainUser.Id;
     }

@@ -21,7 +21,7 @@ namespace Infrastructure.Database;
 public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IDomainEventsDispatcher? domainEventsDispatcher = null)
     : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>(options), IApplicationDbContext
 {
-    public new DbSet<ApplicationUser> Users {  get; set; }
+    public DbSet<ApplicationUser> ApplicationUsers => Set<ApplicationUser>();
     public DbSet<User> DomainUsers { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<Category> Categories { get; set; }
@@ -38,7 +38,7 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        ConfigureIdentityTables(builder);
+        //ConfigureIdentityTables(builder);
         builder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
         builder.HasDefaultSchema(Schemas.Default);
@@ -81,16 +81,16 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
 
         await domainEventsDispatcher!.DispatchAsync(domainEvents);
     }
-    private static void ConfigureIdentityTables(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<ApplicationUser>().ToTable("AspNetUsers");
-        modelBuilder.Entity<IdentityRole<Guid>>().ToTable("AspNetRoles");
-        modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("AspNetUserRoles");
-        modelBuilder.Entity<IdentityUserClaim<Guid>>().ToTable("AspNetUserClaims");
-        modelBuilder.Entity<IdentityUserLogin<Guid>>().ToTable("AspNetUserLogins");
-        modelBuilder.Entity<IdentityUserToken<Guid>>().ToTable("AspNetUserTokens");
-        modelBuilder.Entity<IdentityRoleClaim<Guid>>().ToTable("AspNetRoleClaims");
-    }
+    //private static void ConfigureIdentityTables(ModelBuilder modelBuilder)
+    //{
+    //    modelBuilder.Entity<ApplicationUser>().ToTable("AspNetUsers");
+    //    modelBuilder.Entity<IdentityRole<Guid>>().ToTable("AspNetRoles");
+    //    modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("AspNetUserRoles");
+    //    modelBuilder.Entity<IdentityUserClaim<Guid>>().ToTable("AspNetUserClaims");
+    //    modelBuilder.Entity<IdentityUserLogin<Guid>>().ToTable("AspNetUserLogins");
+    //    modelBuilder.Entity<IdentityUserToken<Guid>>().ToTable("AspNetUserTokens");
+    //    modelBuilder.Entity<IdentityRoleClaim<Guid>>().ToTable("AspNetRoleClaims");
+    //}
 
     private static void IgnoreDomainEvents(ModelBuilder modelBuilder)
     {

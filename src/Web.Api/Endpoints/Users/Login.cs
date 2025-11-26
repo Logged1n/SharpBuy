@@ -17,7 +17,7 @@ internal sealed class Login : IEndpoint
             ICommandHandler<LoginUserCommand, string> handler,
             CancellationToken cancellationToken) =>
         {
-            var command = new LoginUserCommand(request.Email, request.Password);
+            var command = new LoginUserCommand(request.Email.ToUpperInvariant(), request.Password);
 
             Result<string> result = await handler.Handle(command, cancellationToken);
 

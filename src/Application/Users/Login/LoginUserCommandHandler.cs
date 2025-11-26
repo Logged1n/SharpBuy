@@ -10,13 +10,14 @@ namespace Application.Users.Login;
 
 internal sealed class LoginUserCommandHandler(
     IApplicationDbContext context,
-    IPasswordHasher passwordHasher,
+    IPasswordHasher<ApplicationUser> passwordHasher,
     ITokenProvider tokenProvider) : ICommandHandler<LoginUserCommand, string>
 {
     public async Task<Result<string>> Handle(LoginUserCommand command, CancellationToken cancellationToken)
     {
         ApplicationUser? user = await context.Set<ApplicationUser>()
-            .Where(u => u.Email == command.Email)
+            .Where(u => u.NormalizedEmail == command.Email)
+            .Include(u => u.DomainUser)
             .AsNoTracking()
             .SingleOrDefaultAsync(cancellationToken);
 
@@ -25,17 +26,17 @@ internal sealed class LoginUserCommandHandler(
             return Result.Failure<string>(UserErrors.NotFoundByEmail);
         }
 
-        if (!user.DomainUser.EmailVerified)
-            return Result.Failure<string>(UserErrors.EmailNotVerified);
+        //TODO: Enable email verification
+        //if (!domainUser.EmailVerified)
+        //    return Result.Failure<string>(UserErrors.EmailNotVerified);
 
-        bool verified = passwordHasher.Verify(command.Password, user.PasswordHash!);
 
-        if (!verified)
+        if (passwordHasher.VerifyHashedPassword(user, user.PasswordHash!, command.Password) != PasswordVerificationResult.Success)
         {
             return Result.Failure<string>(UserErrors.NotFoundByEmail);
         }
 
-        string token = tokenProvider.Create(user);
+        string token = await tokenProvider.Create(user);
 
         return token;
     }
