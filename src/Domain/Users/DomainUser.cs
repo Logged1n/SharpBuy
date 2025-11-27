@@ -7,10 +7,10 @@ using SharedKernel.Dtos;
 
 namespace Domain.Users;
 
-public sealed class User : Entity
+public sealed class DomainUser : Entity
 {
     private readonly List<Address> _addresses = [];
-    private User() { }
+    private DomainUser() { }
 
     public Guid Id { get; private set; }
     public string Email { get; private set; }
@@ -24,7 +24,7 @@ public sealed class User : Entity
     public IReadOnlyCollection<Address> Addresses => _addresses.AsReadOnly();
     public string FullName => $"{FirstName} {LastName}";
 
-    public static User Create(
+    public static DomainUser Create(
         string email,
         string firstName,
         string lastName,
@@ -38,7 +38,7 @@ public sealed class User : Entity
         var userId = Guid.NewGuid();
         var cart = Cart.Create(userId);
 
-        return new User
+        return new DomainUser
         {
             Id = userId,
             Email = email.ToUpperInvariant(),

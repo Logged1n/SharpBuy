@@ -32,7 +32,7 @@ internal sealed class UserRegisteredDomainEventHandler : IDomainEventHandler<Use
 
     public async Task Handle(UserRegisteredDomainEvent notification, CancellationToken cancellationToken)
     {
-        User? user = await _dbContext.DomainUsers
+        DomainUser? user = await _dbContext.DomainUsers
             .FirstOrDefaultAsync(u => u.Id == notification.UserId, cancellationToken);
 
         if(user is null)

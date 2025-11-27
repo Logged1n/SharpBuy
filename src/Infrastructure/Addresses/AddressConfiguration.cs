@@ -9,7 +9,7 @@ internal sealed class AddressConfiguration : IEntityTypeConfiguration<Address>
 {
     public void Configure(EntityTypeBuilder<Address> builder)
     {
-        builder.ToTable("Addresses");
+        builder.ToTable("addresses");
 
         builder.HasKey(a => a.Id);
 
@@ -32,7 +32,7 @@ internal sealed class AddressConfiguration : IEntityTypeConfiguration<Address>
             .IsRequired()
             .HasMaxLength(100);
 
-        builder.HasOne<User>()
+        builder.HasOne<DomainUser>()
             .WithMany(u => u.Addresses)
             .HasForeignKey(a => a.UserId)
             .OnDelete(DeleteBehavior.Cascade);

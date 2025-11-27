@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Users;
 
-internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
+internal sealed class UserConfiguration : IEntityTypeConfiguration<DomainUser>
 {
-    public void Configure(EntityTypeBuilder<User> builder)
+    public void Configure(EntityTypeBuilder<DomainUser> builder)
     {
-        builder.ToTable("Users");
+        builder.ToTable("domain_users");
 
         builder.HasKey(u => u.Id);
 

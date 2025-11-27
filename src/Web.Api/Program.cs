@@ -35,6 +35,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerWithUi();
 
     app.ApplyMigrations();
+    await app.SeedIdentityAsync();
 
     app.UseCors();
 }

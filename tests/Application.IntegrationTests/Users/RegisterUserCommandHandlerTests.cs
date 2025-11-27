@@ -37,7 +37,7 @@ public class RegisterUserCommandHandlerTests : IntegrationTestBase
         result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldNotBe(Guid.Empty);
 
-        User? user = await DbContext.DomainUsers
+        DomainUser? user = await DbContext.DomainUsers
             .Include(u => u.Cart)
             .FirstOrDefaultAsync(u => u.Id == result.Value);
 
@@ -56,7 +56,7 @@ public class RegisterUserCommandHandlerTests : IntegrationTestBase
     {
         // Arrange
         string email = "duplicate@example.com";
-        var existingUser = User.Create(email, "John", "Doe", "123456789");
+        var existingUser = DomainUser.Create(email, "John", "Doe", "123456789");
         DbContext.DomainUsers.Add(existingUser);
         await DbContext.SaveChangesAsync();
 
@@ -103,7 +103,7 @@ public class RegisterUserCommandHandlerTests : IntegrationTestBase
         // Assert
         result.IsSuccess.ShouldBeTrue();
 
-        User? user = await DbContext.DomainUsers
+        DomainUser? user = await DbContext.DomainUsers
             .Include(u => u.Addresses)
             .FirstOrDefaultAsync(u => u.Id == result.Value);
 

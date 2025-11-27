@@ -5,5 +5,5 @@ namespace Application.Abstractions.Authentication;
 public sealed class ApplicationUser : IdentityUser<Guid>
 {
     public Guid DomainUserId { get; set; }
-    public User DomainUser { get; set; }
+    public DomainUser DomainUser { get; set; }
 }

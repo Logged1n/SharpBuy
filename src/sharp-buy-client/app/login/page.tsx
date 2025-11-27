@@ -36,22 +36,22 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1 text-center">
-          <div className="flex justify-center mb-4">
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center py-6 sm:py-12 px-4">
+      <Card className="w-full max-w-md shadow-lg">
+        <CardHeader className="space-y-2 text-center pb-6">
+          <div className="flex justify-center mb-2">
             <div className="flex items-center space-x-2">
-              <ShoppingCart className="h-8 w-8 text-primary" />
-              <span className="text-2xl font-bold">SharpBuy</span>
+              <ShoppingCart className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+              <span className="text-xl sm:text-2xl font-bold">SharpBuy</span>
             </div>
           </div>
-          <CardTitle className="text-2xl">Welcome back</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-xl sm:text-2xl">Welcome back</CardTitle>
+          <CardDescription className="text-sm">
             Enter your credentials to access your account
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <CardContent className="px-4 sm:px-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
               <div className="flex items-center gap-2 p-3 text-sm text-destructive bg-destructive/10 rounded-md">
                 <AlertCircle className="h-4 w-4" />
@@ -85,13 +85,13 @@ export default function LoginPage() {
               />
             </div>
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full h-11" disabled={isLoading}>
               {isLoading ? 'Signing in...' : 'Sign in'}
             </Button>
 
-            <div className="text-center text-sm">
+            <div className="text-center text-sm pt-2">
               <span className="text-muted-foreground">Don&apos;t have an account? </span>
-              <Link href="/register" className="text-primary hover:underline">
+              <Link href="/register" className="text-primary hover:underline font-medium">
                 Sign up
               </Link>
             </div>

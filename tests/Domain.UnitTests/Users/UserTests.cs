@@ -14,7 +14,7 @@ public class UserTests
         string phoneNumber = "+1234567890";
 
         // Act
-        var user = User.Create(email, firstName, lastName, phoneNumber);
+        var user = DomainUser.Create(email, firstName, lastName, phoneNumber);
 
         // Assert
         user.ShouldNotBeNull();
@@ -36,7 +36,7 @@ public class UserTests
     public void Create_WithInvalidEmail_ShouldThrowArgumentException(string? invalidEmail)
     {
         // Act
-        Action act = () => User.Create(invalidEmail!, "John", "Doe", "123456");
+        Action act = () => DomainUser.Create(invalidEmail!, "John", "Doe", "123456");
 
         // Assert
         Should.Throw<ArgumentException>(act);
@@ -49,7 +49,7 @@ public class UserTests
     public void Create_WithInvalidFirstName_ShouldThrowArgumentException(string? invalidFirstName)
     {
         // Act
-        Action act = () => User.Create("test@example.com", invalidFirstName!, "Doe", "123456");
+        Action act = () => DomainUser.Create("test@example.com", invalidFirstName!, "Doe", "123456");
 
         // Assert
         Should.Throw<ArgumentException>(act);
@@ -62,7 +62,7 @@ public class UserTests
     public void Create_WithInvalidLastName_ShouldThrowArgumentException(string? invalidLastName)
     {
         // Act
-        Action act = () => User.Create("test@example.com", "John", invalidLastName!, "123456");
+        Action act = () => DomainUser.Create("test@example.com", "John", invalidLastName!, "123456");
 
         // Assert
         Should.Throw<ArgumentException>(act);
@@ -72,7 +72,7 @@ public class UserTests
     public void AddAddress_WithValidData_ShouldSucceed()
     {
         // Arrange
-        User user = CreateValidUser();
+        DomainUser user = CreateValidUser();
         string line1 = "123 Main St";
         string city = "New York";
         string postalCode = "10001";
@@ -92,7 +92,7 @@ public class UserTests
     public void AddAddress_MultipleAddresses_ShouldKeepFirstAsPrimary()
     {
         // Arrange
-        User user = CreateValidUser();
+        DomainUser user = CreateValidUser();
         user.AddAddress("123 Main St", null, "New York", "10001", "USA");
         Guid? firstAddressId = user.PrimaryAddressId;
 
@@ -108,7 +108,7 @@ public class UserTests
     public void VerifyEmail_WhenNotVerified_ShouldSucceed()
     {
         // Arrange
-        User user = CreateValidUser();
+        DomainUser user = CreateValidUser();
 
         // Act
         Result result = user.VerifyEmail();
@@ -122,7 +122,7 @@ public class UserTests
     public void VerifyEmail_WhenAlreadyVerified_ShouldReturnFailure()
     {
         // Arrange
-        User user = CreateValidUser();
+        DomainUser user = CreateValidUser();
         user.VerifyEmail();
 
         // Act
@@ -140,15 +140,15 @@ public class UserTests
         string email = "test@example.com";
 
         // Act
-        var user = User.Create(email, "John", "Doe", "123456");
+        var user = DomainUser.Create(email, "John", "Doe", "123456");
 
         // Assert
         user.Email.ShouldBe(email.ToUpperInvariant());
     }
 
-    private static User CreateValidUser()
+    private static DomainUser CreateValidUser()
     {
-        return User.Create(
+        return DomainUser.Create(
             "test@example.com",
             "John",
             "Doe",

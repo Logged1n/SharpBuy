@@ -10,7 +10,7 @@ public class UserRepositoryTests : BaseIntegrationTest
     public async Task AddUser_ShouldPersistToDatabase()
     {
         // Arrange
-        var user = User.Create(
+        var user = DomainUser.Create(
             "test@example.com",
             "John",
             "Doe",
@@ -26,7 +26,7 @@ public class UserRepositoryTests : BaseIntegrationTest
         // Assert
         await ExecuteInTransactionAsync(async context =>
         {
-            User? savedUser = await context.DomainUsers
+            DomainUser? savedUser = await context.DomainUsers
                 .Include(u => u.Cart)
                 .FirstOrDefaultAsync(u => u.Id == user.Id);
 
@@ -44,7 +44,7 @@ public class UserRepositoryTests : BaseIntegrationTest
     public async Task AddUser_WithAddress_ShouldPersistRelationship()
     {
         // Arrange
-        var user = User.Create(
+        var user = DomainUser.Create(
             "test@example.com",
             "John",
             "Doe",
@@ -62,7 +62,7 @@ public class UserRepositoryTests : BaseIntegrationTest
         // Assert
         await ExecuteInTransactionAsync(async context =>
         {
-            User? savedUser = await context.DomainUsers
+            DomainUser? savedUser = await context.DomainUsers
                 .Include(u => u.Addresses)
                 .FirstOrDefaultAsync(u => u.Id == user.Id);
 
@@ -78,7 +78,7 @@ public class UserRepositoryTests : BaseIntegrationTest
     public async Task VerifyEmail_ShouldUpdateEmailVerifiedFlag()
     {
         // Arrange
-        var user = User.Create(
+        var user = DomainUser.Create(
             "test@example.com",
             "John",
             "Doe",
@@ -93,7 +93,7 @@ public class UserRepositoryTests : BaseIntegrationTest
         // Act
         await ExecuteInTransactionAsync(async context =>
         {
-            User? trackedUser = await context.DomainUsers.FindAsync(user.Id);
+            DomainUser? trackedUser = await context.DomainUsers.FindAsync(user.Id);
             trackedUser!.VerifyEmail();
             return await context.SaveChangesAsync();
         });
@@ -101,7 +101,7 @@ public class UserRepositoryTests : BaseIntegrationTest
         // Assert
         await ExecuteInTransactionAsync(async context =>
         {
-            User? verifiedUser = await context.DomainUsers.FindAsync(user.Id);
+            DomainUser? verifiedUser = await context.DomainUsers.FindAsync(user.Id);
             verifiedUser!.EmailVerified.ShouldBeTrue();
             return Task.CompletedTask;
         });
@@ -111,8 +111,8 @@ public class UserRepositoryTests : BaseIntegrationTest
     public async Task FindUserByEmail_ShouldReturnCorrectUser()
     {
         // Arrange
-        var user1 = User.Create("user1@example.com", "John", "Doe", "123456");
-        var user2 = User.Create("user2@example.com", "Jane", "Smith", "789012");
+        var user1 = DomainUser.Create("user1@example.com", "John", "Doe", "123456");
+        var user2 = DomainUser.Create("user2@example.com", "Jane", "Smith", "789012");
 
         await ExecuteInTransactionAsync(async context =>
         {
@@ -123,7 +123,7 @@ public class UserRepositoryTests : BaseIntegrationTest
         // Act & Assert
         await ExecuteInTransactionAsync(async context =>
         {
-            User? foundUser = await context.DomainUsers
+            DomainUser? foundUser = await context.DomainUsers
                 .FirstOrDefaultAsync(u => u.Email == "USER1@EXAMPLE.COM");
 
             foundUser.ShouldNotBeNull();
@@ -136,7 +136,7 @@ public class UserRepositoryTests : BaseIntegrationTest
     public async Task UserCart_ShouldSupportCartOperations()
     {
         // Arrange
-        var user = User.Create("test@example.com", "John", "Doe", "123456");
+        var user = DomainUser.Create("test@example.com", "John", "Doe", "123456");
         var product = Product.Create(
             "Test Product",
             "Test Description",
@@ -157,7 +157,7 @@ public class UserRepositoryTests : BaseIntegrationTest
         // Act
         await ExecuteInTransactionAsync(async context =>
         {
-            User? trackedUser = await context.DomainUsers
+            DomainUser? trackedUser = await context.DomainUsers
                 .Include(u => u.Cart)
                 .FirstOrDefaultAsync(u => u.Id == user.Id);
 
@@ -168,7 +168,7 @@ public class UserRepositoryTests : BaseIntegrationTest
         // Assert
         await ExecuteInTransactionAsync(async context =>
         {
-            User? userWithCart = await context.DomainUsers
+            DomainUser? userWithCart = await context.DomainUsers
                 .Include(u => u.Cart)
                 .ThenInclude(c => c.Items)
                 .FirstOrDefaultAsync(u => u.Id == user.Id);

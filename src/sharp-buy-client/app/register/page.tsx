@@ -94,22 +94,22 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-2xl">
-        <CardHeader className="space-y-1 text-center">
-          <div className="flex justify-center mb-4">
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center py-6 sm:py-12 px-4">
+      <Card className="w-full max-w-2xl shadow-lg">
+        <CardHeader className="space-y-2 text-center pb-6">
+          <div className="flex justify-center mb-2">
             <div className="flex items-center space-x-2">
-              <ShoppingCart className="h-8 w-8 text-primary" />
-              <span className="text-2xl font-bold">SharpBuy</span>
+              <ShoppingCart className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+              <span className="text-xl sm:text-2xl font-bold">SharpBuy</span>
             </div>
           </div>
-          <CardTitle className="text-2xl">Create an account</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-xl sm:text-2xl">Create an account</CardTitle>
+          <CardDescription className="text-sm">
             Enter your information to get started
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <CardContent className="px-4 sm:px-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
               <div className="flex items-center gap-2 p-3 text-sm text-destructive bg-destructive/10 rounded-md">
                 <AlertCircle className="h-4 w-4" />
@@ -124,9 +124,9 @@ export default function RegisterPage() {
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
+                <Label htmlFor="firstName" className="text-sm font-medium">First Name</Label>
                 <Input
                   id="firstName"
                   name="firstName"
@@ -140,7 +140,7 @@ export default function RegisterPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
+                <Label htmlFor="lastName" className="text-sm font-medium">Last Name</Label>
                 <Input
                   id="lastName"
                   name="lastName"
@@ -155,7 +155,7 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-sm font-medium">Email</Label>
               <Input
                 id="email"
                 name="email"
@@ -169,7 +169,7 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phoneNumber">Phone Number</Label>
+              <Label htmlFor="phoneNumber" className="text-sm font-medium">Phone Number</Label>
               <Input
                 id="phoneNumber"
                 name="phoneNumber"
@@ -183,7 +183,7 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-sm font-medium">Password</Label>
               <Input
                 id="password"
                 name="password"
@@ -197,7 +197,7 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Label htmlFor="confirmPassword" className="text-sm font-medium">Confirm Password</Label>
               <Input
                 id="confirmPassword"
                 name="confirmPassword"
@@ -210,10 +210,10 @@ export default function RegisterPage() {
               />
             </div>
 
-            <div className="pt-4 border-t">
-              <h3 className="text-sm font-semibold mb-3">Address (Optional)</h3>
+            <div className="pt-4 border-t mt-2">
+              <h3 className="text-sm font-semibold mb-4 text-muted-foreground">Address (Optional)</h3>
 
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="addressLine1">Address Line 1</Label>
                   <Input
@@ -240,9 +240,9 @@ export default function RegisterPage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="city">City</Label>
+                    <Label htmlFor="city" className="text-sm font-medium">City</Label>
                     <Input
                       id="city"
                       name="city"
@@ -255,7 +255,7 @@ export default function RegisterPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="postalCode">Postal Code</Label>
+                    <Label htmlFor="postalCode" className="text-sm font-medium">Postal Code</Label>
                     <Input
                       id="postalCode"
                       name="postalCode"
@@ -283,13 +283,13 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            <Button type="submit" className="w-full" disabled={isLoading || success}>
+            <Button type="submit" className="w-full h-11 mt-6" disabled={isLoading || success}>
               {isLoading ? 'Creating account...' : 'Create account'}
             </Button>
 
-            <div className="text-center text-sm">
+            <div className="text-center text-sm pt-2">
               <span className="text-muted-foreground">Already have an account? </span>
-              <Link href="/login" className="text-primary hover:underline">
+              <Link href="/login" className="text-primary hover:underline font-medium">
                 Sign in
               </Link>
             </div>

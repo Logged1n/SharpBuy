@@ -1,4 +1,6 @@
-﻿using Application.Abstractions.Authentication;
+﻿using System.Collections.Generic;
+using System.Reflection.Emit;
+using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Domain.Addresses;
 using Domain.Carts;
@@ -22,7 +24,7 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
     : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>(options), IApplicationDbContext
 {
     public DbSet<ApplicationUser> ApplicationUsers => Set<ApplicationUser>();
-    public DbSet<User> DomainUsers { get; set; }
+    public DbSet<DomainUser> DomainUsers { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<ProductCategory> ProductCategories { get; set; }
@@ -38,7 +40,7 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        //ConfigureIdentityTables(builder);
+        SeedDatabase(builder);
         builder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
         builder.HasDefaultSchema(Schemas.Default);
@@ -64,6 +66,35 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
         return result;
     }
 
+    private void SeedDatabase(ModelBuilder builder)
+    {
+        var adminRoleId = Guid.Parse("10000000-0000-0000-0000-000000000001");
+        var salesmanRoleId = Guid.Parse("10000000-0000-0000-0000-000000000002");
+        var clientRoleId = Guid.Parse("10000000-0000-0000-0000-000000000003");
+
+        builder.Entity<IdentityRole<Guid>>().HasData(
+            new IdentityRole<Guid>
+            {
+                Id = adminRoleId,
+                Name = "Admin",
+                NormalizedName = "ADMIN"
+            },
+            new IdentityRole<Guid>
+            {
+                Id = salesmanRoleId,
+                Name = "Salesman",
+                NormalizedName = "SALESMAN"
+            },
+            new IdentityRole<Guid>
+            {
+                Id = clientRoleId,
+                Name = "Client",
+                NormalizedName = "CLIENT"
+            }
+        );
+    }
+
+
     private async Task PublishDomainEventsAsync()
     {
         var domainEvents = ChangeTracker
@@ -81,16 +112,6 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
 
         await domainEventsDispatcher!.DispatchAsync(domainEvents);
     }
-    //private static void ConfigureIdentityTables(ModelBuilder modelBuilder)
-    //{
-    //    modelBuilder.Entity<ApplicationUser>().ToTable("AspNetUsers");
-    //    modelBuilder.Entity<IdentityRole<Guid>>().ToTable("AspNetRoles");
-    //    modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("AspNetUserRoles");
-    //    modelBuilder.Entity<IdentityUserClaim<Guid>>().ToTable("AspNetUserClaims");
-    //    modelBuilder.Entity<IdentityUserLogin<Guid>>().ToTable("AspNetUserLogins");
-    //    modelBuilder.Entity<IdentityUserToken<Guid>>().ToTable("AspNetUserTokens");
-    //    modelBuilder.Entity<IdentityRoleClaim<Guid>>().ToTable("AspNetRoleClaims");
-    //}
 
     private static void IgnoreDomainEvents(ModelBuilder modelBuilder)
     {

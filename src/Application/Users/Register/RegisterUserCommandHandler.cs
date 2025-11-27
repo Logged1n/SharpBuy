@@ -18,7 +18,7 @@ internal sealed class RegisterUserCommandHandler(
         if (await context.DomainUsers.AnyAsync(u => u.Email == command.Email, cancellationToken))
             return Result.Failure<Guid>(UserErrors.EmailNotUnique);
 
-        var domainUser = User.Create(
+        var domainUser = DomainUser.Create(
             command.Email,
             command.FirstName,
             command.LastName,

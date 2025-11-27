@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ProtectedRoute } from '@/components/protected-route';
+import { AdminRoute } from '@/components/admin-route';
 import { useAuth } from '@/lib/auth';
 import { api, ApiError, AddProductRequest } from '@/lib/api';
 import { Button } from '@/components/ui/button';
@@ -64,18 +64,19 @@ function AdminContent() {
   };
 
   return (
-    <div className="container max-w-7xl mx-auto py-8 px-4 md:px-6">
-      <div className="space-y-8">
-        {/* Header */}
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
-          <p className="text-muted-foreground mt-2">
-            Welcome back, {user?.email}
-          </p>
-        </div>
+    <div className="min-h-screen bg-background">
+      <div className="container max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="space-y-2">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Admin Dashboard</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">
+              Welcome back, {user?.email}
+            </p>
+          </div>
 
         {/* Stats Cards */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Products</CardTitle>
@@ -124,12 +125,12 @@ function AdminContent() {
         {/* Product Management Section */}
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="space-y-1">
                 <CardTitle>Product Management</CardTitle>
                 <CardDescription>Add and manage your product catalog</CardDescription>
               </div>
-              <Button onClick={() => setShowAddProduct(!showAddProduct)}>
+              <Button onClick={() => setShowAddProduct(!showAddProduct)} className="w-full sm:w-auto">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Product
               </Button>
@@ -144,8 +145,8 @@ function AdminContent() {
             )}
 
             {showAddProduct && (
-              <form onSubmit={handleAddProduct} className="space-y-4 p-4 border rounded-lg">
-                <h3 className="text-lg font-semibold">Add New Product</h3>
+              <form onSubmit={handleAddProduct} className="space-y-4 p-3 sm:p-4 border rounded-lg bg-muted/20">
+                <h3 className="text-base sm:text-lg font-semibold">Add New Product</h3>
 
                 {error && (
                   <div className="flex items-center gap-2 p-3 text-sm text-destructive bg-destructive/10 rounded-md">
@@ -154,7 +155,7 @@ function AdminContent() {
                   </div>
                 )}
 
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="name">Product Name</Label>
                     <Input
@@ -197,7 +198,7 @@ function AdminContent() {
                   />
                 </div>
 
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="priceAmount">Price</Label>
                     <Input
@@ -230,16 +231,17 @@ function AdminContent() {
                   </div>
                 </div>
 
-                <div className="flex gap-2 justify-end">
+                <div className="flex flex-col-reverse sm:flex-row gap-2 justify-end pt-2">
                   <Button
                     type="button"
                     variant="outline"
                     onClick={() => setShowAddProduct(false)}
                     disabled={isLoading}
+                    className="w-full sm:w-auto"
                   >
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={isLoading}>
+                  <Button type="submit" disabled={isLoading} className="w-full sm:w-auto">
                     {isLoading ? 'Adding...' : 'Add Product'}
                   </Button>
                 </div>
@@ -254,6 +256,7 @@ function AdminContent() {
             )}
           </CardContent>
         </Card>
+        </div>
       </div>
     </div>
   );
@@ -261,8 +264,8 @@ function AdminContent() {
 
 export default function AdminPage() {
   return (
-    <ProtectedRoute>
+    <AdminRoute>
       <AdminContent />
-    </ProtectedRoute>
+    </AdminRoute>
   );
 }

@@ -9,7 +9,7 @@ internal sealed class CartItemConfiguration : IEntityTypeConfiguration<CartItem>
 {
     public void Configure(EntityTypeBuilder<CartItem> builder)
     {
-        builder.ToTable("CartItems");
+        builder.ToTable("cart_items");
 
         builder.HasKey(ci => new { ci.CartId, ci.ProductId });
 

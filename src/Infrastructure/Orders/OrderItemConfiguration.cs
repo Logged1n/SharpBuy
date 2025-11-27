@@ -9,7 +9,7 @@ internal sealed class OrderItemConfiguration : IEntityTypeConfiguration<OrderIte
 {
     public void Configure(EntityTypeBuilder<OrderItem> builder)
     {
-        builder.ToTable("OrderItems");
+        builder.ToTable("order_items");
 
         builder.HasKey(oi => oi.Id);
 
@@ -29,12 +29,12 @@ internal sealed class OrderItemConfiguration : IEntityTypeConfiguration<OrderIte
         builder.OwnsOne(oi => oi.UnitPrice, priceBuilder =>
         {
             priceBuilder.Property(m => m.Amount)
-                .HasColumnName("UnitPriceAmount")
+                .HasColumnName("unit_price_amount")
                 .HasPrecision(18, 2)
                 .IsRequired();
 
             priceBuilder.Property(m => m.Currency)
-                .HasColumnName("UnitPriceCurrency")
+                .HasColumnName("unit_price_currency")
                 .HasMaxLength(3)
                 .IsRequired();
         });
@@ -58,7 +58,7 @@ internal sealed class OrderItemConfiguration : IEntityTypeConfiguration<OrderIte
         builder.HasIndex(oi => new { oi.OrderId, oi.ProductId })
             .IsUnique();
 
-        //builder.ToTable(t =>
-        //    t.HasCheckConstraint("CK_OrderItem_Quantity", "\"quantity\" > 0"));
+        builder.ToTable(t =>
+            t.HasCheckConstraint("CK_OrderItem_Quantity", "\"quantity\" > 0"));
     }
 }

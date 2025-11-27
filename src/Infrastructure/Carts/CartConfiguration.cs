@@ -13,7 +13,7 @@ internal sealed class CartConfiguration : IEntityTypeConfiguration<Cart>
         builder.Navigation(c => c.Items)
            .UsePropertyAccessMode(PropertyAccessMode.Field);
 
-        builder.HasOne<User>()
+        builder.HasOne<DomainUser>()
             .WithOne(u => u.Cart)
             .HasForeignKey<Cart>(c => c.OwnerId)
             .OnDelete(DeleteBehavior.Cascade);
