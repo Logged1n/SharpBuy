@@ -33,11 +33,11 @@ internal sealed class UserRegisteredDomainEventHandler : IDomainEventHandler<Use
     public async Task Handle(UserRegisteredDomainEvent notification, CancellationToken cancellationToken)
     {
         DomainUser? user = await _dbContext.DomainUsers
-            .FirstOrDefaultAsync(u => u.Id == notification.UserId, cancellationToken);
+            .FirstOrDefaultAsync(u => u.Email == notification.Email, cancellationToken);
 
         if(user is null)
         {
-            _logger.LogError("Failed to handle UserRegisteredDomainEvent for User ID {UserId}.", notification.UserId);
+            _logger.LogError("Failed to handle UserRegisteredDomainEvent for User {UserEmail}.", notification.Email);
             return;
         }
 

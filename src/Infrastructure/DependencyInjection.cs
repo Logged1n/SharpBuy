@@ -54,8 +54,7 @@ public static class DependencyInjection
             {
                 npgsqlOptions.MigrationsHistoryTable(HistoryRepository.DefaultTableName, Schemas.Default);
                 npgsqlOptions.UseRelationalNulls(false);
-            })
-            .UseSnakeCaseNamingConvention());
+            }));
 
         services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
 
@@ -66,7 +65,11 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddIdentityCore<ApplicationUser>(options => options.User.RequireUniqueEmail = true)
+        services.AddIdentityCore<ApplicationUser>(options => {
+            options.User.RequireUniqueEmail = true;
+            options.Password.RequireDigit = false;
+            options.Password.RequireNonAlphanumeric = false;
+            })
             .AddRoles<IdentityRole<Guid>>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddSignInManager()

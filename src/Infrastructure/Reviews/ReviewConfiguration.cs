@@ -49,6 +49,6 @@ internal sealed class ReviewConfiguration : IEntityTypeConfiguration<Review>
             .IsUnique();
 
         builder.ToTable(t =>
-            t.HasCheckConstraint("CK_Review_Score", "\"score\" >= 0 AND \"score\" <= 5"));
+            t.HasCheckConstraint("CK_Review_Score", "\"Score\" >= 0 AND \"Score\" <= 5"));
     }
 }

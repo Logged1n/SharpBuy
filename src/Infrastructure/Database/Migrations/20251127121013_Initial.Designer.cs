@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251127113549_Initial")]
+    [Migration("20251127121013_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -31,80 +31,62 @@ namespace Infrastructure.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid");
 
                     b.Property<int>("AccessFailedCount")
-                        .HasColumnType("integer")
-                        .HasColumnName("access_failed_count");
+                        .HasColumnType("integer");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("text")
-                        .HasColumnName("concurrency_stamp");
+                        .HasColumnType("text");
 
                     b.Property<Guid>("DomainUserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("domain_user_id");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("email");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("boolean")
-                        .HasColumnName("email_confirmed");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("boolean")
-                        .HasColumnName("lockout_enabled");
+                        .HasColumnType("boolean");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("lockout_end");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("normalized_email");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("normalized_user_name");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("text")
-                        .HasColumnName("password_hash");
+                        .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("text")
-                        .HasColumnName("phone_number");
+                        .HasColumnType("text");
 
                     b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("boolean")
-                        .HasColumnName("phone_number_confirmed");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("text")
-                        .HasColumnName("security_stamp");
+                        .HasColumnType("text");
 
                     b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("boolean")
-                        .HasColumnName("two_factor_enabled");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("user_name");
+                        .HasColumnType("character varying(256)");
 
-                    b.HasKey("Id")
-                        .HasName("pk_asp_net_users");
+                    b.HasKey("Id");
 
                     b.HasIndex("DomainUserId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_asp_net_users_domain_user_id");
+                        .IsUnique();
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -120,370 +102,305 @@ namespace Infrastructure.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("City")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("city");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Country")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("country");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Line1")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("line1");
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("Line2")
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("line2");
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("PostalCode")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("postal_code");
+                        .HasColumnType("character varying(20)");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
+                        .HasColumnType("uuid");
 
-                    b.HasKey("Id")
-                        .HasName("pk_addresses");
+                    b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_addresses_user_id");
+                    b.HasIndex("UserId");
 
-                    b.ToTable("addresses", "public");
+                    b.ToTable("Addresses", "public");
                 });
 
             modelBuilder.Entity("Domain.Carts.Cart", b =>
                 {
                     b.Property<Guid>("OwnerId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("owner_id");
+                        .HasColumnType("uuid");
 
-                    b.HasKey("OwnerId")
-                        .HasName("pk_carts");
+                    b.HasKey("OwnerId");
 
-                    b.ToTable("carts", "public");
+                    b.ToTable("Carts", "public");
                 });
 
             modelBuilder.Entity("Domain.Carts.CartItem", b =>
                 {
                     b.Property<Guid>("CartId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("cart_id");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("ProductId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("product_id");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("AddedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("added_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Quantity")
-                        .HasColumnType("integer")
-                        .HasColumnName("quantity");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.ComplexProperty<Dictionary<string, object>>("UnitPrice", "Domain.Carts.CartItem.UnitPrice#Money", b1 =>
                         {
                             b1.IsRequired();
 
                             b1.Property<decimal>("Amount")
-                                .HasColumnType("numeric")
-                                .HasColumnName("unit_price_amount");
+                                .HasColumnType("numeric");
 
                             b1.Property<string>("Currency")
                                 .IsRequired()
-                                .HasColumnType("text")
-                                .HasColumnName("unit_price_currency");
+                                .HasColumnType("text");
                         });
 
-                    b.HasKey("CartId", "ProductId")
-                        .HasName("pk_cart_items");
+                    b.HasKey("CartId", "ProductId");
 
-                    b.HasIndex("AddedAt")
-                        .HasDatabaseName("ix_cart_items_added_at");
+                    b.HasIndex("AddedAt");
 
-                    b.HasIndex("ProductId")
-                        .HasDatabaseName("ix_cart_items_product_id");
+                    b.HasIndex("ProductId");
 
-                    b.ToTable("cart_items", "public");
+                    b.ToTable("CartItems", "public", t =>
+                        {
+                            t.HasCheckConstraint("CK_CartItem_Quantity", "\"Quantity\" > 0");
+                        });
                 });
 
             modelBuilder.Entity("Domain.Categories.Category", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("name");
+                        .HasColumnType("text");
 
-                    b.HasKey("Id")
-                        .HasName("pk_categories");
+                    b.HasKey("Id");
 
-                    b.ToTable("categories", "public");
+                    b.ToTable("Categories", "public");
                 });
 
             modelBuilder.Entity("Domain.Inventories.Inventory", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("LastUpdated")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_updated");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("ProductId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("product_id");
+                        .HasColumnType("uuid");
 
                     b.Property<int>("Quantity")
-                        .HasColumnType("integer")
-                        .HasColumnName("quantity");
+                        .HasColumnType("integer");
 
                     b.Property<int>("ReservedQuantity")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasDefaultValue(0)
-                        .HasColumnName("reserved_quantity");
+                        .HasDefaultValue(0);
 
-                    b.HasKey("Id")
-                        .HasName("pk_inventories");
+                    b.HasKey("Id");
 
-                    b.HasIndex("ProductId")
-                        .HasDatabaseName("ix_inventories_product_id");
+                    b.HasIndex("ProductId");
 
-                    b.ToTable("inventories", "public");
+                    b.ToTable("Inventories", "public", t =>
+                        {
+                            t.HasCheckConstraint("CK_Inventory_Quantity", "\"Quantity\" >= 0");
+
+                            t.HasCheckConstraint("CK_Inventory_ReservedQuantity", "\"ReservedQuantity\" >= 0");
+
+                            t.HasCheckConstraint("CK_Inventory_Reserved_Not_Greater_Than_Quantity", "\"ReservedQuantity\" <= \"Quantity\"");
+                        });
                 });
 
             modelBuilder.Entity("Domain.Orders.Order", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid?>("BillingAddressId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("billing_address_id");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("CompletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("completed_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("ModifiedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("modified_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid?>("ShippingAddressId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("shipping_address_id");
+                        .HasColumnType("uuid");
 
                     b.Property<int>("Status")
-                        .HasColumnType("integer")
-                        .HasColumnName("status");
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
+                        .HasColumnType("uuid");
 
-                    b.HasKey("Id")
-                        .HasName("pk_orders");
+                    b.HasKey("Id");
 
-                    b.ToTable("orders", "public");
+                    b.ToTable("Orders", "public");
                 });
 
             modelBuilder.Entity("Domain.Orders.OrderItem", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("OrderId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("order_id");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("ProductId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("product_id");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ProductName")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("product_name");
+                        .HasColumnType("character varying(200)");
 
                     b.Property<int>("Quantity")
-                        .HasColumnType("integer")
-                        .HasColumnName("quantity");
+                        .HasColumnType("integer");
 
-                    b.HasKey("Id")
-                        .HasName("pk_order_items");
+                    b.HasKey("Id");
 
-                    b.HasIndex("OrderId")
-                        .HasDatabaseName("ix_order_items_order_id");
+                    b.HasIndex("OrderId");
 
-                    b.HasIndex("ProductId")
-                        .HasDatabaseName("ix_order_items_product_id");
+                    b.HasIndex("ProductId");
 
                     b.HasIndex("OrderId", "ProductId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_order_items_order_id_product_id");
+                        .IsUnique();
 
-                    b.ToTable("order_items", "public", t =>
+                    b.ToTable("OrderItems", "public", t =>
                         {
-                            t.HasCheckConstraint("CK_OrderItem_Quantity", "\"quantity\" > 0");
+                            t.HasCheckConstraint("CK_OrderItem_Quantity", "\"Quantity\" > 0");
                         });
                 });
 
             modelBuilder.Entity("Domain.ProductCategories.ProductCategory", b =>
                 {
                     b.Property<Guid>("ProductId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("product_id");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("CategoryId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("category_id");
+                        .HasColumnType("uuid");
 
-                    b.HasKey("ProductId", "CategoryId")
-                        .HasName("pk_product_categories");
+                    b.HasKey("ProductId", "CategoryId");
 
-                    b.HasIndex("CategoryId")
-                        .HasDatabaseName("ix_product_categories_category_id");
+                    b.HasIndex("CategoryId");
 
-                    b.HasIndex("ProductId")
-                        .HasDatabaseName("ix_product_categories_product_id");
+                    b.HasIndex("ProductId");
 
-                    b.ToTable("product_categories", "public");
+                    b.ToTable("ProductCategories", "public");
                 });
 
             modelBuilder.Entity("Domain.Products.Product", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
-                        .HasColumnName("description");
+                        .HasColumnType("character varying(2000)");
 
                     b.Property<Guid>("InventoryId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("inventory_id");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("MainPhotoPath")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("main_photo_path");
+                        .HasColumnType("character varying(500)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("name");
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("PhotoPaths")
                         .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("photo_paths");
+                        .HasColumnType("text");
 
-                    b.HasKey("Id")
-                        .HasName("pk_products");
+                    b.HasKey("Id");
 
                     b.HasIndex("InventoryId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_products_inventory_id");
+                        .IsUnique();
 
-                    b.HasIndex("Name")
-                        .HasDatabaseName("ix_products_name");
+                    b.HasIndex("Name");
 
-                    b.ToTable("products", "public");
+                    b.ToTable("Products", "public");
                 });
 
             modelBuilder.Entity("Domain.Reviews.Review", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
-                        .HasColumnName("description");
+                        .HasColumnType("character varying(2000)");
 
                     b.Property<Guid>("ProductId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("product_id");
+                        .HasColumnType("uuid");
 
                     b.Property<int>("Score")
-                        .HasColumnType("integer")
-                        .HasColumnName("score");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("title");
+                        .HasColumnType("character varying(200)");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
+                        .HasColumnType("uuid");
 
-                    b.HasKey("Id")
-                        .HasName("pk_reviews");
+                    b.HasKey("Id");
 
-                    b.HasIndex("CreatedAt")
-                        .HasDatabaseName("ix_reviews_created_at");
+                    b.HasIndex("CreatedAt");
 
-                    b.HasIndex("ProductId")
-                        .HasDatabaseName("ix_reviews_product_id");
+                    b.HasIndex("ProductId");
 
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_reviews_user_id");
+                    b.HasIndex("UserId");
 
                     b.HasIndex("ProductId", "UserId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_reviews_product_id_user_id");
+                        .IsUnique();
 
-                    b.ToTable("reviews", "public", t =>
+                    b.ToTable("Reviews", "public", t =>
                         {
-                            t.HasCheckConstraint("CK_Review_Score", "\"score\" >= 0 AND \"score\" <= 5");
+                            t.HasCheckConstraint("CK_Review_Score", "\"Score\" >= 0 AND \"Score\" <= 5");
                         });
                 });
 
@@ -491,112 +408,90 @@ namespace Infrastructure.Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("email");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<bool>("EmailVerified")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("email_verified");
+                        .HasDefaultValue(false);
 
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("first_name");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("last_name");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasMaxLength(9)
-                        .HasColumnType("character varying(9)")
-                        .HasColumnName("phone_number");
+                        .HasColumnType("character varying(9)");
 
                     b.Property<Guid?>("PrimaryAddressId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("primary_address_id");
+                        .HasColumnType("uuid");
 
-                    b.HasKey("Id")
-                        .HasName("pk_domain_users");
+                    b.HasKey("Id");
 
-                    b.HasIndex("CreatedAt")
-                        .HasDatabaseName("ix_domain_users_created_at");
+                    b.HasIndex("CreatedAt");
 
                     b.HasIndex("Email")
-                        .IsUnique()
-                        .HasDatabaseName("ix_domain_users_email");
+                        .IsUnique();
 
-                    b.ToTable("domain_users", "public");
+                    b.ToTable("DomainUsers", "public");
                 });
 
             modelBuilder.Entity("Domain.Users.EmailVerificationToken", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedOnUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_on_utc");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("ExpiresOnUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("expires_on_utc");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
+                        .HasColumnType("uuid");
 
-                    b.HasKey("Id")
-                        .HasName("pk_email_verification_tokens");
+                    b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_email_verification_tokens_user_id");
+                    b.HasIndex("UserId");
 
-                    b.ToTable("email_verification_tokens", "public");
+                    b.ToTable("EmailVerificationTokens", "public");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("text")
-                        .HasColumnName("concurrency_stamp");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("name");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("NormalizedName")
                         .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("normalized_name");
+                        .HasColumnType("character varying(256)");
 
-                    b.HasKey("Id")
-                        .HasName("pk_asp_net_roles");
+                    b.HasKey("Id");
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
@@ -629,28 +524,22 @@ namespace Infrastructure.Database.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
+                        .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("text")
-                        .HasColumnName("claim_type");
+                        .HasColumnType("text");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("text")
-                        .HasColumnName("claim_value");
+                        .HasColumnType("text");
 
                     b.Property<Guid>("RoleId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("role_id");
+                        .HasColumnType("uuid");
 
-                    b.HasKey("Id")
-                        .HasName("pk_asp_net_role_claims");
+                    b.HasKey("Id");
 
-                    b.HasIndex("RoleId")
-                        .HasDatabaseName("ix_asp_net_role_claims_role_id");
+                    b.HasIndex("RoleId");
 
                     b.ToTable("AspNetRoleClaims", "public");
                 });
@@ -659,28 +548,22 @@ namespace Infrastructure.Database.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
+                        .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("text")
-                        .HasColumnName("claim_type");
+                        .HasColumnType("text");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("text")
-                        .HasColumnName("claim_value");
+                        .HasColumnType("text");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
+                        .HasColumnType("uuid");
 
-                    b.HasKey("Id")
-                        .HasName("pk_asp_net_user_claims");
+                    b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_asp_net_user_claims_user_id");
+                    b.HasIndex("UserId");
 
                     b.ToTable("AspNetUserClaims", "public");
                 });
@@ -688,26 +571,20 @@ namespace Infrastructure.Database.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("text")
-                        .HasColumnName("login_provider");
+                        .HasColumnType("text");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("text")
-                        .HasColumnName("provider_key");
+                        .HasColumnType("text");
 
                     b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("text")
-                        .HasColumnName("provider_display_name");
+                        .HasColumnType("text");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
+                        .HasColumnType("uuid");
 
-                    b.HasKey("LoginProvider", "ProviderKey")
-                        .HasName("pk_asp_net_user_logins");
+                    b.HasKey("LoginProvider", "ProviderKey");
 
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_asp_net_user_logins_user_id");
+                    b.HasIndex("UserId");
 
                     b.ToTable("AspNetUserLogins", "public");
                 });
@@ -715,18 +592,14 @@ namespace Infrastructure.Database.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
                 {
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("RoleId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("role_id");
+                        .HasColumnType("uuid");
 
-                    b.HasKey("UserId", "RoleId")
-                        .HasName("pk_asp_net_user_roles");
+                    b.HasKey("UserId", "RoleId");
 
-                    b.HasIndex("RoleId")
-                        .HasDatabaseName("ix_asp_net_user_roles_role_id");
+                    b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", "public");
                 });
@@ -734,23 +607,18 @@ namespace Infrastructure.Database.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("text")
-                        .HasColumnName("login_provider");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
-                        .HasColumnType("text")
-                        .HasColumnName("name");
+                        .HasColumnType("text");
 
                     b.Property<string>("Value")
-                        .HasColumnType("text")
-                        .HasColumnName("value");
+                        .HasColumnType("text");
 
-                    b.HasKey("UserId", "LoginProvider", "Name")
-                        .HasName("pk_asp_net_user_tokens");
+                    b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", "public");
                 });
@@ -761,8 +629,7 @@ namespace Infrastructure.Database.Migrations
                         .WithOne()
                         .HasForeignKey("Application.Abstractions.Authentication.ApplicationUser", "DomainUserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_asp_net_users_domain_users_domain_user_id");
+                        .IsRequired();
 
                     b.Navigation("DomainUser");
                 });
@@ -773,8 +640,7 @@ namespace Infrastructure.Database.Migrations
                         .WithMany("Addresses")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_addresses_domain_users_user_id");
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Carts.Cart", b =>
@@ -783,8 +649,7 @@ namespace Infrastructure.Database.Migrations
                         .WithOne("Cart")
                         .HasForeignKey("Domain.Carts.Cart", "OwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_carts_domain_users_owner_id");
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Carts.CartItem", b =>
@@ -793,15 +658,13 @@ namespace Infrastructure.Database.Migrations
                         .WithMany("Items")
                         .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_cart_items_carts_cart_id");
+                        .IsRequired();
 
                     b.HasOne("Domain.Products.Product", null)
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_cart_items_products_product_id");
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Orders.Order", b =>
@@ -809,8 +672,7 @@ namespace Infrastructure.Database.Migrations
                     b.OwnsOne("SharedKernel.ValueObjects.Money", "Total", b1 =>
                         {
                             b1.Property<Guid>("OrderId")
-                                .HasColumnType("uuid")
-                                .HasColumnName("id");
+                                .HasColumnType("uuid");
 
                             b1.Property<decimal>("Amount")
                                 .HasPrecision(18, 2)
@@ -825,11 +687,10 @@ namespace Infrastructure.Database.Migrations
 
                             b1.HasKey("OrderId");
 
-                            b1.ToTable("orders", "public");
+                            b1.ToTable("Orders", "public");
 
                             b1.WithOwner()
-                                .HasForeignKey("OrderId")
-                                .HasConstraintName("fk_orders_orders_id");
+                                .HasForeignKey("OrderId");
                         });
 
                     b.Navigation("Total")
@@ -842,40 +703,36 @@ namespace Infrastructure.Database.Migrations
                         .WithMany("Items")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_order_items_orders_order_id");
+                        .IsRequired();
 
                     b.HasOne("Domain.Products.Product", null)
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_order_items_products_product_id");
+                        .IsRequired();
 
                     b.OwnsOne("SharedKernel.ValueObjects.Money", "UnitPrice", b1 =>
                         {
                             b1.Property<Guid>("OrderItemId")
-                                .HasColumnType("uuid")
-                                .HasColumnName("id");
+                                .HasColumnType("uuid");
 
                             b1.Property<decimal>("Amount")
                                 .HasPrecision(18, 2)
                                 .HasColumnType("numeric(18,2)")
-                                .HasColumnName("unit_price_amount");
+                                .HasColumnName("UnitPriceAmount");
 
                             b1.Property<string>("Currency")
                                 .IsRequired()
                                 .HasMaxLength(3)
                                 .HasColumnType("character varying(3)")
-                                .HasColumnName("unit_price_currency");
+                                .HasColumnName("UnitPriceCurrency");
 
                             b1.HasKey("OrderItemId");
 
-                            b1.ToTable("order_items", "public");
+                            b1.ToTable("OrderItems", "public");
 
                             b1.WithOwner()
-                                .HasForeignKey("OrderItemId")
-                                .HasConstraintName("fk_order_items_order_items_id");
+                                .HasForeignKey("OrderItemId");
                         });
 
                     b.Navigation("UnitPrice")
@@ -888,15 +745,13 @@ namespace Infrastructure.Database.Migrations
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_product_categories_categories_category_id");
+                        .IsRequired();
 
                     b.HasOne("Domain.Products.Product", null)
                         .WithMany("Categories")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_product_categories_products_product_id");
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Products.Product", b =>
@@ -905,14 +760,12 @@ namespace Infrastructure.Database.Migrations
                         .WithOne()
                         .HasForeignKey("Domain.Products.Product", "InventoryId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_products_inventories_inventory_id");
+                        .IsRequired();
 
                     b.OwnsOne("SharedKernel.ValueObjects.Money", "Price", b1 =>
                         {
                             b1.Property<Guid>("ProductId")
-                                .HasColumnType("uuid")
-                                .HasColumnName("id");
+                                .HasColumnType("uuid");
 
                             b1.Property<decimal>("Amount")
                                 .HasPrecision(18, 2)
@@ -927,11 +780,10 @@ namespace Infrastructure.Database.Migrations
 
                             b1.HasKey("ProductId");
 
-                            b1.ToTable("products", "public");
+                            b1.ToTable("Products", "public");
 
                             b1.WithOwner()
-                                .HasForeignKey("ProductId")
-                                .HasConstraintName("fk_products_products_id");
+                                .HasForeignKey("ProductId");
                         });
 
                     b.Navigation("Inventory");
@@ -946,15 +798,13 @@ namespace Infrastructure.Database.Migrations
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_reviews_products_product_id");
+                        .IsRequired();
 
                     b.HasOne("Domain.Users.DomainUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_reviews_domain_users_user_id");
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Users.EmailVerificationToken", b =>
@@ -963,8 +813,7 @@ namespace Infrastructure.Database.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_email_verification_tokens_domain_users_user_id");
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -975,8 +824,7 @@ namespace Infrastructure.Database.Migrations
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_asp_net_role_claims_asp_net_roles_role_id");
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
@@ -985,8 +833,7 @@ namespace Infrastructure.Database.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_asp_net_user_claims_asp_net_users_user_id");
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
@@ -995,8 +842,7 @@ namespace Infrastructure.Database.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_asp_net_user_logins_asp_net_users_user_id");
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
@@ -1005,15 +851,13 @@ namespace Infrastructure.Database.Migrations
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_asp_net_user_roles_asp_net_roles_role_id");
+                        .IsRequired();
 
                     b.HasOne("Application.Abstractions.Authentication.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_asp_net_user_roles_asp_net_users_user_id");
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
@@ -1022,8 +866,7 @@ namespace Infrastructure.Database.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_asp_net_user_tokens_asp_net_users_user_id");
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Carts.Cart", b =>

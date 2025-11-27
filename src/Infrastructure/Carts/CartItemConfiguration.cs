@@ -9,8 +9,6 @@ internal sealed class CartItemConfiguration : IEntityTypeConfiguration<CartItem>
 {
     public void Configure(EntityTypeBuilder<CartItem> builder)
     {
-        builder.ToTable("cart_items");
-
         builder.HasKey(ci => new { ci.CartId, ci.ProductId });
 
         builder.Property(ci => ci.CartId)
@@ -40,7 +38,7 @@ internal sealed class CartItemConfiguration : IEntityTypeConfiguration<CartItem>
         builder.HasIndex(ci => ci.ProductId);
         builder.HasIndex(ci => ci.AddedAt);
 
-        //builder.ToTable(t =>
-        //    t.HasCheckConstraint("CK_CartItem_Quantity", "\"quantity\" > 0"));
+        builder.ToTable(t =>
+            t.HasCheckConstraint("CK_CartItem_Quantity", "\"Quantity\" > 0"));
     }
 }

@@ -24,10 +24,9 @@ internal sealed class RegisterUserCommandHandler(
             command.LastName,
             command.PhoneNumber);
 
-        // Domain events
-        domainUser.Raise(new UserRegisteredDomainEvent(domainUser.Id));
         context.DomainUsers.Add(domainUser);
         await context.SaveChangesAsync(cancellationToken);
+        domainUser.Raise(new UserRegisteredDomainEvent(domainUser.Email));
 
         var appUser = new ApplicationUser
         {

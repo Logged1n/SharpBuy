@@ -39,11 +39,10 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
+        builder.HasDefaultSchema(Schemas.Default);
         base.OnModelCreating(builder);
         SeedDatabase(builder);
         builder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
-
-        builder.HasDefaultSchema(Schemas.Default);
         IgnoreDomainEvents(builder);
     }
 

@@ -9,8 +9,6 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<DomainUser>
 {
     public void Configure(EntityTypeBuilder<DomainUser> builder)
     {
-        builder.ToTable("domain_users");
-
         builder.HasKey(u => u.Id);
 
         builder.Property(u => u.FirstName)

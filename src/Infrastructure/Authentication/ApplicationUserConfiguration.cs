@@ -7,8 +7,6 @@ internal sealed class ApplicationUserConfiguration : IEntityTypeConfiguration<Ap
 {
     public void Configure(EntityTypeBuilder<ApplicationUser> builder)
     {
-        builder.ToTable("AspNetUsers");
-
         builder.Property(u => u.DomainUserId)
             .IsRequired();
 
