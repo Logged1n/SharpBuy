@@ -4,6 +4,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace Infrastructure.Database.Migrations
 {
     /// <inheritdoc />
@@ -44,6 +46,25 @@ namespace Infrastructure.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "domain_users",
+                schema: "public",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    first_name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    last_name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    phone_number = table.Column<string>(type: "character varying(9)", maxLength: 9, nullable: false),
+                    primary_address_id = table.Column<Guid>(type: "uuid", nullable: true),
+                    email_verified = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_domain_users", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "inventories",
                 schema: "public",
                 columns: table => new
@@ -81,25 +102,6 @@ namespace Infrastructure.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Users",
-                schema: "public",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uuid", nullable: false),
-                    email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    first_name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    last_name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    phone_number = table.Column<string>(type: "character varying(9)", maxLength: 9, nullable: false),
-                    primary_address_id = table.Column<Guid>(type: "uuid", nullable: true),
-                    email_verified = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_users", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 schema: "public",
                 columns: table => new
@@ -123,33 +125,7 @@ namespace Infrastructure.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "products",
-                schema: "public",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uuid", nullable: false),
-                    name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    description = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false),
-                    PriceAmount = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
-                    PriceCurrency = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false),
-                    inventory_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    main_photo_path = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    photo_paths = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_products", x => x.id);
-                    table.ForeignKey(
-                        name: "fk_products_inventories_inventory_id",
-                        column: x => x.inventory_id,
-                        principalSchema: "public",
-                        principalTable: "inventories",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Addresses",
+                name: "addresses",
                 schema: "public",
                 columns: table => new
                 {
@@ -168,7 +144,7 @@ namespace Infrastructure.Database.Migrations
                         name: "fk_addresses_domain_users_user_id",
                         column: x => x.user_id,
                         principalSchema: "public",
-                        principalTable: "Users",
+                        principalTable: "domain_users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -202,7 +178,7 @@ namespace Infrastructure.Database.Migrations
                         name: "fk_asp_net_users_domain_users_domain_user_id",
                         column: x => x.domain_user_id,
                         principalSchema: "public",
-                        principalTable: "Users",
+                        principalTable: "domain_users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -221,7 +197,7 @@ namespace Infrastructure.Database.Migrations
                         name: "fk_carts_domain_users_owner_id",
                         column: x => x.owner_id,
                         principalSchema: "public",
-                        principalTable: "Users",
+                        principalTable: "domain_users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -243,99 +219,33 @@ namespace Infrastructure.Database.Migrations
                         name: "fk_email_verification_tokens_domain_users_user_id",
                         column: x => x.user_id,
                         principalSchema: "public",
-                        principalTable: "Users",
+                        principalTable: "domain_users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "OrderItems",
+                name: "products",
                 schema: "public",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    order_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    product_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    product_name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    UnitPriceAmount = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
-                    UnitPriceCurrency = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false),
-                    quantity = table.Column<int>(type: "integer", nullable: false)
+                    name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    description = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false),
+                    PriceAmount = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
+                    PriceCurrency = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false),
+                    inventory_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    main_photo_path = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    photo_paths = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_order_items", x => x.id);
+                    table.PrimaryKey("pk_products", x => x.id);
                     table.ForeignKey(
-                        name: "fk_order_items_orders_order_id",
-                        column: x => x.order_id,
+                        name: "fk_products_inventories_inventory_id",
+                        column: x => x.inventory_id,
                         principalSchema: "public",
-                        principalTable: "orders",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "fk_order_items_products_product_id",
-                        column: x => x.product_id,
-                        principalSchema: "public",
-                        principalTable: "products",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "product_categories",
-                schema: "public",
-                columns: table => new
-                {
-                    product_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    category_id = table.Column<Guid>(type: "uuid", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_product_categories", x => new { x.product_id, x.category_id });
-                    table.ForeignKey(
-                        name: "fk_product_categories_categories_category_id",
-                        column: x => x.category_id,
-                        principalSchema: "public",
-                        principalTable: "categories",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "fk_product_categories_products_product_id",
-                        column: x => x.product_id,
-                        principalSchema: "public",
-                        principalTable: "products",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "reviews",
-                schema: "public",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uuid", nullable: false),
-                    score = table.Column<int>(type: "integer", nullable: false),
-                    product_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    description = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_reviews", x => x.id);
-                    table.CheckConstraint("CK_Review_Score", "\"score\" >= 0 AND \"score\" <= 5");
-                    table.ForeignKey(
-                        name: "fk_reviews_domain_users_user_id",
-                        column: x => x.user_id,
-                        principalSchema: "public",
-                        principalTable: "Users",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "fk_reviews_products_product_id",
-                        column: x => x.product_id,
-                        principalSchema: "public",
-                        principalTable: "products",
+                        principalTable: "inventories",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -435,7 +345,7 @@ namespace Infrastructure.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CartItems",
+                name: "cart_items",
                 schema: "public",
                 columns: table => new
                 {
@@ -466,10 +376,114 @@ namespace Infrastructure.Database.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "order_items",
+                schema: "public",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    order_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    product_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    product_name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    unit_price_amount = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
+                    unit_price_currency = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false),
+                    quantity = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_order_items", x => x.id);
+                    table.CheckConstraint("CK_OrderItem_Quantity", "\"quantity\" > 0");
+                    table.ForeignKey(
+                        name: "fk_order_items_orders_order_id",
+                        column: x => x.order_id,
+                        principalSchema: "public",
+                        principalTable: "orders",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_order_items_products_product_id",
+                        column: x => x.product_id,
+                        principalSchema: "public",
+                        principalTable: "products",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "product_categories",
+                schema: "public",
+                columns: table => new
+                {
+                    product_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    category_id = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_product_categories", x => new { x.product_id, x.category_id });
+                    table.ForeignKey(
+                        name: "fk_product_categories_categories_category_id",
+                        column: x => x.category_id,
+                        principalSchema: "public",
+                        principalTable: "categories",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_product_categories_products_product_id",
+                        column: x => x.product_id,
+                        principalSchema: "public",
+                        principalTable: "products",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "reviews",
+                schema: "public",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    score = table.Column<int>(type: "integer", nullable: false),
+                    product_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    description = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_reviews", x => x.id);
+                    table.CheckConstraint("CK_Review_Score", "\"score\" >= 0 AND \"score\" <= 5");
+                    table.ForeignKey(
+                        name: "fk_reviews_domain_users_user_id",
+                        column: x => x.user_id,
+                        principalSchema: "public",
+                        principalTable: "domain_users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "fk_reviews_products_product_id",
+                        column: x => x.product_id,
+                        principalSchema: "public",
+                        principalTable: "products",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                schema: "public",
+                table: "AspNetRoles",
+                columns: new[] { "id", "concurrency_stamp", "name", "normalized_name" },
+                values: new object[,]
+                {
+                    { new Guid("10000000-0000-0000-0000-000000000001"), null, "Admin", "ADMIN" },
+                    { new Guid("10000000-0000-0000-0000-000000000002"), null, "Salesman", "SALESMAN" },
+                    { new Guid("10000000-0000-0000-0000-000000000003"), null, "Client", "CLIENT" }
+                });
+
             migrationBuilder.CreateIndex(
                 name: "ix_addresses_user_id",
                 schema: "public",
-                table: "Addresses",
+                table: "addresses",
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
@@ -526,14 +540,27 @@ namespace Infrastructure.Database.Migrations
             migrationBuilder.CreateIndex(
                 name: "ix_cart_items_added_at",
                 schema: "public",
-                table: "CartItems",
+                table: "cart_items",
                 column: "added_at");
 
             migrationBuilder.CreateIndex(
                 name: "ix_cart_items_product_id",
                 schema: "public",
-                table: "CartItems",
+                table: "cart_items",
                 column: "product_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_domain_users_created_at",
+                schema: "public",
+                table: "domain_users",
+                column: "created_at");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_domain_users_email",
+                schema: "public",
+                table: "domain_users",
+                column: "email",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_email_verification_tokens_user_id",
@@ -550,20 +577,20 @@ namespace Infrastructure.Database.Migrations
             migrationBuilder.CreateIndex(
                 name: "ix_order_items_order_id",
                 schema: "public",
-                table: "OrderItems",
+                table: "order_items",
                 column: "order_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_order_items_order_id_product_id",
                 schema: "public",
-                table: "OrderItems",
+                table: "order_items",
                 columns: new[] { "order_id", "product_id" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_order_items_product_id",
                 schema: "public",
-                table: "OrderItems",
+                table: "order_items",
                 column: "product_id");
 
             migrationBuilder.CreateIndex(
@@ -615,26 +642,13 @@ namespace Infrastructure.Database.Migrations
                 schema: "public",
                 table: "reviews",
                 column: "user_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_users_created_at",
-                schema: "public",
-                table: "Users",
-                column: "created_at");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_users_email",
-                schema: "public",
-                table: "Users",
-                column: "email",
-                unique: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Addresses",
+                name: "addresses",
                 schema: "public");
 
             migrationBuilder.DropTable(
@@ -658,7 +672,7 @@ namespace Infrastructure.Database.Migrations
                 schema: "public");
 
             migrationBuilder.DropTable(
-                name: "CartItems",
+                name: "cart_items",
                 schema: "public");
 
             migrationBuilder.DropTable(
@@ -666,7 +680,7 @@ namespace Infrastructure.Database.Migrations
                 schema: "public");
 
             migrationBuilder.DropTable(
-                name: "OrderItems",
+                name: "order_items",
                 schema: "public");
 
             migrationBuilder.DropTable(
@@ -702,7 +716,7 @@ namespace Infrastructure.Database.Migrations
                 schema: "public");
 
             migrationBuilder.DropTable(
-                name: "Users",
+                name: "domain_users",
                 schema: "public");
 
             migrationBuilder.DropTable(

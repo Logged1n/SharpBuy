@@ -1,6 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <Compile Remove="Authorization\**" />
+    <EmbeddedResource Remove="Authorization\**" />
+    <None Remove="Authorization\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.NpgSql" />
     <PackageReference Include="EFCore.NamingConventions" />
     <PackageReference Include="FluentEmail.Smtp" />
@@ -22,10 +28,6 @@
 		<InternalsVisibleTo Include="Application.IntegrationTests" />
 		<InternalsVisibleTo Include="Infrastructure.IntegrationTests" />
 		<InternalsVisibleTo Include="Web.Api.IntegrationTests" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Authorization\" />
 	</ItemGroup>
 
 </Project>

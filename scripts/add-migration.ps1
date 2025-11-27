@@ -1,14 +1,9 @@
 param (
-    [string]$MigrationName,
+    [string]$MigrationName = "Initial",
     [string]$StartupProject = "../src/Web.API",
     [string]$Project = "../src/Infrastructure",
     [string]$OutputDir = "Database/Migrations"
 )
-
-if (-not $MigrationName) {
-    Write-Host "❌ Provide migration name as a parameter: -MigrationName"
-    exit 1
-}
 
 dotnet ef migrations add $MigrationName `
     --startup-project $StartupProject `

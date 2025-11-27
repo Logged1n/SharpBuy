@@ -159,7 +159,7 @@ namespace Infrastructure.Database.Migrations
                     b.HasIndex("UserId")
                         .HasDatabaseName("ix_addresses_user_id");
 
-                    b.ToTable("Addresses", "public");
+                    b.ToTable("addresses", "public");
                 });
 
             modelBuilder.Entity("Domain.Carts.Cart", b =>
@@ -219,7 +219,7 @@ namespace Infrastructure.Database.Migrations
                     b.HasIndex("ProductId")
                         .HasDatabaseName("ix_cart_items_product_id");
 
-                    b.ToTable("CartItems", "public");
+                    b.ToTable("cart_items", "public");
                 });
 
             modelBuilder.Entity("Domain.Categories.Category", b =>
@@ -353,7 +353,10 @@ namespace Infrastructure.Database.Migrations
                         .IsUnique()
                         .HasDatabaseName("ix_order_items_order_id_product_id");
 
-                    b.ToTable("OrderItems", "public");
+                    b.ToTable("order_items", "public", t =>
+                        {
+                            t.HasCheckConstraint("CK_OrderItem_Quantity", "\"quantity\" > 0");
+                        });
                 });
 
             modelBuilder.Entity("Domain.ProductCategories.ProductCategory", b =>
@@ -481,35 +484,7 @@ namespace Infrastructure.Database.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Domain.Users.EmailVerificationToken", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<DateTime>("CreatedOnUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_on_utc");
-
-                    b.Property<DateTime>("ExpiresOnUtc")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("expires_on_utc");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_email_verification_tokens");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_email_verification_tokens_user_id");
-
-                    b.ToTable("email_verification_tokens", "public");
-                });
-
-            modelBuilder.Entity("Domain.Users.User", b =>
+            modelBuilder.Entity("Domain.Users.DomainUser", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -555,16 +530,44 @@ namespace Infrastructure.Database.Migrations
                         .HasColumnName("primary_address_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_users");
+                        .HasName("pk_domain_users");
 
                     b.HasIndex("CreatedAt")
-                        .HasDatabaseName("ix_users_created_at");
+                        .HasDatabaseName("ix_domain_users_created_at");
 
                     b.HasIndex("Email")
                         .IsUnique()
-                        .HasDatabaseName("ix_users_email");
+                        .HasDatabaseName("ix_domain_users_email");
 
-                    b.ToTable("Users", "public");
+                    b.ToTable("domain_users", "public");
+                });
+
+            modelBuilder.Entity("Domain.Users.EmailVerificationToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedOnUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_on_utc");
+
+                    b.Property<DateTime>("ExpiresOnUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expires_on_utc");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_email_verification_tokens");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_email_verification_tokens_user_id");
+
+                    b.ToTable("email_verification_tokens", "public");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
@@ -597,6 +600,26 @@ namespace Infrastructure.Database.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", "public");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("10000000-0000-0000-0000-000000000001"),
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = new Guid("10000000-0000-0000-0000-000000000002"),
+                            Name = "Salesman",
+                            NormalizedName = "SALESMAN"
+                        },
+                        new
+                        {
+                            Id = new Guid("10000000-0000-0000-0000-000000000003"),
+                            Name = "Client",
+                            NormalizedName = "CLIENT"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -731,7 +754,7 @@ namespace Infrastructure.Database.Migrations
 
             modelBuilder.Entity("Application.Abstractions.Authentication.ApplicationUser", b =>
                 {
-                    b.HasOne("Domain.Users.User", "DomainUser")
+                    b.HasOne("Domain.Users.DomainUser", "DomainUser")
                         .WithOne()
                         .HasForeignKey("Application.Abstractions.Authentication.ApplicationUser", "DomainUserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -743,7 +766,7 @@ namespace Infrastructure.Database.Migrations
 
             modelBuilder.Entity("Domain.Addresses.Address", b =>
                 {
-                    b.HasOne("Domain.Users.User", null)
+                    b.HasOne("Domain.Users.DomainUser", null)
                         .WithMany("Addresses")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -753,7 +776,7 @@ namespace Infrastructure.Database.Migrations
 
             modelBuilder.Entity("Domain.Carts.Cart", b =>
                 {
-                    b.HasOne("Domain.Users.User", null)
+                    b.HasOne("Domain.Users.DomainUser", null)
                         .WithOne("Cart")
                         .HasForeignKey("Domain.Carts.Cart", "OwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -835,17 +858,17 @@ namespace Infrastructure.Database.Migrations
                             b1.Property<decimal>("Amount")
                                 .HasPrecision(18, 2)
                                 .HasColumnType("numeric(18,2)")
-                                .HasColumnName("UnitPriceAmount");
+                                .HasColumnName("unit_price_amount");
 
                             b1.Property<string>("Currency")
                                 .IsRequired()
                                 .HasMaxLength(3)
                                 .HasColumnType("character varying(3)")
-                                .HasColumnName("UnitPriceCurrency");
+                                .HasColumnName("unit_price_currency");
 
                             b1.HasKey("OrderItemId");
 
-                            b1.ToTable("OrderItems", "public");
+                            b1.ToTable("order_items", "public");
 
                             b1.WithOwner()
                                 .HasForeignKey("OrderItemId")
@@ -923,7 +946,7 @@ namespace Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_reviews_products_product_id");
 
-                    b.HasOne("Domain.Users.User", null)
+                    b.HasOne("Domain.Users.DomainUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -933,7 +956,7 @@ namespace Infrastructure.Database.Migrations
 
             modelBuilder.Entity("Domain.Users.EmailVerificationToken", b =>
                 {
-                    b.HasOne("Domain.Users.User", "User")
+                    b.HasOne("Domain.Users.DomainUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1020,7 +1043,7 @@ namespace Infrastructure.Database.Migrations
                     b.Navigation("Categories");
                 });
 
-            modelBuilder.Entity("Domain.Users.User", b =>
+            modelBuilder.Entity("Domain.Users.DomainUser", b =>
                 {
                     b.Navigation("Addresses");
 
