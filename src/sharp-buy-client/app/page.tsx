@@ -112,12 +112,12 @@ export default function Home() {
               </CardDescription>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center pt-2 sm:pt-4">
                 <Link href="/register">
-                  <Button size="lg" variant="secondary">
+                  <Button size="lg" variant="destructive" className="border-primary-foreground/20 hover:bg-primary-foreground/10">
                     Create Account
                   </Button>
                 </Link>
                 <Link href="/login">
-                  <Button size="lg" variant="outline" className="border-primary-foreground/20 hover:bg-primary-foreground/10">
+                  <Button size="lg" variant="secondary" className="border-primary-foreground/20 hover:bg-primary-foreground/10">
                     Sign In
                   </Button>
                 </Link>

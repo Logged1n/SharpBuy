@@ -24,6 +24,16 @@ internal sealed class RegisterUserCommandHandler(
             command.LastName,
             command.PhoneNumber);
 
+        if (command.PrimaryAddress is not null)
+        {
+            domainUser.AddAddress(
+                command.PrimaryAddress.Line1,
+                command.PrimaryAddress.Line2,
+                command.PrimaryAddress.City,
+                command.PrimaryAddress.PostalCode,
+                command.PrimaryAddress.Country);
+        }
+
         context.DomainUsers.Add(domainUser);
         await context.SaveChangesAsync(cancellationToken);
         domainUser.Raise(new UserRegisteredDomainEvent(domainUser.Email));
@@ -36,21 +46,11 @@ internal sealed class RegisterUserCommandHandler(
             DomainUserId = domainUser.Id,
             DomainUser = domainUser
         };
-
         IdentityResult createResult = await userManager.CreateAsync(appUser, command.Password);
+        IdentityResult addRoleResult = await userManager.AddToRoleAsync(appUser, Roles.Client);
 
-        if (!createResult.Succeeded)
+        if (!createResult.Succeeded || !addRoleResult.Succeeded)
             return Result.Failure<Guid>(UserErrors.IdentityFailed(createResult.Errors.Select(e => e.Description)));
-
-        if (command.PrimaryAddress is not null)
-        {
-            domainUser.AddAddress(
-                command.PrimaryAddress.Line1,
-                command.PrimaryAddress.Line2,
-                command.PrimaryAddress.City,
-                command.PrimaryAddress.PostalCode,
-                command.PrimaryAddress.Country);
-        }
 
         return domainUser.Id;
     }

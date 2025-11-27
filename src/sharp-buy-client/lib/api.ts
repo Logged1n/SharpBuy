@@ -13,12 +13,6 @@ export interface LoginRequest {
   password: string;
 }
 
-export interface LoginResponse {
-  id: string;
-  email: string;
-  token: string;
-}
-
 export interface AddressDto {
   line1: string;
   line2?: string | null;

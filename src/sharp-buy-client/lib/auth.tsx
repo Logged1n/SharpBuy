@@ -34,18 +34,22 @@ function decodeToken(token: string): DecodedToken | null {
     );
     const decoded = JSON.parse(jsonPayload);
 
-    // Extract roles - they might be in different claim names
-    const rolesString = decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ||
-                       decoded['role'] ||
-                       decoded['roles'] ||
-                       '';
+    // Extract roles - handle multiple role claims in the token
+    const roleClaimName = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
+    const roles: string[] = [];
 
-    // Roles are separated by semicolon
-    const roles = typeof rolesString === 'string'
-      ? rolesString.split(';').filter(Boolean)
-      : Array.isArray(rolesString)
-        ? rolesString
-        : [];
+    // Check for the standard role claim (can be string or array)
+    const roleClaim = decoded[roleClaimName] || decoded['role'] || decoded['roles'];
+
+    if (roleClaim) {
+      if (Array.isArray(roleClaim)) {
+        // If it's already an array, use it directly
+        roles.push(...roleClaim);
+      } else if (typeof roleClaim === 'string') {
+        // If it's a string, it might be semicolon-separated or a single role
+        roles.push(...roleClaim.split(';').filter(Boolean));
+      }
+    }
 
     return {
       ...decoded,
@@ -89,13 +93,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = async (credentials: LoginRequest) => {
-    const response = await api.login(credentials);
-    const decodedToken = decodeToken(response.token);
+    const token = await api.login(credentials);
+    const decodedToken = decodeToken(token);
 
-    localStorage.setItem('auth_token', response.token);
-    localStorage.setItem('user', JSON.stringify(response));
-    setUser(response);
-
+    localStorage.setItem('auth_token', token);
+    localStorage.setItem('user', token);
+    setUser(token);
     if (decodedToken) {
       setRoles(decodedToken.roles);
     }

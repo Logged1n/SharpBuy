@@ -4,6 +4,7 @@ using Domain.Addresses;
 using Domain.Carts;
 using Domain.Users;
 using Infrastructure.Authentication;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 using SharedKernel.Dtos;
@@ -15,12 +16,17 @@ namespace Application.IntegrationTests.Users;
 
 public class RegisterUserCommandHandlerTests : IntegrationTestBase
 {
+    public RegisterUserCommandHandlerTests(UserManager<ApplicationUser> userManager)
+    {
+        UserManager = userManager;
+    }
+    public UserManager<ApplicationUser> UserManager { get; init; }
+
     [Fact]
     public async Task Handle_WithValidData_ShouldCreateUser()
     {
         // Arrange
-        var passwordHasher = new PasswordHasher();
-        var handler = new RegisterUserCommandHandler(DbContext, passwordHasher);
+        var handler = new RegisterUserCommandHandler(DbContext, UserManager);
         var command = new RegisterUserCommand(
             "test@example.com",
             "John",
@@ -60,8 +66,7 @@ public class RegisterUserCommandHandlerTests : IntegrationTestBase
         DbContext.DomainUsers.Add(existingUser);
         await DbContext.SaveChangesAsync();
 
-        var passwordHasher = new PasswordHasher();
-        var handler = new RegisterUserCommandHandler(DbContext, passwordHasher);
+        var handler = new RegisterUserCommandHandler(DbContext, UserManager);
         var command = new RegisterUserCommand(
             email,
             "Jane",
@@ -79,8 +84,7 @@ public class RegisterUserCommandHandlerTests : IntegrationTestBase
     public async Task Handle_WithAddress_ShouldCreateUserWithAddress()
     {
         // Arrange
-        var passwordHasher = new PasswordHasher();
-        var handler = new RegisterUserCommandHandler(DbContext, passwordHasher);
+        var handler = new RegisterUserCommandHandler(DbContext, UserManager);
         var address = new AddressDto(
             "123 Main St",
             "Apt 4",
@@ -123,8 +127,7 @@ public class RegisterUserCommandHandlerTests : IntegrationTestBase
     public async Task Handle_ShouldHashPassword()
     {
         // Arrange
-        var passwordHasher = new PasswordHasher();
-        var handler = new RegisterUserCommandHandler(DbContext, passwordHasher);
+        var handler = new RegisterUserCommandHandler(DbContext, UserManager);
         var command = new RegisterUserCommand(
             "test@example.com",
             "John",
@@ -150,8 +153,7 @@ public class RegisterUserCommandHandlerTests : IntegrationTestBase
     public async Task Handle_ShouldCreateCartForUser()
     {
         // Arrange
-        var passwordHasher = new PasswordHasher();
-        var handler = new RegisterUserCommandHandler(DbContext, passwordHasher);
+        var handler = new RegisterUserCommandHandler(DbContext, UserManager);
         var command = new RegisterUserCommand(
             "test@example.com",
             "John",

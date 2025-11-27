@@ -2,6 +2,7 @@
 using System.Text;
 using Application.Abstractions.Authentication;
 using Domain.Users;
+using FluentEmail.Core;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -25,14 +26,15 @@ internal sealed class TokenProvider(IConfiguration configuration, IDateTimeProvi
             [
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email!),
-                new Claim(JwtRegisteredClaimNames.Name, user.DomainUser.FullName),
-                new Claim(JwtCustomClaims.Roles, string.Join(";", roles.Select(x => x.ToString())))
+                new Claim(JwtRegisteredClaimNames.Name, user.DomainUser.FullName)
             ]),
             Expires = dateTimeProvider.UtcNow.AddMinutes(configuration.GetValue<int>("Jwt:ExpirationInMinutes")),
             SigningCredentials = credentials,
             Issuer = configuration["Jwt:Issuer"],
             Audience = configuration["Jwt:Audience"]
         };
+
+        roles.ForEach(role => tokenDescriptor.Subject.AddClaim(new Claim(ClaimTypes.Role, role)));
 
         var handler = new JsonWebTokenHandler();
 
