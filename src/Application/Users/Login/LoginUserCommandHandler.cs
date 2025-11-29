@@ -26,9 +26,8 @@ internal sealed class LoginUserCommandHandler(
             return Result.Failure<string>(UserErrors.NotFoundByEmail);
         }
 
-        //TODO: Enable email verification
-        //if (!domainUser.EmailVerified)
-        //    return Result.Failure<string>(UserErrors.EmailNotVerified);
+        if (!user.EmailConfirmed)
+            return Result.Failure<string>(UserErrors.EmailNotVerified);
 
 
         if (passwordHasher.VerifyHashedPassword(user, user.PasswordHash!, command.Password) != PasswordVerificationResult.Success)

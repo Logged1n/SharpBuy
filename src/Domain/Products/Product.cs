@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Domain.Categories;
 using Domain.Inventories;
 using Domain.Reviews;
@@ -75,6 +75,32 @@ public sealed class Product : Entity
             return Result.Failure(ProductErrors.NoCategoriesAssigned);
 
         _categories.Remove(productCategory);
+        return Result.Success();
+    }
+
+    public Result Update(string name, string description, decimal priceAmount, string priceCurrency)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentException.ThrowIfNullOrWhiteSpace(description);
+        ArgumentException.ThrowIfNullOrWhiteSpace(priceCurrency);
+
+        if (priceAmount <= 0)
+            return Result.Failure(ProductErrors.InvalidPrice);
+
+        Name = name;
+        Description = description;
+        Price = new Money(priceAmount, priceCurrency);
+        return Result.Success();
+    }
+
+    public Result UpdatePrice(decimal priceAmount, string priceCurrency)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(priceCurrency);
+
+        if (priceAmount <= 0)
+            return Result.Failure(ProductErrors.InvalidPrice);
+
+        Price = new Money(priceAmount, priceCurrency);
         return Result.Success();
     }
 }

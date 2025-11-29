@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { api, LoginRequest, LoginResponse } from './api';
+import { api, LoginRequest } from './api';
 
 interface DecodedToken {
   roles: string[];
@@ -10,7 +10,7 @@ interface DecodedToken {
 }
 
 interface AuthContextType {
-  user: LoginResponse | null;
+  user: { token: string } | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   roles: string[];
@@ -62,7 +62,7 @@ function decodeToken(token: string): DecodedToken | null {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<LoginResponse | null>(null);
+  const [user, setUser] = useState<{ token: string } | null>(null);
   const [roles, setRoles] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -97,8 +97,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const decodedToken = decodeToken(token);
 
     localStorage.setItem('auth_token', token);
-    localStorage.setItem('user', token);
-    setUser(token);
+    localStorage.setItem('user', JSON.stringify({ token }));
+    setUser({ token });
     if (decodedToken) {
       setRoles(decodedToken.roles);
     }

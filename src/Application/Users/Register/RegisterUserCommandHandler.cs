@@ -50,7 +50,11 @@ internal sealed class RegisterUserCommandHandler(
         IdentityResult addRoleResult = await userManager.AddToRoleAsync(appUser, Roles.Client);
 
         if (!createResult.Succeeded || !addRoleResult.Succeeded)
-            return Result.Failure<Guid>(UserErrors.IdentityFailed(createResult.Errors.Select(e => e.Description)));
+        {
+            IEnumerable<string> errors = createResult.Errors.Concat(addRoleResult.Errors)
+                .Select(e => e.Description);
+            return Result.Failure<Guid>(UserErrors.IdentityFailed(errors));
+        }
 
         return domainUser.Id;
     }

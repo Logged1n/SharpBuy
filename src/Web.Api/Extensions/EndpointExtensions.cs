@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+using System.Reflection;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Web.Api.Endpoints;
 
@@ -39,5 +40,10 @@ public static class EndpointExtensions
     public static RouteHandlerBuilder HasPermission(this RouteHandlerBuilder app, string permission)
     {
         return app.RequireAuthorization(permission);
+    }
+
+    public static RouteHandlerBuilder RequireRoles(this RouteHandlerBuilder app, params string[] roles)
+    {
+        return app.RequireAuthorization(new AuthorizeAttribute { Roles = string.Join(",", roles) });
     }
 }

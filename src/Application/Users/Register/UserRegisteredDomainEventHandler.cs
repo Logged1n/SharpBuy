@@ -41,8 +41,6 @@ internal sealed class UserRegisteredDomainEventHandler : IDomainEventHandler<Use
             return;
         }
 
-        _dbContext.Carts.Add(Cart.Create(user.Id));
-
         DateTime utcNow = _dateTimeProvider.UtcNow;
         var verificationToken = new EmailVerificationToken()
         {

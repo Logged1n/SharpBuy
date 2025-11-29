@@ -1,5 +1,6 @@
-﻿using Application.Abstractions.Messaging;
+using Application.Abstractions.Messaging;
 using Application.Products.Add;
+using Domain.Users;
 using SharedKernel;
 using SharedKernel.ValueObjects;
 using Web.Api.Extensions;
@@ -9,7 +10,7 @@ namespace Web.Api.Endpoints.Products;
 
 public sealed class Add : IEndpoint
 {
-    public sealed record Request(string Name, string Description, int Qunatity, Money price, ICollection<Guid> categoryIds, string MainPhotoPath);
+    public sealed record Request(string Name, string Description, int Quantity, Money Price, ICollection<Guid> CategoryIds, string MainPhotoPath);
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
@@ -21,14 +22,17 @@ public sealed class Add : IEndpoint
             var command = new AddProductCommand(
                 request.Name,
                 request.Description,
-                request.Qunatity,
-                request.price,
-                request.categoryIds,
+                request.Quantity,
+                request.Price,
+                request.CategoryIds,
                 request.MainPhotoPath);
 
             Result<Guid> result = await handler.Handle(command, cancellationToken);
-            return result.Match(Results.Created, CustomResults.Problem);
+            return result.Match(
+                id => Results.Created($"/products/{id}", id),
+                CustomResults.Problem);
         })
-        .WithTags(Tags.Products);
+        .WithTags(Tags.Products)
+        .RequireRoles(Roles.Admin, Roles.Salesman);
     }
 }

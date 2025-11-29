@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
+import { useCart } from '@/lib/cart-context';
 import { Button } from './ui/button';
 import { ThemeToggle } from './theme-toggle';
 import { MobileMenu } from './mobile-menu';
@@ -9,9 +10,10 @@ import { ShoppingCart } from 'lucide-react';
 
 export function Navbar() {
   const { isAuthenticated, logout } = useAuth();
+  const { itemCount } = useCart();
 
   return (
-    <nav className="sticky top-0 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
+    <nav className="sticky top-0 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 z-50">
       <div className="flex h-16 items-center justify-between w-full px-4 md:px-8">
         {/* Left side: Logo and Desktop Navigation */}
         <div className="flex items-center gap-8">
@@ -35,8 +37,20 @@ export function Navbar() {
           </div>
         </div>
 
-        {/* Right side: Theme Toggle, Auth Buttons, Mobile Menu */}
+        {/* Right side: Cart, Theme Toggle, Auth Buttons, Mobile Menu */}
         <div className="flex items-center gap-2 sm:gap-3">
+          {/* Cart Icon with Badge */}
+          <Link href="/cart">
+            <Button variant="ghost" size="icon" className="relative">
+              <ShoppingCart className="h-5 w-5" />
+              {itemCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+                  {itemCount > 99 ? '99+' : itemCount}
+                </span>
+              )}
+            </Button>
+          </Link>
+
           {/* Theme Toggle - visible on all screen sizes */}
           <ThemeToggle />
 

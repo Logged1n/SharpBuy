@@ -90,9 +90,15 @@ public static class DependencyInjection
 
         services.AddHttpContextAccessor();
         services.AddScoped<ITokenProvider, TokenProvider>();
+       
         IConfigurationSection emailOptions = configuration.GetSection("EmailOptions");
+        string smtpConn = configuration.GetConnectionString("papercut");
+        string uriString = smtpConn!.Replace("Endpoint=", "");
+        var uri = new Uri(uriString);
+        string host = uri.Host;
+        int port = uri.Port;
         services.AddFluentEmail(emailOptions["FromAddress"], emailOptions["FromAddress"])
-           .AddSmtpSender(emailOptions["SmtpServer"], emailOptions.GetValue<int>("SmtpPort"));
+           .AddSmtpSender(host, port);
 
         return services;
     }

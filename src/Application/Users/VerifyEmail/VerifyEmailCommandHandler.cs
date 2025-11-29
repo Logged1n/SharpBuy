@@ -1,4 +1,5 @@
-﻿using Application.Abstractions.Data;
+﻿using Application.Abstractions.Authentication;
+using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
 using Domain.Users;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +17,10 @@ internal sealed class VerifyEmailCommandHandler(IApplicationDbContext dbContext,
         if (token is null || token.ExpiresOnUtc < dateTimeProvider.UtcNow || token.User.EmailVerified)
             return Result.Failure(EmailErrors.InvalidToken);
 
+        ApplicationUser user = await dbContext.ApplicationUsers
+            .FirstAsync(u => u.DomainUserId == token.UserId, cancellationToken);
         token.User.VerifyEmail();
+        user.EmailConfirmed = true;
         dbContext.EmailVerificationTokens.Remove(token);
         await dbContext.SaveChangesAsync(cancellationToken);
 

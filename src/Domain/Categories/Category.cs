@@ -1,4 +1,4 @@
-﻿using Domain.ProductCategories;
+using Domain.ProductCategories;
 using Domain.Products;
 using SharedKernel;
 
@@ -47,5 +47,11 @@ public sealed class Category
 
         _products.Remove(productCategory);
         return Result.Success();
+    }
+
+    public void Update(string name)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        Name = name;
     }
 }

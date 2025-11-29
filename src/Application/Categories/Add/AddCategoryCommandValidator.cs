@@ -1,12 +1,11 @@
-﻿using FluentValidation;
+using FluentValidation;
 
 namespace Application.Categories.Add;
+
 internal sealed class AddCategoryCommandValidator : AbstractValidator<AddCategoryCommand>
 {
     public AddCategoryCommandValidator()
     {
-        RuleFor(c => c.Name)
-            .NotEmpty()
-            .MaximumLength(100);
+        RuleFor(x => x.Name).NotEmpty().MaximumLength(100);
     }
 }

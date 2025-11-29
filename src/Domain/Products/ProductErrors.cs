@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,7 +26,24 @@ public static class ProductErrors
         Error.Conflict(
             "Products.NotInCategory",
             $"Product with ID '{productId}' is not in category with ID '{categoryId}'.");
+
     public static readonly Error NoCategoriesAssigned = Error.Conflict(
         "Products.NoCategoriesAssigned",
         "Product must be assigned to at least one category.");
+
+    public static readonly Error InvalidPrice = Error.Problem(
+        "Products.InvalidPrice",
+        "Product price must be greater than zero.");
+
+    public static readonly Error InsufficientStock = Error.Conflict(
+        "Products.InsufficientStock",
+        "Insufficient stock available for this product.");
+
+    public static readonly Error CannotDelete = Error.Conflict(
+        "Products.CannotDelete",
+        "Product cannot be deleted because it has related data.");
+
+    public static readonly Error InvalidCategories = Error.Problem(
+        "Products.InvalidCategories",
+        "One or more specified categories do not exist.");
 }
