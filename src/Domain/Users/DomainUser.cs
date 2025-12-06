@@ -31,9 +31,6 @@ public sealed class DomainUser : Entity
         string phoneNumber)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(email);
-        ArgumentException.ThrowIfNullOrWhiteSpace(firstName);
-        ArgumentException.ThrowIfNullOrWhiteSpace(lastName);
-        ArgumentException.ThrowIfNullOrWhiteSpace(phoneNumber);
 
         var userId = Guid.NewGuid();
         var cart = Cart.Create(userId);

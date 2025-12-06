@@ -11,14 +11,15 @@ public sealed class Cart : Entity
 
     public ICollection<CartItem> Items => _items.AsReadOnly();
     public Guid OwnerId { get; private set; }
-    public Money Total => _items
-            .Select(item => item.TotalPrice)
-            .Aggregate((a, b) => a + b);
+    public Money Total => _items.Count > 0
+            ? _items.Select(item => item.TotalPrice).Aggregate((a, b) => a + b)
+            : Money.Zero("USD");
 
     public static Cart Create(Guid ownerId)
     {
         ArgumentOutOfRangeException.ThrowIfEqual(ownerId, Guid.Empty);
 
+        // Set both Id and OwnerId to the same value since OwnerId is the primary key in the database
         return new Cart { OwnerId = ownerId };
     }
 

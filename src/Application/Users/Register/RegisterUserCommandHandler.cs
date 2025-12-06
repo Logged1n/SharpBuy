@@ -1,6 +1,7 @@
 ﻿using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
+using Domain.Carts;
 using Domain.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -35,19 +36,27 @@ internal sealed class RegisterUserCommandHandler(
         }
 
         context.DomainUsers.Add(domainUser);
+        context.Carts.Add(domainUser.Cart);
         await context.SaveChangesAsync(cancellationToken);
         domainUser.Raise(new UserRegisteredDomainEvent(domainUser.Email));
 
         var appUser = new ApplicationUser
         {
+            Id = domainUser.Id,
             UserName = command.Email,
             Email = command.Email,
+            NormalizedEmail = command.Email.ToUpperInvariant(),
             PhoneNumber = command.PhoneNumber,
             DomainUserId = domainUser.Id,
-            DomainUser = domainUser
+            DomainUser = domainUser,
+            EmailConfirmed = command.EmailConfirmed
         };
-        IdentityResult createResult = await userManager.CreateAsync(appUser, command.Password);
-        IdentityResult addRoleResult = await userManager.AddToRoleAsync(appUser, Roles.Client);
+
+        IdentityResult createResult = command.EmailConfirmed && string.IsNullOrEmpty(command.Password)
+            ? await userManager.CreateAsync(appUser)
+            : await userManager.CreateAsync(appUser, command.Password);
+        ApplicationUser? registeredUser = await userManager.FindByEmailAsync(command.Email);
+        IdentityResult addRoleResult = await userManager.AddToRoleAsync(registeredUser!, Roles.Client);
 
         if (!createResult.Succeeded || !addRoleResult.Succeeded)
         {

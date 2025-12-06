@@ -35,14 +35,16 @@ internal sealed class AddItemToCartCommandHandler(IApplicationDbContext dbContex
         }
 
         // For authenticated users, manage cart in database
+        // Note: Cart should already exist from user registration (DomainUser.Create automatically creates one)
         Cart? cart = await dbContext.Carts
             .Include(c => c.Items)
             .FirstOrDefaultAsync(c => c.OwnerId == command.UserId.Value, cancellationToken);
 
         if (cart is null)
         {
-            cart = Cart.Create(command.UserId.Value);
-            dbContext.Carts.Add(cart);
+            // This should rarely happen, but handle it gracefully
+            // Carts are created during user registration in DomainUser.Create()
+            return Result.Failure(Error.NotFound("Cart.NotFound", "User's cart not found. Please contact support."));
         }
 
         Result addResult = cart.AddCartItem(command.ProductId, product.Price, command.Quantity);

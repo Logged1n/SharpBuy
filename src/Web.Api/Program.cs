@@ -23,7 +23,7 @@ builder.Services.AddEndpoints(Assembly.GetExecutingAssembly());
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy
         .AllowAnyHeader()
         .AllowAnyMethod()
-        .AllowAnyOrigin()));
+        .WithOrigins("http://localhost:3000")));
 
 WebApplication app = builder.Build();
 
@@ -53,9 +53,10 @@ if (app.Environment.IsDevelopment())
 
     app.ApplyMigrations();
     await app.SeedIdentityAsync();
-
-    app.UseCors();
 }
+
+
+app.UseCors();
 
 app.UseRequestContextLogging();
 

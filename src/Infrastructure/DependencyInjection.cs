@@ -9,6 +9,7 @@ using Infrastructure.DomainEvents;
 using Infrastructure.Storage;
 using Infrastructure.Time;
 using Infrastructure.Users;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -72,13 +73,33 @@ public static class DependencyInjection
             options.User.RequireUniqueEmail = true;
             options.Password.RequireDigit = false;
             options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequiredLength = 0;
+            options.Password.RequireLowercase = false;
+            options.Password.RequiredUniqueChars = 0;
+            options.Password.RequireUppercase = false;
             })
             .AddRoles<IdentityRole<Guid>>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddSignInManager()
             .AddDefaultTokenProviders();
 
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        services.AddAuthentication(options => {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+            .AddCookie()
+            .AddGoogle(options =>
+            {
+                string? clientId = configuration["Authentication:Google:ClientId"];
+                string? clientSecret = configuration["Authentication:Google:ClientSecret"];
+                ArgumentNullException.ThrowIfNull(clientId);
+                ArgumentNullException.ThrowIfNull(clientSecret);
+
+                options.ClientId = clientId;
+                options.ClientSecret = clientSecret;
+                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
             .AddJwtBearer(o =>
             {
                 o.RequireHttpsMetadata = false;

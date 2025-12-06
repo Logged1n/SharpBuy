@@ -10,6 +10,7 @@ public sealed record RegisterUserCommand(
     string LastName,
     string Password,
     string PhoneNumber,
-    AddressDto? PrimaryAddress,
-    IReadOnlyCollection<AddressDto>? AdditionalAddresses)
+    AddressDto? PrimaryAddress = null,
+    IReadOnlyCollection<AddressDto>? AdditionalAddresses = null,
+    bool EmailConfirmed = false)
     : ICommand<Guid>;

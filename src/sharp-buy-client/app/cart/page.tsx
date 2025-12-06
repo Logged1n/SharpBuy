@@ -103,8 +103,15 @@ export default function CartPage() {
                 key={item.productId}
                 className="flex gap-4 p-4 border rounded-lg bg-card"
               >
-                {/* Product Image Placeholder */}
-                <div className="w-24 h-24 bg-muted rounded-md flex-shrink-0" />
+                {/* Product Image */}
+                <div className="w-24 h-24 bg-muted rounded-md flex-shrink-0 overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`${process.env.NEXT_PUBLIC_API_URL || 'https://localhost:5001'}${item.mainPhotoPath}`}
+                    alt={item.productName}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
 
                 {/* Product Details */}
                 <div className="flex-1">
