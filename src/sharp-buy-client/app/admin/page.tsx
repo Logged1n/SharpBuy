@@ -25,6 +25,8 @@ function AdminContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
 
   const [productData, setProductData] = useState({
     name: '',
@@ -80,6 +82,17 @@ function AdminContent() {
     }));
   };
 
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setSelectedImageFile(file);
+
+    // Create preview URL
+    const previewUrl = URL.createObjectURL(file);
+    setImagePreviewUrl(previewUrl);
+  };
+
   const resetProductForm = () => {
     setProductData({
       name: '',
@@ -92,6 +105,11 @@ function AdminContent() {
     });
     setShowAddProduct(false);
     setEditingProductId(null);
+    setSelectedImageFile(null);
+    if (imagePreviewUrl) {
+      URL.revokeObjectURL(imagePreviewUrl);
+      setImagePreviewUrl(null);
+    }
   };
 
   const handleEditProduct = (product: ProductListItem) => {
@@ -127,18 +145,21 @@ function AdminContent() {
         });
         setSuccess('Product updated successfully!');
       } else {
-        // Add new product
-        await api.addProduct({
-          name: productData.name,
-          description: productData.description,
-          quantity: productData.quantity,
-          price: {
-            amount: productData.priceAmount,
-            currency: productData.priceCurrency,
+        // Add new product with image
+        await api.addProduct(
+          {
+            name: productData.name,
+            description: productData.description,
+            quantity: productData.quantity,
+            price: {
+              amount: productData.priceAmount,
+              currency: productData.priceCurrency,
+            },
+            categoryIds: productData.categoryIds,
+            mainPhotoPath: productData.mainPhotoPath,
           },
-          categoryIds: productData.categoryIds,
-          mainPhotoPath: productData.mainPhotoPath,
-        });
+          selectedImageFile || undefined
+        );
         setSuccess('Product added successfully!');
       }
       resetProductForm();
@@ -444,6 +465,26 @@ function AdminContent() {
                               placeholder="0"
                               required
                               disabled={isLoading}
+                            />
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="productImage">Product Image</Label>
+                        <Input
+                          id="productImage"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageSelect}
+                          disabled={isLoading}
+                        />
+                        {imagePreviewUrl && (
+                          <div className="mt-2">
+                            <img
+                              src={imagePreviewUrl}
+                              alt="Product preview"
+                              className="h-32 w-32 object-cover rounded-md border"
                             />
                           </div>
                         )}

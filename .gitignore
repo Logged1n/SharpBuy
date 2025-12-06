@@ -398,3 +398,6 @@ FodyWeavers.xsd
 *.sln.iml
 
 .containers/
+
+# Uploaded files
+src/Web.Api/uploads/

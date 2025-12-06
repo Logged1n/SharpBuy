@@ -2,9 +2,11 @@
 using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Emails;
+using Application.Abstractions.Storage;
 using Infrastructure.Authentication;
 using Infrastructure.Database;
 using Infrastructure.DomainEvents;
+using Infrastructure.Storage;
 using Infrastructure.Time;
 using Infrastructure.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -39,6 +41,7 @@ public static class DependencyInjection
         services.AddScoped<IEmailVerificationLinkFactory, EmailVerificationLinkFactory>();
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<IFileStorageService, FileStorageService>();
 
         services.AddTransient<IDomainEventsDispatcher, DomainEventsDispatcher>();
 

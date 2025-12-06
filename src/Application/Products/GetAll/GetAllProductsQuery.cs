@@ -12,4 +12,5 @@ public sealed record ProductListItem(
     decimal PriceAmount,
     string PriceCurrency,
     int StockQuantity,
-    string MainPhotoPath);
+    string MainPhotoPath,
+    ICollection<string> PhotoPaths);

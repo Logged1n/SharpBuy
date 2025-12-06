@@ -1,4 +1,6 @@
+using System.Globalization;
 using Application.Abstractions.Messaging;
+using Application.Abstractions.Storage;
 using Application.Products.Add;
 using Domain.Users;
 using SharedKernel;
@@ -10,22 +12,58 @@ namespace Web.Api.Endpoints.Products;
 
 public sealed class Add : IEndpoint
 {
-    public sealed record Request(string Name, string Description, int Quantity, Money Price, ICollection<Guid> CategoryIds, string MainPhotoPath);
+    private static readonly string[] AllowedExtensions = [".JPG", ".JPEG", ".PNG", ".GIF", ".WEBP"];
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
         app.MapPost("products", async (
-            Request request,
+            HttpRequest httpRequest,
             ICommandHandler<AddProductCommand, Guid> handler,
+            IFileStorageService fileStorageService,
             CancellationToken cancellationToken) =>
         {
-            var command = new AddProductCommand(
-                request.Name,
-                request.Description,
-                request.Quantity,
-                request.Price,
-                request.CategoryIds,
-                request.MainPhotoPath);
+            if (!httpRequest.HasFormContentType)
+                return Results.BadRequest("Request must be multipart/form-data");
+
+            IFormCollection form = await httpRequest.ReadFormAsync(cancellationToken);
+
+            // Read form fields
+            string name = form["name"].ToString();
+            string description = form["description"].ToString();
+            int quantity = int.Parse(form["quantity"].ToString(), CultureInfo.InvariantCulture);
+            decimal priceAmount = decimal.Parse(form["priceAmount"].ToString(), CultureInfo.InvariantCulture);
+            string priceCurrency = form["priceCurrency"].ToString();
+            string categoryIdsStr = form["categoryIds"].ToString();
+
+            List<Guid> categoryIds = string.IsNullOrEmpty(categoryIdsStr)
+                ? []
+                : categoryIdsStr.Split(',').Select(Guid.Parse).ToList();
+
+            // Handle image upload
+            string mainPhotoPath = "/placeholder.jpg";
+            IFormFile? file = form.Files.GetFile("image");
+            if (file != null && file.Length > 0)
+            {
+                // Validate file
+                string extension = Path.GetExtension(file.FileName).ToUpperInvariant();
+
+                if (!AllowedExtensions.Contains(extension))
+                    return Results.BadRequest("Invalid file type. Only images are allowed.");
+
+                if (file.Length > 5 * 1024 * 1024)
+                    return Results.BadRequest("File size exceeds 5MB limit");
+
+                using Stream stream = file.OpenReadStream();
+                mainPhotoPath = await fileStorageService.SaveProductImageAsync(stream, file.FileName, cancellationToken);
+            }
+
+            AddProductCommand command = new(
+                name,
+                description,
+                quantity,
+                new Money(priceAmount, priceCurrency),
+                categoryIds,
+                mainPhotoPath);
 
             Result<Guid> result = await handler.Handle(command, cancellationToken);
             return result.Match(

@@ -77,6 +77,7 @@ export interface ProductListItem {
   priceCurrency: string;
   stockQuantity: number;
   mainPhotoPath: string;
+  photoPaths: string[];
 }
 
 export interface AddProductRequest {
@@ -244,11 +245,29 @@ class ApiClient {
     return this.handleResponse<Product>(response);
   }
 
-  async addProduct(data: AddProductRequest): Promise<string> {
+  async addProduct(data: AddProductRequest, imageFile?: File): Promise<string> {
+    const formData = new FormData();
+    formData.append('name', data.name);
+    formData.append('description', data.description);
+    formData.append('quantity', data.quantity.toString());
+    formData.append('priceAmount', data.price.amount.toString());
+    formData.append('priceCurrency', data.price.currency);
+    formData.append('categoryIds', data.categoryIds.join(','));
+
+    if (imageFile) {
+      formData.append('image', imageFile);
+    }
+
+    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+    const headers: HeadersInit = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const response = await fetch(`${this.baseUrl}/products`, {
       method: 'POST',
-      headers: this.getHeaders(true),
-      body: JSON.stringify(data),
+      headers,
+      body: formData,
     });
 
     return this.handleResponse<string>(response);
@@ -271,6 +290,25 @@ class ApiClient {
     });
 
     return this.handleResponse<void>(response);
+  }
+
+  async uploadProductImage(file: File): Promise<{ path: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+    const headers: HeadersInit = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${this.baseUrl}/products/upload-image`, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+
+    return this.handleResponse<{ path: string }>(response);
   }
 
   // Categories

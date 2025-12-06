@@ -2,6 +2,7 @@ using System.Reflection;
 using Application;
 using Infrastructure;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.FileProviders;
 using Web.Api;
 using Web.Api.Extensions;
 
@@ -29,6 +30,22 @@ WebApplication app = builder.Build();
 app.MapDefaultEndpoints();
 
 app.MapEndpoints();
+
+// Serve static files from wwwroot
+app.UseStaticFiles();
+
+// Serve uploaded files from the uploads directory
+string uploadsPath = Path.Combine(builder.Environment.ContentRootPath, "uploads");
+if (!Directory.Exists(uploadsPath))
+{
+    Directory.CreateDirectory(uploadsPath);
+}
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(uploadsPath),
+    RequestPath = "/uploads"
+});
 
 if (app.Environment.IsDevelopment())
 {
