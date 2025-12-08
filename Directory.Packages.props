@@ -41,7 +41,7 @@
     <PackageVersion Include="Testcontainers.PostgreSql" Version="4.2.0" />
     <PackageVersion Include="Respawn" Version="6.2.1" />
     <!--Aspire AppHost-->
-    <PackageVersion Include="Aspire.Hosting.AppHost" Version="9.5.2" />
+    <PackageVersion Include="Aspire.Hosting.AppHost" Version="13.0.2" />
     <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="9.5.2" />
     <PackageVersion Include="CommunityToolkit.Aspire.Hosting.PapercutSmtp" Version="9.9.0" />
     <!--Aspire ServiceDefaults-->
