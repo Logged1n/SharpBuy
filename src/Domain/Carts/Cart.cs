@@ -62,4 +62,10 @@ public sealed class Cart : Entity
         return Result.Success();
     }
 
+    public Result Clear()
+    {
+        _items.Clear();
+        return Result.Success();
+    }
+
 }

@@ -25,6 +25,7 @@
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.10" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.10" />
     <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.2" />
+    <PackageVersion Include="Stripe.net" Version="50.0.0" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="9.0.6" />
     <!-- Testing -->
     <PackageVersion Include="Shouldly" Version="4.3.0" />

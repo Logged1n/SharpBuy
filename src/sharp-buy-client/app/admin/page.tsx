@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Package, Plus, AlertCircle, CheckCircle, Trash2, Edit, X } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { AdminOrdersTab } from '@/components/admin-orders-tab';
 
 function AdminContent() {
   const { user } = useAuth();
@@ -330,11 +331,12 @@ function AdminContent() {
             </div>
           )}
 
-          {/* Tabs for Products and Categories */}
+          {/* Tabs for Products, Categories, and Orders */}
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="products">Products</TabsTrigger>
               <TabsTrigger value="categories">Categories</TabsTrigger>
+              <TabsTrigger value="orders">Orders</TabsTrigger>
             </TabsList>
 
             {/* Products Tab */}
@@ -693,6 +695,11 @@ function AdminContent() {
                   )}
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            {/* Orders Tab */}
+            <TabsContent value="orders" className="space-y-4">
+              <AdminOrdersTab />
             </TabsContent>
           </Tabs>
         </div>

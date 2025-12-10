@@ -4,6 +4,11 @@ namespace Domain.Orders;
 
 public static class OrderErrors
 {
+    public static Error NotFound(Guid orderId) =>
+        Error.NotFound(
+            "Order.NotFound",
+            $"The order with ID '{orderId}' was not found.");
+
     public static Error ItemAlreadyExists(Guid productId) =>
         Error.Conflict(
             "Order.ItemAlreadyExists",

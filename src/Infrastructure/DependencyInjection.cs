@@ -2,10 +2,12 @@
 using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Emails;
+using Application.Abstractions.Payments;
 using Application.Abstractions.Storage;
 using Infrastructure.Authentication;
 using Infrastructure.Database;
 using Infrastructure.DomainEvents;
+using Infrastructure.Payments;
 using Infrastructure.Storage;
 using Infrastructure.Time;
 using Infrastructure.Users;
@@ -43,6 +45,7 @@ public static class DependencyInjection
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IFileStorageService, FileStorageService>();
+        services.AddScoped<IPaymentService, StripePaymentService>();
 
         services.AddTransient<IDomainEventsDispatcher, DomainEventsDispatcher>();
 

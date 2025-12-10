@@ -145,6 +145,60 @@ export interface UpdateCartItemQuantityRequest {
   quantity: number;
 }
 
+// Order types
+export enum OrderStatus {
+  Open = 0,
+  Confirmed = 1,
+  Shipped = 2,
+  Arrived = 3,
+  Collected = 4,
+  Completed = 5,
+  Returning = 6,
+  Cancelled = 7,
+}
+
+export interface OrderItem {
+  id: string;
+  productId: string;
+  productName: string;
+  unitPriceAmount: number;
+  unitPriceCurrency: string;
+  quantity: number;
+  totalPriceAmount: number;
+  totalPriceCurrency: string;
+}
+
+export interface OrderAddress {
+  line1: string;
+  line2?: string | null;
+  city: string;
+  postalCode: string;
+  country: string;
+}
+
+export interface Order {
+  id: string;
+  userId: string;
+  userFirstName: string;
+  userLastName: string;
+  userEmail: string;
+  createdAt: string;
+  modifiedAt: string;
+  completedAt?: string | null;
+  status: OrderStatus;
+  shippingAddressId?: string | null;
+  billingAddressId?: string | null;
+  shippingAddress?: OrderAddress | null;
+  billingAddress?: OrderAddress | null;
+  totalAmount: number;
+  totalCurrency: string;
+  items: OrderItem[];
+}
+
+export interface UpdateOrderStatusRequest {
+  newStatus: OrderStatus;
+}
+
 class ApiClient {
   private baseUrl: string;
 
@@ -402,6 +456,60 @@ class ApiClient {
     const response = await fetch(`${this.baseUrl}/carts`, {
       method: 'DELETE',
       headers: this.getHeaders(true),
+    });
+
+    return this.handleResponse<void>(response);
+  }
+
+  // Orders
+  async createPaymentIntent(): Promise<{ clientSecret: string }> {
+    const response = await fetch(`${this.baseUrl}/orders/payment-intent`, {
+      method: 'POST',
+      headers: this.getHeaders(true),
+    });
+
+    return this.handleResponse<{ clientSecret: string }>(response);
+  }
+
+  async placeOrder(data: {
+    shippingAddressId?: string | null;
+    billingAddressId?: string | null;
+    shippingAddress?: OrderAddress | null;
+    billingAddress?: OrderAddress | null;
+    paymentIntentId: string;
+  }): Promise<string> {
+    const response = await fetch(`${this.baseUrl}/orders`, {
+      method: 'POST',
+      headers: this.getHeaders(true),
+      body: JSON.stringify(data),
+    });
+
+    return this.handleResponse<string>(response);
+  }
+
+  async getOrders(page: number = 1, pageSize: number = 20): Promise<PagedResult<Order>> {
+    const response = await fetch(`${this.baseUrl}/orders?page=${page}&pageSize=${pageSize}`, {
+      method: 'GET',
+      headers: this.getHeaders(true),
+    });
+
+    return this.handleResponse<PagedResult<Order>>(response);
+  }
+
+  async getOrder(id: string): Promise<Order> {
+    const response = await fetch(`${this.baseUrl}/orders/${id}`, {
+      method: 'GET',
+      headers: this.getHeaders(true),
+    });
+
+    return this.handleResponse<Order>(response);
+  }
+
+  async updateOrderStatus(id: string, data: UpdateOrderStatusRequest): Promise<void> {
+    const response = await fetch(`${this.baseUrl}/orders/${id}/status`, {
+      method: 'PUT',
+      headers: this.getHeaders(true),
+      body: JSON.stringify(data),
     });
 
     return this.handleResponse<void>(response);

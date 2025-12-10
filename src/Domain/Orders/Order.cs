@@ -21,7 +21,7 @@ public sealed class Order : Entity
     public Money Total { get; private set; }
     public IReadOnlyCollection<OrderItem> Items => _items.AsReadOnly();
 
-    public Order Create(Guid userId, Guid shippingAddressId, Guid? billingAddressId = null)
+    public static Order Create(Guid userId, Guid shippingAddressId, Guid? billingAddressId = null)
     {
         ArgumentOutOfRangeException.ThrowIfEqual(userId, Guid.Empty);
         ArgumentOutOfRangeException.ThrowIfEqual(shippingAddressId, Guid.Empty);
@@ -62,11 +62,18 @@ public sealed class Order : Entity
         if (Status == OrderStatus.Completed || Status == OrderStatus.Cancelled)
             return Result.Failure(OrderErrors.AlreadyFinished);
 
+        OrderStatus oldStatus = Status;
         Status = status;
         ModifiedAt = DateTime.UtcNow;
 
         if (status == OrderStatus.Completed)
             CompletedAt = DateTime.UtcNow;
+
+        if (status == OrderStatus.Confirmed)
+            Raise(new OrderPlacedDomainEvent(Id, UserId));
+
+        if (oldStatus != OrderStatus.Open || status != OrderStatus.Confirmed)
+            Raise(new OrderStatusChangedDomainEvent(Id, UserId, oldStatus, status));
 
         return Result.Success();
     }

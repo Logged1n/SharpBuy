@@ -22,4 +22,8 @@ public static class CartErrors
     public static readonly Error InsufficientStock = Error.Conflict(
         "Cart.InsufficientStock",
         "Requested quantity exceeds available stock.");
+
+    public static readonly Error EmptyCart = Error.Problem(
+        "Cart.EmptyCart",
+        "Cannot place order with an empty cart.");
 }
