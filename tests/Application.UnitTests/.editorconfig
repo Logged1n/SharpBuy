@@ -1,0 +1,3 @@
+[*.cs]
+# Allow var in test projects
+dotnet_diagnostic.IDE0008.severity = none

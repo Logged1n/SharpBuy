@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, ShoppingCart, AlertCircle, Package } from 'lucide-react';
+import { ProductReviews } from '@/components/ProductReviews';
 // Removed Image import - using regular img tags for uploaded images
 
 export default function ProductDetailPage() {
@@ -295,6 +296,11 @@ export default function ProductDetailPage() {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Product Reviews Section */}
+        <div className="mt-12">
+          <ProductReviews productId={product.id} />
         </div>
       </div>
     </div>

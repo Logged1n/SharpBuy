@@ -199,6 +199,23 @@ export interface UpdateOrderStatusRequest {
   newStatus: OrderStatus;
 }
 
+// Review types
+export interface Review {
+  id: string;
+  score: number;
+  title: string;
+  description?: string | null;
+  createdAt: string;
+  userName: string;
+}
+
+export interface AddReviewRequest {
+  productId: string;
+  score: number;
+  title: string;
+  description?: string | null;
+}
+
 class ApiClient {
   private baseUrl: string;
 
@@ -544,6 +561,26 @@ class ApiClient {
     });
 
     return this.handleResponse<void>(response);
+  }
+
+  // Reviews
+  async getProductReviews(productId: string): Promise<Review[]> {
+    const response = await fetch(`${this.baseUrl}/products/${productId}/reviews`, {
+      method: 'GET',
+      headers: this.getHeaders(),
+    });
+
+    return this.handleResponse<Review[]>(response);
+  }
+
+  async addReview(data: AddReviewRequest): Promise<string> {
+    const response = await fetch(`${this.baseUrl}/reviews`, {
+      method: 'POST',
+      headers: this.getHeaders(true),
+      body: JSON.stringify(data),
+    });
+
+    return this.handleResponse<string>(response);
   }
 }
 
