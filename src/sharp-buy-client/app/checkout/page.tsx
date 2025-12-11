@@ -20,6 +20,9 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // User's saved address ID from profile
+  const [userAddressId, setUserAddressId] = useState<string | null>(null);
+
   // Shipping address form
   const [shippingAddress, setShippingAddress] = useState({
     line1: '',
@@ -67,6 +70,23 @@ export default function CheckoutPage() {
         return;
       }
 
+      // Load user profile to auto-populate address
+      try {
+        const profile = await api.getUserProfile();
+        if (profile.address && profile.addressId) {
+          setUserAddressId(profile.addressId);
+          setShippingAddress({
+            line1: profile.address.line1,
+            line2: profile.address.line2 || '',
+            city: profile.address.city,
+            postalCode: profile.address.postalCode,
+            country: profile.address.country,
+          });
+        }
+      } catch (profileErr) {
+        console.log('Could not load user profile, using empty address');
+      }
+
       // Create payment intent on Stripe
       const { clientSecret: secret } = await api.createPaymentIntent();
       setClientSecret(secret);
@@ -96,12 +116,13 @@ export default function CheckoutPage() {
 
   const handlePaymentSuccess = async (paymentIntentId: string) => {
     try {
-      // Place order with addresses and confirmed payment intent ID
+      // If user has saved address and didn't modify it, send address ID
+      // Otherwise send the full address object to create a new one
       const orderId = await api.placeOrder({
-        shippingAddressId: null,
-        billingAddressId: null,
-        shippingAddress: shippingAddress,
-        billingAddress: useSameAddress ? null : billingAddress,
+        shippingAddressId: userAddressId,
+        billingAddressId: useSameAddress ? userAddressId : null,
+        shippingAddress: userAddressId ? null : shippingAddress,
+        billingAddress: useSameAddress ? null : (userAddressId ? null : billingAddress),
         paymentIntentId: paymentIntentId,
       });
 
@@ -114,6 +135,11 @@ export default function CheckoutPage() {
 
   const handlePaymentError = (errorMessage: string) => {
     setError(errorMessage);
+  };
+
+  const handleShippingAddressChange = (field: keyof typeof shippingAddress, value: string) => {
+    setShippingAddress({ ...shippingAddress, [field]: value });
+    setUserAddressId(null); // User modified address, create new one
   };
 
   if (authLoading || loading) {
@@ -152,7 +178,7 @@ export default function CheckoutPage() {
                 <Input
                   id="shipping-line1"
                   value={shippingAddress.line1}
-                  onChange={(e) => setShippingAddress({ ...shippingAddress, line1: e.target.value })}
+                  onChange={(e) => handleShippingAddressChange('line1', e.target.value)}
                   disabled={showPayment}
                   required
                 />
@@ -162,7 +188,7 @@ export default function CheckoutPage() {
                 <Input
                   id="shipping-line2"
                   value={shippingAddress.line2}
-                  onChange={(e) => setShippingAddress({ ...shippingAddress, line2: e.target.value })}
+                  onChange={(e) => handleShippingAddressChange('line2', e.target.value)}
                   disabled={showPayment}
                 />
               </div>
@@ -172,7 +198,7 @@ export default function CheckoutPage() {
                   <Input
                     id="shipping-city"
                     value={shippingAddress.city}
-                    onChange={(e) => setShippingAddress({ ...shippingAddress, city: e.target.value })}
+                    onChange={(e) => handleShippingAddressChange('city', e.target.value)}
                     disabled={showPayment}
                     required
                   />
@@ -182,7 +208,7 @@ export default function CheckoutPage() {
                   <Input
                     id="shipping-postalCode"
                     value={shippingAddress.postalCode}
-                    onChange={(e) => setShippingAddress({ ...shippingAddress, postalCode: e.target.value })}
+                    onChange={(e) => handleShippingAddressChange('postalCode', e.target.value)}
                     disabled={showPayment}
                     required
                   />
@@ -193,7 +219,7 @@ export default function CheckoutPage() {
                 <Input
                   id="shipping-country"
                   value={shippingAddress.country}
-                  onChange={(e) => setShippingAddress({ ...shippingAddress, country: e.target.value })}
+                  onChange={(e) => handleShippingAddressChange('country', e.target.value)}
                   disabled={showPayment}
                   required
                 />

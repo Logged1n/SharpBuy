@@ -1,16 +1,40 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/auth';
 import { useCart } from '@/lib/cart-context';
 import { Button } from './ui/button';
 import { ThemeToggle } from './theme-toggle';
 import { MobileMenu } from './mobile-menu';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, User } from 'lucide-react';
+import { api } from '@/lib/api';
 
 export function Navbar() {
   const { isAuthenticated, logout } = useAuth();
   const { itemCount } = useCart();
+  const [hasAdminAccess, setHasAdminAccess] = useState(false);
+
+  useEffect(() => {
+    const checkAdminAccess = async () => {
+      if (!isAuthenticated) {
+        setHasAdminAccess(false);
+        return;
+      }
+
+      try {
+        const permissions = await api.getPermissions();
+        const isAdmin = permissions.some(p =>
+          p === 'products:write' || p === 'categories:write' || p === 'orders:write'
+        );
+        setHasAdminAccess(isAdmin);
+      } catch (error) {
+        setHasAdminAccess(false);
+      }
+    };
+
+    checkAdminAccess();
+  }, [isAuthenticated]);
 
   return (
     <nav className="sticky top-0 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 z-50">
@@ -58,11 +82,19 @@ export function Navbar() {
           <div className="hidden md:flex items-center gap-2">
             {isAuthenticated ? (
               <>
-                <Link href="/admin">
+                <Link href="/profile">
                   <Button variant="ghost" size="sm">
-                    Admin
+                    <User className="h-4 w-4 mr-2" />
+                    Profile
                   </Button>
                 </Link>
+                {hasAdminAccess && (
+                  <Link href="/admin">
+                    <Button variant="ghost" size="sm">
+                      Admin
+                    </Button>
+                  </Link>
+                )}
                 <Button variant="outline" size="sm" onClick={logout}>
                   Logout
                 </Button>

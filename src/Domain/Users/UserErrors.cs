@@ -31,4 +31,12 @@ public static class UserErrors
     public static readonly Error EmailAlreadyVerified = Error.Conflict(
         "Users.EmailAlreadyVerified",
         "The email is already verified.");
+
+    public static readonly Error InvalidFirstName = Error.Problem(
+        "Users.InvalidFirstName",
+        "First name is required");
+
+    public static readonly Error InvalidLastName = Error.Problem(
+        "Users.InvalidLastName",
+        "Last name is required");
 }

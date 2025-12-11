@@ -68,4 +68,18 @@ public sealed class DomainUser : Entity
 
         return Result.Success();
     }
+
+    public Result Update(string firstName, string lastName)
+    {
+        if (string.IsNullOrWhiteSpace(firstName))
+            return Result.Failure(UserErrors.InvalidFirstName);
+
+        if (string.IsNullOrWhiteSpace(lastName))
+            return Result.Failure(UserErrors.InvalidLastName);
+
+        FirstName = firstName;
+        LastName = lastName;
+
+        return Result.Success();
+    }
 }

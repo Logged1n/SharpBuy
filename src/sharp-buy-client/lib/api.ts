@@ -280,6 +280,37 @@ class ApiClient {
     return this.handleResponse<string[]>(response);
   }
 
+  async getUserProfile(): Promise<{
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    addressId?: string | null;
+    address?: AddressDto | null;
+  }> {
+    const response = await fetch(`${this.baseUrl}/users/profile`, {
+      method: 'GET',
+      headers: this.getHeaders(true),
+    });
+
+    return this.handleResponse(response);
+  }
+
+  async updateUserProfile(data: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    address?: AddressDto | null;
+  }): Promise<void> {
+    const response = await fetch(`${this.baseUrl}/users/profile`, {
+      method: 'PUT',
+      headers: this.getHeaders(true),
+      body: JSON.stringify(data),
+    });
+
+    return this.handleResponse<void>(response);
+  }
+
   // Products
   async getProducts(page: number = 1, pageSize: number = 100): Promise<PagedResult<ProductListItem>> {
     const response = await fetch(`${this.baseUrl}/products?page=${page}&pageSize=${pageSize}`, {
