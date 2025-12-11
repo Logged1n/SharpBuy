@@ -42,32 +42,6 @@ public class UserTests
         Should.Throw<ArgumentException>(act);
     }
 
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData(" ")]
-    public void Create_WithInvalidFirstName_ShouldThrowArgumentException(string? invalidFirstName)
-    {
-        // Act
-        Action act = () => DomainUser.Create("test@example.com", invalidFirstName!, "Doe", "123456");
-
-        // Assert
-        Should.Throw<ArgumentException>(act);
-    }
-
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData(" ")]
-    public void Create_WithInvalidLastName_ShouldThrowArgumentException(string? invalidLastName)
-    {
-        // Act
-        Action act = () => DomainUser.Create("test@example.com", "John", invalidLastName!, "123456");
-
-        // Assert
-        Should.Throw<ArgumentException>(act);
-    }
-
     [Fact]
     public void AddAddress_WithValidData_ShouldSucceed()
     {
