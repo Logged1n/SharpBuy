@@ -3,11 +3,13 @@ using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Emails;
 using Application.Abstractions.Payments;
+using Application.Abstractions.Reporting;
 using Application.Abstractions.Storage;
 using Infrastructure.Authentication;
 using Infrastructure.Database;
 using Infrastructure.DomainEvents;
 using Infrastructure.Payments;
+using Infrastructure.Reporting;
 using Infrastructure.Storage;
 using Infrastructure.Time;
 using Infrastructure.Users;
@@ -46,13 +48,16 @@ public static class DependencyInjection
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IFileStorageService, FileStorageService>();
         services.AddScoped<IPaymentService, StripePaymentService>();
+        services.AddScoped<IPdfGenerator, RazorPdfGenerator>();
 
         services.AddTransient<IDomainEventsDispatcher, DomainEventsDispatcher>();
 
         return services;
     }
 
+#pragma warning disable S1172 // Unused method parameters should be removed
     private static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
+#pragma warning restore S1172 // Unused method parameters should be removed
     {
         string? connectionString = configuration.GetConnectionString("SharpBuy");
 

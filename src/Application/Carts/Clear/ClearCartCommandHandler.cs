@@ -20,7 +20,7 @@ internal sealed class ClearCartCommandHandler(IApplicationDbContext dbContext)
             return Result.Failure(CartErrors.CartNotFound(command.UserId));
         }
 
-        cart.Items.Clear();
+        cart.Clear();
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return Result.Success();

@@ -216,6 +216,74 @@ export interface AddReviewRequest {
   description?: string | null;
 }
 
+// Analytics types
+export type Granularity = 'Day' | 'Week' | 'Month';
+
+export interface AnalyticsRequest {
+  startDate: string;
+  endDate: string;
+  granularity: Granularity;
+}
+
+export interface SalesDataPoint {
+  date: string;
+  revenue: number;
+  orderCount: number;
+}
+
+export interface SalesAnalyticsResponse {
+  totalRevenue: number;
+  totalOrders: number;
+  averageOrderValue: number;
+  growthPercentage: number;
+  dataPoints: SalesDataPoint[];
+}
+
+export interface ProductPerformance {
+  productId: string;
+  productName: string;
+  quantitySold: number;
+  revenue: number;
+  period: string | null;
+}
+
+export interface ProductAnalyticsResponse {
+  totalProductsSold: number;
+  totalRevenue: number;
+  topProducts: ProductPerformance[];
+  productPerformanceByPeriod: ProductPerformance[];
+}
+
+export interface CustomerDataPoint {
+  date: string;
+  newCustomers: number;
+  returningCustomers: number;
+}
+
+export interface CustomerAnalyticsResponse {
+  totalCustomers: number;
+  newCustomers: number;
+  returningCustomers: number;
+  averageCustomerValue: number;
+  dataPoints: CustomerDataPoint[];
+}
+
+export interface OrderDataPoint {
+  date: string;
+  completed: number;
+  pending: number;
+  cancelled: number;
+}
+
+export interface OrderAnalyticsResponse {
+  totalOrders: number;
+  completedOrders: number;
+  pendingOrders: number;
+  cancelledOrders: number;
+  completionRate: number;
+  dataPoints: OrderDataPoint[];
+}
+
 class ApiClient {
   private baseUrl: string;
 
@@ -581,6 +649,103 @@ class ApiClient {
     });
 
     return this.handleResponse<string>(response);
+  }
+
+  // Analytics
+  async getSalesAnalytics(request: AnalyticsRequest): Promise<SalesAnalyticsResponse> {
+    const response = await fetch(`${this.baseUrl}/analytics/sales`, {
+      method: 'POST',
+      headers: this.getHeaders(true),
+      body: JSON.stringify(request),
+    });
+
+    return this.handleResponse<SalesAnalyticsResponse>(response);
+  }
+
+  async getProductAnalytics(request: AnalyticsRequest): Promise<ProductAnalyticsResponse> {
+    const response = await fetch(`${this.baseUrl}/analytics/products`, {
+      method: 'POST',
+      headers: this.getHeaders(true),
+      body: JSON.stringify(request),
+    });
+
+    return this.handleResponse<ProductAnalyticsResponse>(response);
+  }
+
+  async getCustomerAnalytics(request: AnalyticsRequest): Promise<CustomerAnalyticsResponse> {
+    const response = await fetch(`${this.baseUrl}/analytics/customers`, {
+      method: 'POST',
+      headers: this.getHeaders(true),
+      body: JSON.stringify(request),
+    });
+
+    return this.handleResponse<CustomerAnalyticsResponse>(response);
+  }
+
+  async getOrderAnalytics(request: AnalyticsRequest): Promise<OrderAnalyticsResponse> {
+    const response = await fetch(`${this.baseUrl}/analytics/orders`, {
+      method: 'POST',
+      headers: this.getHeaders(true),
+      body: JSON.stringify(request),
+    });
+
+    return this.handleResponse<OrderAnalyticsResponse>(response);
+  }
+
+  async downloadSalesReport(request: AnalyticsRequest): Promise<Blob> {
+    const response = await fetch(`${this.baseUrl}/analytics/reports/sales`, {
+      method: 'POST',
+      headers: this.getHeaders(true),
+      body: JSON.stringify(request),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to download sales report');
+    }
+
+    return response.blob();
+  }
+
+  async downloadProductReport(request: AnalyticsRequest): Promise<Blob> {
+    const response = await fetch(`${this.baseUrl}/analytics/reports/products`, {
+      method: 'POST',
+      headers: this.getHeaders(true),
+      body: JSON.stringify(request),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to download product report');
+    }
+
+    return response.blob();
+  }
+
+  async downloadCustomerReport(request: AnalyticsRequest): Promise<Blob> {
+    const response = await fetch(`${this.baseUrl}/analytics/reports/customers`, {
+      method: 'POST',
+      headers: this.getHeaders(true),
+      body: JSON.stringify(request),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to download customer report');
+    }
+
+    return response.blob();
+  }
+
+  async downloadOrderReport(request: AnalyticsRequest): Promise<Blob> {
+    const response = await fetch(`${this.baseUrl}/analytics/reports/orders`, {
+      method: 'POST',
+      headers: this.getHeaders(true),
+      body: JSON.stringify(request),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to download order report');
+    }
+
+    return response.blob();
   }
 }
 

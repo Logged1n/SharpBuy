@@ -11,8 +11,25 @@ public static class MigrationExtensions
     {
         using IServiceScope scope = app.ApplicationServices.CreateScope();
         using ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        dbContext.Database.Migrate();
-        SeedData(dbContext);
+
+        // Retry logic for database connection
+        int maxRetries = 10;
+        int delayMs = 1000;
+
+        for (int i = 0; i < maxRetries; i++)
+        {
+            try
+            {
+                dbContext.Database.Migrate();
+                SeedData(dbContext);
+                return;
+            }
+            catch (Exception ex) when (i < maxRetries - 1)
+            {
+                Console.WriteLine($"Migration attempt {i + 1} failed: {ex.Message}. Retrying in {delayMs}ms...");
+                Thread.Sleep(delayMs);
+            }
+        }
     }
 
     private static void SeedData(ApplicationDbContext dbContext)

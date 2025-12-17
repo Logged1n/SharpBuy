@@ -12,6 +12,10 @@ public static class DependencyInjection
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
 
+        // Add Razor view engine for PDF generation
+        services.AddControllersWithViews()
+            .AddRazorRuntimeCompilation();
+
         return services;
     }
 }

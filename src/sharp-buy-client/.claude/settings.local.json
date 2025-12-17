@@ -5,7 +5,16 @@
       "Bash(dotnet build:*)",
       "Bash(npm run build:*)",
       "Bash(find:*)",
-      "Bash(dotnet test:*)"
+      "Bash(dotnet test:*)",
+      "Bash(dotnet restore:*)",
+      "Bash(Select-String -Pattern \"error|succeeded\")",
+      "Bash(Select-Object -First 50)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(npm install:*)",
+      "Bash(dotnet new:*)",
+      "Bash(dotnet sln:*)",
+      "Bash(dotnet run:*)",
+      "Bash(taskkill:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,0 +1,160 @@
+@model Application.Analytics.OrderAnalyticsResponse
+@{
+    var startDate = Model.DataPoints.FirstOrDefault()?.Date ?? DateTime.Now;
+    var endDate = Model.DataPoints.LastOrDefault()?.Date ?? DateTime.Now;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Order Analytics Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #EF4444;
+            padding-bottom: 20px;
+        }
+        .header h1 {
+            color: #EF4444;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .summary-card {
+            background: #F9FAFB;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #EF4444;
+        }
+        .summary-card h3 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .summary-card .value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #111;
+        }
+        .chart-section {
+            margin-bottom: 40px;
+        }
+        .chart-section h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #111;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        thead {
+            background: #EF4444;
+            color: white;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #E5E7EB;
+        }
+        th {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        td {
+            font-size: 13px;
+        }
+        tbody tr:hover {
+            background: #F9FAFB;
+        }
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            border-top: 1px solid #E5E7EB;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Order Analytics Report</h1>
+        <p>Period: @startDate.ToString("MMM dd, yyyy") - @endDate.ToString("MMM dd, yyyy")</p>
+        <p>Generated: @DateTime.Now.ToString("MMM dd, yyyy HH:mm")</p>
+    </div>
+
+    <div class="summary">
+        <div class="summary-card">
+            <h3>Total Orders</h3>
+            <div class="value">@Model.TotalOrders</div>
+        </div>
+        <div class="summary-card">
+            <h3>Completed Orders</h3>
+            <div class="value">@Model.CompletedOrders</div>
+        </div>
+        <div class="summary-card">
+            <h3>Pending Orders</h3>
+            <div class="value">@Model.PendingOrders</div>
+        </div>
+        <div class="summary-card">
+            <h3>Completion Rate</h3>
+            <div class="value">@Model.CompletionRate.ToString("N2")%</div>
+        </div>
+    </div>
+
+    <div class="chart-section">
+        <h2>Order Status by Period</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Completed</th>
+                    <th>Pending</th>
+                    <th>Cancelled</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var dataPoint in Model.DataPoints)
+                {
+                    <tr>
+                        <td>@dataPoint.Date.ToString("MMM dd, yyyy")</td>
+                        <td>@dataPoint.Completed</td>
+                        <td>@dataPoint.Pending</td>
+                        <td>@dataPoint.Cancelled</td>
+                        <td>@(dataPoint.Completed + dataPoint.Pending + dataPoint.Cancelled)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer">
+        <p>SharpBuy Analytics Report - Confidential</p>
+    </div>
+</body>
+</html>

@@ -17,7 +17,8 @@
 	<InternalsVisibleTo Include="Application.UnitTests" />
 	<InternalsVisibleTo Include="Application.IntegrationTests" />
 	<InternalsVisibleTo Include="Infrastructure.IntegrationTests" />
-	  <InternalsVisibleTo Include="Web.Api.IntegrationTests" />
+	<InternalsVisibleTo Include="Web.Api.IntegrationTests" />
+	<InternalsVisibleTo Include="Performance.Benchmarks" />
   </ItemGroup>
 
 </Project>
