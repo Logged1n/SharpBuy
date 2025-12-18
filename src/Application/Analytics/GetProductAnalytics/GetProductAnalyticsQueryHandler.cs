@@ -12,15 +12,30 @@ internal sealed class GetProductAnalyticsQueryHandler(
         GetProductAnalyticsQuery query,
         CancellationToken cancellationToken)
     {
-        List<OrderItemInfo> orderItems = await dbContext.Orders
+        // Fetch orders with their items in a single query
+        var orders = await dbContext.Orders
             .AsNoTracking()
             .Where(o => o.CreatedAt >= query.StartDate && o.CreatedAt <= query.EndDate)
+            .Select(o => new
+            {
+                o.CreatedAt,
+                Items = o.Items.Select(oi => new
+                {
+                    oi.ProductId,
+                    oi.Quantity,
+                    TotalAmount = oi.TotalPrice.Amount
+                }).ToList()
+            })
+            .ToListAsync(cancellationToken);
+
+        // Flatten to OrderItemInfo in memory
+        var orderItems = orders
             .SelectMany(o => o.Items.Select(oi => new OrderItemInfo(
                 oi.ProductId,
                 o.CreatedAt,
                 oi.Quantity,
-                oi.TotalPrice.Amount)))
-            .ToListAsync(cancellationToken);
+                oi.TotalAmount)))
+            .ToList();
 
         if (orderItems.Count == 0)
         {

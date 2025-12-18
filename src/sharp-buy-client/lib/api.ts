@@ -225,6 +225,23 @@ export interface AnalyticsRequest {
   granularity: Granularity;
 }
 
+export type PdfJobState = 'Pending' | 'Processing' | 'Completed' | 'Failed';
+
+export interface PdfJobStatus {
+  jobId: string;
+  state: PdfJobState;
+  pdfCacheKey: string | null;
+  errorMessage: string | null;
+  createdAt: string;
+  completedAt: string | null;
+}
+
+export interface PdfJobResponse {
+  jobId: string;
+  message: string;
+  statusUrl: string;
+}
+
 export interface SalesDataPoint {
   date: string;
   revenue: number;
@@ -692,7 +709,7 @@ class ApiClient {
     return this.handleResponse<OrderAnalyticsResponse>(response);
   }
 
-  async downloadSalesReport(request: AnalyticsRequest): Promise<Blob> {
+  async downloadSalesReport(request: AnalyticsRequest): Promise<PdfJobResponse> {
     const response = await fetch(`${this.baseUrl}/analytics/reports/sales`, {
       method: 'POST',
       headers: this.getHeaders(true),
@@ -700,13 +717,13 @@ class ApiClient {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to download sales report');
+      throw new Error('Failed to start sales report generation');
     }
 
-    return response.blob();
+    return response.json();
   }
 
-  async downloadProductReport(request: AnalyticsRequest): Promise<Blob> {
+  async downloadProductReport(request: AnalyticsRequest): Promise<PdfJobResponse> {
     const response = await fetch(`${this.baseUrl}/analytics/reports/products`, {
       method: 'POST',
       headers: this.getHeaders(true),
@@ -714,13 +731,13 @@ class ApiClient {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to download product report');
+      throw new Error('Failed to start product report generation');
     }
 
-    return response.blob();
+    return response.json();
   }
 
-  async downloadCustomerReport(request: AnalyticsRequest): Promise<Blob> {
+  async downloadCustomerReport(request: AnalyticsRequest): Promise<PdfJobResponse> {
     const response = await fetch(`${this.baseUrl}/analytics/reports/customers`, {
       method: 'POST',
       headers: this.getHeaders(true),
@@ -728,13 +745,13 @@ class ApiClient {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to download customer report');
+      throw new Error('Failed to start customer report generation');
     }
 
-    return response.blob();
+    return response.json();
   }
 
-  async downloadOrderReport(request: AnalyticsRequest): Promise<Blob> {
+  async downloadOrderReport(request: AnalyticsRequest): Promise<PdfJobResponse> {
     const response = await fetch(`${this.baseUrl}/analytics/reports/orders`, {
       method: 'POST',
       headers: this.getHeaders(true),
@@ -742,10 +759,59 @@ class ApiClient {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to download order report');
+      throw new Error('Failed to start order report generation');
+    }
+
+    return response.json();
+  }
+
+  async getPdfJobStatus(jobId: string): Promise<PdfJobStatus> {
+    const response = await fetch(`${this.baseUrl}/analytics/pdf-jobs/${jobId}`, {
+      method: 'GET',
+      headers: this.getHeaders(true),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to get PDF job status');
+    }
+
+    return response.json();
+  }
+
+  async downloadPdf(cacheKey: string): Promise<Blob> {
+    const response = await fetch(`${this.baseUrl}/analytics/pdf/${encodeURIComponent(cacheKey)}`, {
+      method: 'GET',
+      headers: this.getHeaders(true),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to download PDF');
     }
 
     return response.blob();
+  }
+
+  async pollPdfJobUntilComplete(
+    jobId: string,
+    onProgress?: (status: PdfJobStatus) => void,
+    maxAttempts: number = 60,
+    intervalMs: number = 1000
+  ): Promise<PdfJobStatus> {
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      const status = await this.getPdfJobStatus(jobId);
+
+      if (onProgress) {
+        onProgress(status);
+      }
+
+      if (status.state === 'Completed' || status.state === 'Failed') {
+        return status;
+      }
+
+      await new Promise(resolve => setTimeout(resolve, intervalMs));
+    }
+
+    throw new Error('PDF generation timeout');
   }
 }
 

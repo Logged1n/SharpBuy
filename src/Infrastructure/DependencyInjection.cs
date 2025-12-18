@@ -1,11 +1,15 @@
 ﻿using System.Text;
 using Application.Abstractions.Authentication;
+using Application.Abstractions.BackgroundJobs;
+using Application.Abstractions.Caching;
 using Application.Abstractions.Data;
 using Application.Abstractions.Emails;
 using Application.Abstractions.Payments;
 using Application.Abstractions.Reporting;
 using Application.Abstractions.Storage;
 using Infrastructure.Authentication;
+using Infrastructure.BackgroundJobs;
+using Infrastructure.Caching;
 using Infrastructure.Database;
 using Infrastructure.DomainEvents;
 using Infrastructure.Payments;
@@ -34,6 +38,8 @@ public static class DependencyInjection
         services
             .AddServices()
             .AddDatabase(configuration)
+            .AddCaching(configuration)
+            .AddBackgroundJobs()
             .AddAuthenticationInternal(configuration)
             .AddAuthorizationInternal();
 
@@ -49,6 +55,7 @@ public static class DependencyInjection
         services.AddScoped<IFileStorageService, FileStorageService>();
         services.AddScoped<IPaymentService, StripePaymentService>();
         services.AddScoped<IPdfGenerator, RazorPdfGenerator>();
+        services.AddScoped<ICachedPdfGenerator, CachedPdfGeneratorService>();
 
         services.AddTransient<IDomainEventsDispatcher, DomainEventsDispatcher>();
 
@@ -138,6 +145,29 @@ public static class DependencyInjection
     private static IServiceCollection AddAuthorizationInternal(this IServiceCollection services)
     {
         services.AddAuthorization();
+
+        return services;
+    }
+
+    private static IServiceCollection AddCaching(this IServiceCollection services, IConfiguration configuration)
+    {
+        string? redisConnection = configuration.GetConnectionString("redis");
+
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = redisConnection;
+            options.InstanceName = "SharpBuy:";
+        });
+
+        services.AddScoped<ICacheService, CacheService>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddBackgroundJobs(this IServiceCollection services)
+    {
+        services.AddSingleton<IBackgroundJobService, BackgroundJobService>();
+        services.AddHostedService<BackgroundJobWorker>();
 
         return services;
     }

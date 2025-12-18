@@ -52,12 +52,6 @@ export function Navbar() {
             >
               Products
             </Link>
-            <Link
-              href="/categories"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Categories
-            </Link>
           </div>
         </div>
 

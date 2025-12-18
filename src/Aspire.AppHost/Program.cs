@@ -12,10 +12,17 @@ IResourceBuilder<PostgresDatabaseResource> database = builder
 IResourceBuilder<PapercutSmtpContainerResource> papercut = builder
     .AddPapercutSmtp("papercut");
 
+IResourceBuilder<RedisResource> redis = builder
+    .AddRedis("redis")
+    .WithImage("redis:7-alpine")
+    .WithHostPort(6379);
+
 builder.AddProject<Projects.Web_Api>("Web-API")
     .WaitFor(papercut)
     .WaitFor(database)
+    .WaitFor(redis)
     .WithReference(papercut)
-    .WithReference(database);
+    .WithReference(database)
+    .WithReference(redis);
 
 await builder.Build().RunAsync();

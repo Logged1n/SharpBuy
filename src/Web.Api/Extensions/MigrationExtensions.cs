@@ -56,34 +56,34 @@ public static class MigrationExtensions
         Product[] products =
         [
             // Electronics (4 products)
-            Product.Create("Laptop Dell XPS 15", "High-performance laptop with 16GB RAM and 512GB SSD", 25, 1299.99m, "USD", "/images/laptop1.jpg"),
-            Product.Create("Wireless Mouse Logitech", "Ergonomic wireless mouse with precision tracking", 100, 29.99m, "USD", "/images/mouse1.jpg"),
-            Product.Create("USB-C Hub", "7-in-1 USB-C hub with HDMI, USB 3.0, and SD card reader", 50, 49.99m, "USD", "/images/hub1.jpg"),
-            Product.Create("Bluetooth Headphones", "Noise-canceling over-ear headphones with 30-hour battery", 40, 199.99m, "USD", "/images/headphones1.jpg"),
+            Product.Create("Laptop Dell XPS 15", "High-performance laptop with 16GB RAM and 512GB SSD", 25, 1299.99m, "USD", "/uploads/products/laptop1.jpg"),
+            Product.Create("Wireless Mouse Logitech", "Ergonomic wireless mouse with precision tracking", 100, 29.99m, "USD", "/uploads/products/mouse1.jpg"),
+            Product.Create("USB-C Hub", "7-in-1 USB-C hub with HDMI, USB 3.0, and SD card reader", 50, 49.99m, "USD", "/uploads/products/hub1.jpg"),
+            Product.Create("Bluetooth Headphones", "Noise-canceling over-ear headphones with 30-hour battery", 40, 199.99m, "USD", "/uploads/products/headphones1.jpg"),
 
             // Clothing (4 products)
-            Product.Create("Men's Cotton T-Shirt", "Comfortable cotton t-shirt in various colors", 200, 19.99m, "USD", "/images/tshirt1.jpg"),
-            Product.Create("Women's Jeans", "Classic fit jeans with stretch fabric", 150, 59.99m, "USD", "/images/jeans1.jpg"),
-            Product.Create("Winter Jacket", "Waterproof winter jacket with thermal insulation", 75, 129.99m, "USD", "/images/jacket1.jpg"),
-            Product.Create("Running Shoes", "Lightweight running shoes with cushioned sole", 120, 89.99m, "USD", "/images/shoes1.jpg"),
+            Product.Create("Men's Cotton T-Shirt", "Comfortable cotton t-shirt in various colors", 200, 19.99m, "USD", "/uploads/products/tshirt1.jpg"),
+            Product.Create("Women's Jeans", "Classic fit jeans with stretch fabric", 150, 59.99m, "USD", "/uploads/products/jeans1.jpg"),
+            Product.Create("Winter Jacket", "Waterproof winter jacket with thermal insulation", 75, 129.99m, "USD", "/uploads/products/jacket1.jpg"),
+            Product.Create("Running Shoes", "Lightweight running shoes with cushioned sole", 120, 89.99m, "USD", "/uploads/products/shoes1.jpg"),
 
             // Books (4 products)
-            Product.Create("Clean Architecture", "Robert C. Martin's guide to software architecture", 80, 39.99m, "USD", "/images/book1.jpg"),
-            Product.Create("Domain-Driven Design", "Eric Evans' classic on DDD principles", 60, 49.99m, "USD", "/images/book2.jpg"),
-            Product.Create("The Pragmatic Programmer", "Your journey to mastery in software development", 90, 44.99m, "USD", "/images/book3.jpg"),
-            Product.Create("Design Patterns", "Gang of Four's essential patterns reference", 70, 54.99m, "USD", "/images/book4.jpg"),
+            Product.Create("Clean Architecture", "Robert C. Martin's guide to software architecture", 80, 39.99m, "USD", "/uploads/products/book1.jpg"),
+            Product.Create("Domain-Driven Design", "Eric Evans' classic on DDD principles", 60, 49.99m, "USD", "/uploads/products/book2.jpg"),
+            Product.Create("The Pragmatic Programmer", "Your journey to mastery in software development", 90, 44.99m, "USD", "/uploads/products/book3.jpg"),
+            Product.Create("Design Patterns", "Gang of Four's essential patterns reference", 70, 54.99m, "USD", "/uploads/products/book4.jpg"),
 
             // Home & Garden (4 products)
-            Product.Create("Coffee Maker", "Programmable 12-cup coffee maker with timer", 45, 79.99m, "USD", "/images/coffee1.jpg"),
-            Product.Create("Indoor Plant Pot", "Ceramic pot with drainage for small plants", 300, 14.99m, "USD", "/images/pot1.jpg"),
-            Product.Create("LED Desk Lamp", "Adjustable LED lamp with touch control", 85, 34.99m, "USD", "/images/lamp1.jpg"),
-            Product.Create("Throw Pillow Set", "Set of 2 decorative throw pillows", 110, 24.99m, "USD", "/images/pillow1.jpg"),
+            Product.Create("Coffee Maker", "Programmable 12-cup coffee maker with timer", 45, 79.99m, "USD", "/uploads/products/coffee1.jpg"),
+            Product.Create("Indoor Plant Pot", "Ceramic pot with drainage for small plants", 300, 14.99m, "USD", "/uploads/products/pot1.jpg"),
+            Product.Create("LED Desk Lamp", "Adjustable LED lamp with touch control", 85, 34.99m, "USD", "/uploads/products/lamp1.jpg"),
+            Product.Create("Throw Pillow Set", "Set of 2 decorative throw pillows", 110, 24.99m, "USD", "/uploads/products/pillow1.jpg"),
 
             // Sports & Outdoors (4 products)
-            Product.Create("Yoga Mat", "Non-slip yoga mat with carrying strap", 200, 29.99m, "USD", "/images/yoga1.jpg"),
-            Product.Create("Camping Tent", "4-person waterproof camping tent", 30, 159.99m, "USD", "/images/tent1.jpg"),
-            Product.Create("Water Bottle", "Insulated stainless steel water bottle 32oz", 180, 24.99m, "USD", "/images/bottle1.jpg"),
-            Product.Create("Resistance Bands Set", "Set of 5 resistance bands for strength training", 95, 19.99m, "USD", "/images/bands1.jpg")
+            Product.Create("Yoga Mat", "Non-slip yoga mat with carrying strap", 200, 29.99m, "USD", "/uploads/products/yoga1.jpg"),
+            Product.Create("Camping Tent", "4-person waterproof camping tent", 30, 159.99m, "USD", "/uploads/products/tent1.jpg"),
+            Product.Create("Water Bottle", "Insulated stainless steel water bottle 32oz", 180, 24.99m, "USD", "/uploads/products/bottle1.jpg"),
+            Product.Create("Resistance Bands Set", "Set of 5 resistance bands for strength training", 95, 19.99m, "USD", "/uploads/products/bands1.jpg")
         ];
 
         dbContext.Products.AddRange(products);

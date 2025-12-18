@@ -20,7 +20,7 @@ internal sealed class GenerateOrderReport : IEndpoint
         app.MapPost("analytics/reports/orders", async (
             Request request,
             IQueryHandler<GetOrderAnalyticsQuery, OrderAnalyticsResponse> handler,
-            IPdfGenerator pdfGenerator,
+            ICachedPdfGenerator pdfGenerator,
             CancellationToken cancellationToken) =>
         {
             if (!Enum.TryParse<Granularity>(request.Granularity, true, out Granularity granularity))
@@ -40,13 +40,20 @@ internal sealed class GenerateOrderReport : IEndpoint
                 return Results.Problem(detail: result.Error.Description, statusCode: 400);
             }
 
-            byte[] pdfBytes = await pdfGenerator.GeneratePdfAsync(
+            string cacheKey = $"orders:{request.StartDate:yyyy-MM-dd}:{request.EndDate:yyyy-MM-dd}:{request.Granularity}";
+
+            string jobId = await pdfGenerator.GeneratePdfAsync(
                 "Reports/OrderReport",
                 result.Value,
+                cacheKey,
                 cancellationToken);
 
-            string fileName = $"order-report-{DateTime.Now:yyyy-MM-dd}.pdf";
-            return Results.File(pdfBytes, "application/pdf", fileName);
+            return Results.Accepted($"/analytics/pdf-jobs/{jobId}", new
+            {
+                jobId,
+                message = "PDF generation started. Check the status endpoint for progress.",
+                statusUrl = $"/analytics/pdf-jobs/{jobId}"
+            });
         })
         .WithTags(Tags.Analytics)
         .RequireAuthorization();

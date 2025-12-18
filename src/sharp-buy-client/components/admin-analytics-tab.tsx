@@ -18,7 +18,9 @@ import {
   SalesAnalyticsResponse,
   ProductAnalyticsResponse,
   CustomerAnalyticsResponse,
-  OrderAnalyticsResponse
+  OrderAnalyticsResponse,
+  PdfJobResponse,
+  PdfJobStatus
 } from '@/lib/api';
 import { Download, TrendingUp, Package, Users, ShoppingCart, Calendar } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -50,6 +52,7 @@ export function AdminAnalyticsTab() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [isDownloading, setIsDownloading] = useState(false);
+  const [pdfJobStatus, setPdfJobStatus] = useState<PdfJobStatus | null>(null);
 
   const getDateRange = (): { startDate: string; endDate: string } => {
     if (useCustomRange) {
@@ -116,44 +119,59 @@ export function AdminAnalyticsTab() {
   const downloadReport = async () => {
     setIsDownloading(true);
     setError('');
+    setPdfJobStatus(null);
 
     try {
       const { startDate, endDate } = getDateRange();
       const request = { startDate, endDate, granularity };
 
-      let blob: Blob;
+      let jobResponse: PdfJobResponse;
       let filename: string;
 
       switch (reportType) {
         case 'sales':
-          blob = await api.downloadSalesReport(request);
+          jobResponse = await api.downloadSalesReport(request);
           filename = `sales-report-${new Date().toISOString().split('T')[0]}.pdf`;
           break;
         case 'products':
-          blob = await api.downloadProductReport(request);
+          jobResponse = await api.downloadProductReport(request);
           filename = `product-report-${new Date().toISOString().split('T')[0]}.pdf`;
           break;
         case 'customers':
-          blob = await api.downloadCustomerReport(request);
+          jobResponse = await api.downloadCustomerReport(request);
           filename = `customer-report-${new Date().toISOString().split('T')[0]}.pdf`;
           break;
         case 'orders':
-          blob = await api.downloadOrderReport(request);
+          jobResponse = await api.downloadOrderReport(request);
           filename = `order-report-${new Date().toISOString().split('T')[0]}.pdf`;
           break;
         default:
           return;
       }
 
-      // Create download link
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      const finalStatus = await api.pollPdfJobUntilComplete(
+        jobResponse.jobId,
+        (status) => setPdfJobStatus(status)
+      );
+
+      if (finalStatus.state === 'Failed') {
+        throw new Error(finalStatus.errorMessage || 'PDF generation failed');
+      }
+
+      if (finalStatus.state === 'Completed' && finalStatus.pdfCacheKey) {
+        const blob = await api.downloadPdf(finalStatus.pdfCacheKey);
+
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
+        setPdfJobStatus(null);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to download report');
     } finally {
@@ -282,6 +300,18 @@ export function AdminAnalyticsTab() {
           {error && (
             <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md">
               {error}
+            </div>
+          )}
+
+          {pdfJobStatus && (
+            <div className="text-sm bg-blue-50 p-3 rounded-md">
+              <p className="font-medium">PDF Generation Status: {pdfJobStatus.state}</p>
+              {pdfJobStatus.state === 'Pending' && (
+                <p className="text-gray-600 mt-1">Your PDF report is queued for generation...</p>
+              )}
+              {pdfJobStatus.state === 'Processing' && (
+                <p className="text-gray-600 mt-1">Generating PDF report, please wait...</p>
+              )}
             </div>
           )}
         </CardContent>
