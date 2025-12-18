@@ -14,7 +14,8 @@
       "Bash(dotnet new:*)",
       "Bash(dotnet sln:*)",
       "Bash(dotnet run:*)",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "Bash(Select-String -Pattern \"Passed|Failed|Total\")"
     ],
     "deny": [],
     "ask": []

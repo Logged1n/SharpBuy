@@ -12,22 +12,56 @@ internal sealed class GetCustomerAnalyticsQueryHandler(
         GetCustomerAnalyticsQuery query,
         CancellationToken cancellationToken)
     {
-        // Get all users with their first order date
-        List<UserInfo> usersWithOrders = await dbContext.DomainUsers
+        // Get all user IDs that have orders
+        List<Guid> userIdsWithOrders = await dbContext.Orders
             .AsNoTracking()
-            .Select(u => new UserInfo(
-                u.Id,
-                dbContext.Orders
-                    .Where(o => o.UserId == u.Id)
-                    .OrderBy(o => o.CreatedAt)
-                    .Select(o => o.CreatedAt)
-                    .FirstOrDefault(),
-                dbContext.Orders
-                    .Where(o => o.UserId == u.Id && o.CreatedAt >= query.StartDate && o.CreatedAt <= query.EndDate)
-                    .SelectMany(o => o.Items)
-                    .Sum(oi => oi.TotalPrice.Amount)))
-            .Where(u => u.FirstOrderDate != default)
+            .Select(o => o.UserId)
+            .Distinct()
             .ToListAsync(cancellationToken);
+
+        if (userIdsWithOrders.Count == 0)
+        {
+            return new CustomerAnalyticsResponse(
+                TotalCustomers: 0,
+                NewCustomers: 0,
+                ReturningCustomers: 0,
+                AverageCustomerValue: 0,
+                DataPoints: []);
+        }
+
+        // Get first order dates for all users
+        var firstOrderDates = await dbContext.Orders
+            .AsNoTracking()
+            .Where(o => userIdsWithOrders.Contains(o.UserId))
+            .GroupBy(o => o.UserId)
+            .Select(g => new
+            {
+                UserId = g.Key,
+                FirstOrderDate = g.Min(o => o.CreatedAt)
+            })
+            .ToListAsync(cancellationToken);
+
+        // Calculate total spent per user in the date range
+        var userSpending = await dbContext.Orders
+            .AsNoTracking()
+            .Where(o => userIdsWithOrders.Contains(o.UserId) &&
+                       o.CreatedAt >= query.StartDate &&
+                       o.CreatedAt <= query.EndDate)
+            .SelectMany(o => o.Items.Select(oi => new { o.UserId, oi.TotalPrice }))
+            .GroupBy(x => x.UserId)
+            .Select(g => new
+            {
+                UserId = g.Key,
+                TotalSpent = g.Sum(x => x.TotalPrice.Amount)
+            })
+            .ToListAsync(cancellationToken);
+
+        // Combine the data
+        var usersWithOrders = firstOrderDates.Select(fod => new UserInfo(
+            fod.UserId,
+            fod.FirstOrderDate,
+            userSpending.FirstOrDefault(us => us.UserId == fod.UserId)?.TotalSpent ?? 0m
+        )).ToList();
 
         int totalCustomers = usersWithOrders.Count;
         var newCustomers = usersWithOrders

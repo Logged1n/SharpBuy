@@ -414,8 +414,26 @@ class ApiClient {
   }
 
   // Products
-  async getProducts(page: number = 1, pageSize: number = 100): Promise<PagedResult<ProductListItem>> {
-    const response = await fetch(`${this.baseUrl}/products?page=${page}&pageSize=${pageSize}`, {
+  async getProducts(
+    page: number = 1,
+    pageSize: number = 100,
+    searchTerm?: string,
+    categoryIds?: string[]
+  ): Promise<PagedResult<ProductListItem>> {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      pageSize: pageSize.toString(),
+    });
+
+    if (searchTerm) {
+      params.append('searchTerm', searchTerm);
+    }
+
+    if (categoryIds && categoryIds.length > 0) {
+      categoryIds.forEach(id => params.append('categoryIds', id));
+    }
+
+    const response = await fetch(`${this.baseUrl}/products?${params.toString()}`, {
       method: 'GET',
       headers: this.getHeaders(),
     });

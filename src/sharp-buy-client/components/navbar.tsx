@@ -76,12 +76,17 @@ export function Navbar() {
           <div className="hidden md:flex items-center gap-2">
             {isAuthenticated ? (
               <>
+              { !hasAdminAccess && (
                 <Link href="/profile">
                   <Button variant="ghost" size="sm">
                     <User className="h-4 w-4 mr-2" />
                     Profile
                   </Button>
                 </Link>
+              )
+
+              }
+                
                 {hasAdminAccess && (
                   <Link href="/admin">
                     <Button variant="ghost" size="sm">

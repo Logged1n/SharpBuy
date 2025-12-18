@@ -13,10 +13,13 @@ public sealed class GetAll : IEndpoint
         app.MapGet("products", async (
             int page,
             int pageSize,
+            string? searchTerm,
+            [Microsoft.AspNetCore.Mvc.FromQuery] Guid[]? categoryIds,
             IQueryHandler<GetAllProductsQuery, PagedResult<ProductListItem>> handler,
             CancellationToken cancellationToken) =>
         {
-            var query = new GetAllProductsQuery(page, pageSize);
+            List<Guid>? categoryIdList = categoryIds?.ToList();
+            var query = new GetAllProductsQuery(page, pageSize, searchTerm, categoryIdList);
 
             Result<PagedResult<ProductListItem>> result = await handler.Handle(query, cancellationToken);
             return result.Match(Results.Ok, CustomResults.Problem);

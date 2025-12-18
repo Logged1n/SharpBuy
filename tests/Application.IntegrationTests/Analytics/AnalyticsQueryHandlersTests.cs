@@ -50,17 +50,26 @@ public class AnalyticsQueryHandlersTests : IntegrationTestBase
         DbContext.Categories.Add(category);
         await DbContext.SaveChangesAsync();
 
-        var address = Address.Create("123 Main St", "City", "State", "Country", "12345");
+        var product1 = Product.Create("Product 1", "Description 1", 10, 100m, "USD", "/photo1.jpg");
+        product1.AddToCategory(category.Id);
+        var product2 = Product.Create("Product 2", "Description 2", 10, 200m, "USD", "/photo2.jpg");
+        product2.AddToCategory(category.Id);
+        DbContext.Products.Add(product1);
+        DbContext.Products.Add(product2);
+        await DbContext.SaveChangesAsync();
+
+        var address = Address.Create("123 Main St", null, "City", "12345", "Country");
+        address.UserId = user.Id;
         DbContext.Addresses.Add(address);
         await DbContext.SaveChangesAsync();
 
         // Create completed orders
         var order1 = Order.Create(user.Id, address.Id);
-        order1.AddOrderItem(Guid.NewGuid(), "Product 1", new Money(100, "USD"), 1);
+        order1.AddOrderItem(product1.Id, "Product 1", new Money(100, "USD"), 1);
         order1.MoveToStatus(OrderStatus.Completed);
 
         var order2 = Order.Create(user.Id, address.Id);
-        order2.AddOrderItem(Guid.NewGuid(), "Product 2", new Money(200, "USD"), 2);
+        order2.AddOrderItem(product2.Id, "Product 2", new Money(200, "USD"), 2);
         order2.MoveToStatus(OrderStatus.Completed);
 
         DbContext.Orders.Add(order1);
@@ -153,7 +162,23 @@ public class AnalyticsQueryHandlersTests : IntegrationTestBase
         DbContext.DomainUsers.Add(user);
         await DbContext.SaveChangesAsync();
 
-        var address = Address.Create("123 Main St", "City", "State", "Country", "12345");
+        var category = Category.Create("Test Category");
+        DbContext.Categories.Add(category);
+        await DbContext.SaveChangesAsync();
+
+        // Create 5 products
+        var products = new List<Product>();
+        for (int i = 0; i < 5; i++)
+        {
+            var product = Product.Create($"Product {i}", $"Description {i}", 10, 100m, "USD", $"/photo{i}.jpg");
+            product.AddToCategory(category.Id);
+            products.Add(product);
+            DbContext.Products.Add(product);
+        }
+        await DbContext.SaveChangesAsync();
+
+        var address = Address.Create("123 Main St", null, "City", "12345", "Country");
+        address.UserId = user.Id;
         DbContext.Addresses.Add(address);
         await DbContext.SaveChangesAsync();
 
@@ -161,7 +186,7 @@ public class AnalyticsQueryHandlersTests : IntegrationTestBase
         for (int i = 0; i < 3; i++)
         {
             var completedOrder = Order.Create(user.Id, address.Id);
-            completedOrder.AddOrderItem(Guid.NewGuid(), $"Product {i}", new Money(100, "USD"), 1);
+            completedOrder.AddOrderItem(products[i].Id, $"Product {i}", new Money(100, "USD"), 1);
             completedOrder.MoveToStatus(OrderStatus.Completed);
             DbContext.Orders.Add(completedOrder);
         }
@@ -170,7 +195,7 @@ public class AnalyticsQueryHandlersTests : IntegrationTestBase
         for (int i = 0; i < 2; i++)
         {
             var openOrder = Order.Create(user.Id, address.Id);
-            openOrder.AddOrderItem(Guid.NewGuid(), $"Product {i + 3}", new Money(100, "USD"), 1);
+            openOrder.AddOrderItem(products[i + 3].Id, $"Product {i + 3}", new Money(100, "USD"), 1);
             DbContext.Orders.Add(openOrder);
         }
 

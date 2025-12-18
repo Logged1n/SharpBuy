@@ -2,29 +2,53 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { api, ProductListItem, PagedResult } from '@/lib/api';
+import { api, ProductListItem, PagedResult, CategoryListItem } from '@/lib/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { ShoppingCart, ChevronLeft, ChevronRight, Eye, Search, X } from 'lucide-react';
 import { useCart } from '@/lib/cart-context';
+import { Badge } from '@/components/ui/badge';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://localhost:5001';
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<ProductListItem[]>([]);
+  const [categories, setCategories] = useState<CategoryListItem[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const { addItem } = useCart();
 
   useEffect(() => {
+    loadCategories();
+  }, []);
+
+  useEffect(() => {
     loadProducts();
-  }, [currentPage]);
+  }, [currentPage, searchTerm, selectedCategories]);
+
+  const loadCategories = async () => {
+    try {
+      const data = await api.getCategories(1, 100);
+      setCategories(data.items);
+    } catch (err) {
+      console.error('Failed to load categories:', err);
+    }
+  };
 
   const loadProducts = async () => {
     setIsLoading(true);
     try {
-      const data: PagedResult<ProductListItem> = await api.getProducts(currentPage, 12);
+      const data: PagedResult<ProductListItem> = await api.getProducts(
+        currentPage,
+        12,
+        searchTerm || undefined,
+        selectedCategories.length > 0 ? selectedCategories : undefined
+      );
       setProducts(data.items);
       setTotalPages(data.totalPages);
     } catch (err) {
@@ -32,6 +56,34 @@ export default function ProductsPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSearchTerm(searchInput);
+    setCurrentPage(1);
+  };
+
+  const handleClearSearch = () => {
+    setSearchInput('');
+    setSearchTerm('');
+    setCurrentPage(1);
+  };
+
+  const toggleCategory = (categoryId: string) => {
+    setSelectedCategories(prev =>
+      prev.includes(categoryId)
+        ? prev.filter(id => id !== categoryId)
+        : [...prev, categoryId]
+    );
+    setCurrentPage(1);
+  };
+
+  const clearFilters = () => {
+    setSearchInput('');
+    setSearchTerm('');
+    setSelectedCategories([]);
+    setCurrentPage(1);
   };
 
   const handleAddToCart = async (productId: string) => {
@@ -53,6 +105,76 @@ export default function ProductsPage() {
               Browse our collection of products
             </p>
           </div>
+
+          {/* Filters */}
+          <Card>
+            <CardContent className="pt-6">
+              <div className="space-y-4">
+                {/* Search */}
+                <form onSubmit={handleSearch} className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      type="text"
+                      placeholder="Search products..."
+                      value={searchInput}
+                      onChange={(e) => setSearchInput(e.target.value)}
+                      className="pl-9"
+                    />
+                  </div>
+                  <Button type="submit" variant="default">
+                    Search
+                  </Button>
+                  {(searchTerm || selectedCategories.length > 0) && (
+                    <Button type="button" variant="outline" onClick={clearFilters}>
+                      <X className="h-4 w-4 mr-1" />
+                      Clear
+                    </Button>
+                  )}
+                </form>
+
+                {/* Categories */}
+                {categories.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium">Categories:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {categories.map((category) => (
+                        <Badge
+                          key={category.id}
+                          variant={selectedCategories.includes(category.id) ? "default" : "outline"}
+                          className="cursor-pointer"
+                          onClick={() => toggleCategory(category.id)}
+                        >
+                          {category.name}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Active Filters Display */}
+                {(searchTerm || selectedCategories.length > 0) && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <span>Active filters:</span>
+                    {searchTerm && (
+                      <Badge variant="secondary" className="gap-1">
+                        Search: {searchTerm}
+                        <X
+                          className="h-3 w-3 cursor-pointer"
+                          onClick={handleClearSearch}
+                        />
+                      </Badge>
+                    )}
+                    {selectedCategories.length > 0 && (
+                      <Badge variant="secondary">
+                        {selectedCategories.length} {selectedCategories.length === 1 ? 'category' : 'categories'}
+                      </Badge>
+                    )}
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Products Grid */}
           {isLoading ? (

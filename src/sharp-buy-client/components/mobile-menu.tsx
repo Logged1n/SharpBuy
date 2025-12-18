@@ -87,20 +87,13 @@ export function MobileMenu() {
           >
             Products
           </Link>
-          <Link
-            href="/categories"
-            className="px-4 py-3 text-sm font-medium hover:bg-muted rounded-md transition-colors"
-            onClick={() => setIsOpen(false)}
-          >
-            Categories
-          </Link>
-
           {/* Divider */}
           <div className="border-t border-border my-2" />
 
           {/* Auth Links */}
           {isAuthenticated ? (
             <>
+            {!hasAdminAccess && (
               <Link
                 href="/profile"
                 className="px-4 py-3 text-sm font-medium hover:bg-muted rounded-md transition-colors flex items-center"
@@ -109,6 +102,7 @@ export function MobileMenu() {
                 <User className="h-4 w-4 mr-2" />
                 Profile
               </Link>
+            )}
               {hasAdminAccess && (
                 <Link
                   href="/admin"
