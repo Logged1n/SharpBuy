@@ -62,9 +62,7 @@ public static class DependencyInjection
         return services;
     }
 
-#pragma warning disable S1172 // Unused method parameters should be removed
     private static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
-#pragma warning restore S1172 // Unused method parameters should be removed
     {
         string? connectionString = configuration.GetConnectionString("SharpBuy");
 
