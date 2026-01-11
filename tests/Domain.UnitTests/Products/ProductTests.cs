@@ -32,8 +32,6 @@ public class ProductTests
         product.Price.Amount.ShouldBe(priceAmount);
         product.Price.Currency.ShouldBe(priceCurrency);
         product.MainPhotoPath.ShouldBe(mainPhotoPath);
-        product.PhotoPaths.ShouldHaveSingleItem();
-        product.PhotoPaths.ShouldContain(mainPhotoPath);
     }
 
     [Theory]
@@ -71,21 +69,6 @@ public class ProductTests
 
         // Assert
         Should.Throw<ArgumentOutOfRangeException>(act);
-    }
-
-    [Fact]
-    public void AddPhoto_ShouldAddPhotoToCollection()
-    {
-        // Arrange
-        Product product = CreateValidProduct();
-        string newPhotoPath = "/photos/additional.jpg";
-
-        // Act
-        product.AddPhoto(newPhotoPath);
-
-        // Assert
-        product.PhotoPaths.Count.ShouldNotBeSameAs(2);
-        product.PhotoPaths.ShouldContain(newPhotoPath);
     }
 
     [Fact]

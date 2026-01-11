@@ -1,4 +1,8 @@
 <Solution>
+  <Folder Name="/Aspire/">
+    <Project Path="src/Aspire.AppHost/Aspire.AppHost.csproj" />
+    <Project Path="src/Aspire.ServiceDefaults/Aspire.ServiceDefaults.csproj" />
+  </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
     <File Path="Directory.Build.props" />
@@ -6,8 +10,6 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Application/Application.csproj" />
-    <Project Path="src/Aspire.AppHost/Aspire.AppHost.csproj" />
-    <Project Path="src/Aspire.ServiceDefaults/Aspire.ServiceDefaults.csproj" />
     <Project Path="src/Domain/Domain.csproj" />
     <Project Path="src/Infrastructure/Infrastructure.csproj" />
     <Project Path="src/SharedKernel/SharedKernel.csproj" />

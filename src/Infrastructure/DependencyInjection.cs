@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Globalization;
+using System.Text;
 using Application.Abstractions.Authentication;
 using Application.Abstractions.BackgroundJobs;
 using Application.Abstractions.Caching;
@@ -17,6 +18,7 @@ using Infrastructure.Reporting;
 using Infrastructure.Storage;
 using Infrastructure.Time;
 using Infrastructure.Users;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -51,7 +53,6 @@ public static class DependencyInjection
                     configuration.GetSection("EmailOptions").Bind(configSection));
         services.AddScoped<IEmailVerificationLinkFactory, EmailVerificationLinkFactory>();
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
-        services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IFileStorageService, FileStorageService>();
         services.AddScoped<IPaymentService, StripePaymentService>();
         services.AddScoped<IPdfGenerator, RazorPdfGenerator>();
@@ -96,46 +97,74 @@ public static class DependencyInjection
             .AddSignInManager()
             .AddDefaultTokenProviders();
 
-        services.AddAuthentication(options => {
+        string? googleClientId = configuration["Authentication:Google:ClientId"];
+        string? googleClientSecret = configuration["Authentication:Google:ClientSecret"];
+        string? jwtSecret = configuration["Jwt:Secret"];
+
+        AuthenticationBuilder authBuilder = services.AddAuthentication(options => {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
         })
-            .AddCookie()
-            .AddGoogle(options =>
-            {
-                string? clientId = configuration["Authentication:Google:ClientId"];
-                string? clientSecret = configuration["Authentication:Google:ClientSecret"];
-                ArgumentNullException.ThrowIfNull(clientId);
-                ArgumentNullException.ThrowIfNull(clientSecret);
+            .AddCookie();
 
-                options.ClientId = clientId;
-                options.ClientSecret = clientSecret;
+        // Only add Google auth if credentials are configured
+        if (!string.IsNullOrEmpty(googleClientId) && !string.IsNullOrEmpty(googleClientSecret))
+        {
+            authBuilder.AddGoogle(options =>
+            {
+                options.ClientId = googleClientId;
+                options.ClientSecret = googleClientSecret;
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(o =>
+            });
+        }
+
+        // Only add JWT bearer if secret is configured
+        if (!string.IsNullOrEmpty(jwtSecret))
+        {
+            authBuilder.AddJwtBearer(o =>
             {
                 o.RequireHttpsMetadata = false;
                 o.TokenValidationParameters = new TokenValidationParameters
                 {
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Secret"]!)),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
                     ValidIssuer = configuration["Jwt:Issuer"],
                     ValidAudience = configuration["Jwt:Audience"],
                     ClockSkew = TimeSpan.Zero
                 };
             });
+        }
 
         services.AddHttpContextAccessor();
         services.AddScoped<ITokenProvider, TokenProvider>();
-       
+
         IConfigurationSection emailOptions = configuration.GetSection("EmailOptions");
-        string smtpConn = configuration.GetConnectionString("papercut");
-        string uriString = smtpConn!.Replace("Endpoint=", "");
-        var uri = new Uri(uriString);
-        string host = uri.Host;
-        int port = uri.Port;
-        services.AddFluentEmail(emailOptions["FromAddress"], emailOptions["FromAddress"])
-           .AddSmtpSender(host, port);
+        string? smtpConn = configuration.GetConnectionString("papercut");
+
+        // Only configure FluentEmail if SMTP connection is available (not during design-time/migrations)
+        if (emailOptions["SmtpServer"] != null && emailOptions["SmtpPort"] != null)
+        {
+            string host = emailOptions["SmtpServer"];
+            int port = int.Parse(emailOptions["SmtpPort"]!, CultureInfo.CurrentCulture);
+            services.AddFluentEmail(emailOptions["FromAddress"], emailOptions["FromAddress"])
+               .AddSmtpSender(host, port);
+            services.AddScoped<IEmailService, EmailService>();
+        }
+        else if (!string.IsNullOrEmpty(smtpConn))
+        {
+            string uriString = smtpConn.Replace("Endpoint=", "");
+            var uri = new Uri(uriString);
+            string host = uri.Host;
+            int port = uri.Port;
+            services.AddFluentEmail(emailOptions["FromAddress"], emailOptions["FromAddress"])
+               .AddSmtpSender(host, port);
+            services.AddScoped<IEmailService, EmailService>();
+        }
+        else
+        {
+            // Use no-op email service during design-time (EF migrations)
+            services.AddScoped<IEmailService, NoOpEmailService>();
+        }
 
         return services;
     }

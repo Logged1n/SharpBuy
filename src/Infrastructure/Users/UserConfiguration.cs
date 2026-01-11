@@ -24,7 +24,7 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<DomainUser>
             .HasMaxLength(256);
 
         builder.Property(u => u.PhoneNumber)
-            .HasMaxLength(9);
+            .HasMaxLength(12);
 
         builder.Property(u => u.EmailVerified)
             .IsRequired()
@@ -43,6 +43,11 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<DomainUser>
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
 
+        builder.HasMany(u => u.Orders)
+            .WithOne()
+            .HasForeignKey(o => o.UserId)
+            .OnDelete(DeleteBehavior.NoAction);
+
         builder.HasMany(u => u.Addresses)
             .WithOne()
             .HasForeignKey(a => a.UserId)
@@ -52,8 +57,6 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<DomainUser>
             .UsePropertyAccessMode(PropertyAccessMode.Field);
 
         builder.HasIndex(u => u.Email).IsUnique();
-        builder.HasIndex(u => u.CreatedAt);
-
         builder.Ignore(u => u.DomainEvents);
     }
 }

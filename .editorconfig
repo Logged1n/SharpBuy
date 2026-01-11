@@ -73,6 +73,10 @@ dotnet_diagnostic.S2326.severity = none
 
 # CA1862: Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
 dotnet_diagnostic.CA1862.severity = suggestion
+csharp_style_prefer_local_over_anonymous_function = true:suggestion
+csharp_prefer_static_local_function = true:error
+csharp_style_conditional_delegate_call = true:error
+csharp_style_pattern_matching_over_is_with_cast_check = true:error
 
 [*.{cs,vb}]
 dotnet_style_prefer_simplified_boolean_expressions = true:suggestion
@@ -426,6 +430,14 @@ tab_width = 4
 
 # IDE0300: Simplify collection initialization
 dotnet_style_prefer_collection_expression = never
+dotnet_style_coalesce_expression = true:error
+dotnet_style_null_propagation = true:error
+dotnet_style_prefer_is_null_check_over_reference_equality_method = true:error
+dotnet_style_prefer_auto_properties = true:warning
+dotnet_style_object_initializer = true:error
+dotnet_style_collection_initializer = true:error
+dotnet_diagnostic.CA1305.severity = none
+dotnet_style_predefined_type_for_locals_parameters_members = true:error
 
 [**/Migrations/*.cs]
 generated_code = true

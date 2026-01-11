@@ -22,7 +22,6 @@ public sealed class Product : Entity
     public Inventory Inventory { get; private set; }
     public IReadOnlyCollection<ProductCategory> Categories => _categories.AsReadOnly();
     public string MainPhotoPath { get; private set; }
-    public ICollection<string> PhotoPaths { get; private set; }
 
     public static Product Create(
         string name,
@@ -47,13 +46,10 @@ public sealed class Product : Entity
             Description = description,
             Price = new Money(priceAmount, priceCurrency),
             MainPhotoPath = mainPhotoPath,
-            PhotoPaths = [mainPhotoPath],
             Inventory = inventory,
             InventoryId = inventory.Id
         };
     }
-
-    public void AddPhoto(string photoPath) => PhotoPaths.Add(photoPath);
 
     public Result AddToCategory(Guid categoryId)
     {
@@ -89,17 +85,6 @@ public sealed class Product : Entity
 
         Name = name;
         Description = description;
-        Price = new Money(priceAmount, priceCurrency);
-        return Result.Success();
-    }
-
-    public Result UpdatePrice(decimal priceAmount, string priceCurrency)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(priceCurrency);
-
-        if (priceAmount <= 0)
-            return Result.Failure(ProductErrors.InvalidPrice);
-
         Price = new Money(priceAmount, priceCurrency);
         return Result.Success();
     }

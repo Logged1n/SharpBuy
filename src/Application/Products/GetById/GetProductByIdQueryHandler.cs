@@ -21,7 +21,6 @@ internal sealed class GetProductByIdQueryHandler(IApplicationDbContext dbContext
                 p.Price.Currency,
                 p.Inventory.Quantity,
                 p.MainPhotoPath,
-                p.PhotoPaths,
                 p.Categories
                     .Join(dbContext.Categories,
                         pc => pc.CategoryId,

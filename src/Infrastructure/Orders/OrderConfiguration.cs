@@ -21,5 +21,6 @@ internal sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
                 .HasMaxLength(3)
                 .IsRequired();
         });
+
     }
 }

@@ -45,8 +45,7 @@ internal sealed class GetAllProductsQueryHandler(IApplicationDbContext dbContext
                 p.Price.Amount,
                 p.Price.Currency,
                 p.Inventory.Quantity,
-                p.MainPhotoPath,
-                p.PhotoPaths))
+                p.MainPhotoPath))
             .ToListAsync(cancellationToken);
 
         return PagedResult<ProductListItem>.Create(products, query.Page, query.PageSize, totalCount);

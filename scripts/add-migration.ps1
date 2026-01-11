@@ -8,4 +8,5 @@ param (
 dotnet ef migrations add $MigrationName `
     --startup-project $StartupProject `
     --project $Project `
-    --output-dir $OutputDir
+    --output-dir $OutputDir `
+    --verbose

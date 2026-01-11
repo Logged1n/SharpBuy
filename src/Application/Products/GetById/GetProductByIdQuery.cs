@@ -12,7 +12,6 @@ public sealed record ProductResponse(
     string PriceCurrency,
     int StockQuantity,
     string MainPhotoPath,
-    ICollection<string> PhotoPaths,
     ICollection<CategoryInfo> Categories);
 
 public sealed record CategoryInfo(Guid Id, string Name);

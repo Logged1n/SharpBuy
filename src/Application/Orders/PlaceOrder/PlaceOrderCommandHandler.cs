@@ -18,7 +18,6 @@ internal sealed class PlaceOrderCommandHandler(
 {
     public async Task<Result<Guid>> Handle(PlaceOrderCommand command, CancellationToken cancellationToken)
     {
-        // Verify payment with Stripe
         Result paymentResult = await paymentService.ConfirmPaymentAsync(
             command.PaymentIntentId,
             cancellationToken);
@@ -46,7 +45,6 @@ internal sealed class PlaceOrderCommandHandler(
             .Where(inv => productIds.Contains(inv.ProductId))
             .ToDictionaryAsync(inv => inv.ProductId, cancellationToken);
 
-        // Handle addresses - create new if provided, otherwise use existing IDs
         Guid? shippingAddressId = command.ShippingAddressId;
         Guid? billingAddressId = command.BillingAddressId;
 

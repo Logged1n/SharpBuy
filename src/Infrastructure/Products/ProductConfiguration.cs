@@ -37,12 +37,6 @@ internal sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
             .IsRequired()
             .HasMaxLength(500);
         
-        builder.Property(p => p.PhotoPaths)
-            .HasConversion(
-                v => System.Text.Json.JsonSerializer.Serialize(v, (System.Text.Json.JsonSerializerOptions?)null),
-                v => System.Text.Json.JsonSerializer.Deserialize<List<string>>(v, (System.Text.Json.JsonSerializerOptions?)null) ?? new List<string>())
-            .IsRequired();
-        
         builder.Property(p => p.InventoryId)
             .IsRequired();
         

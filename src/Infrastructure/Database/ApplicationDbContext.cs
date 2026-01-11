@@ -20,7 +20,7 @@ using SharedKernel;
 
 namespace Infrastructure.Database;
 
-public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IDomainEventsDispatcher? domainEventsDispatcher = null)
+public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IDomainEventsDispatcher domainEventsDispatcher)
     : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>(options), IApplicationDbContext
 {
     public DbSet<ApplicationUser> ApplicationUsers => Set<ApplicationUser>();
@@ -39,29 +39,14 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        builder.HasDefaultSchema(Schemas.Default);
         base.OnModelCreating(builder);
-        SeedDatabase(builder);
         builder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
-        IgnoreDomainEvents(builder);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        // When should you publish domain events?
-        //
-        // 1. BEFORE calling SaveChangesAsync
-        //     - domain events are part of the same transaction
-        //     - immediate consistency
-        // 2. AFTER calling SaveChangesAsync
-        //     - domain events are a separate transaction
-        //     - eventual consistency
-        //     - handlers can fail
-
         await PublishDomainEventsAsync();
-
         int result = await base.SaveChangesAsync(cancellationToken);
-
         return result;
     }
 
@@ -109,7 +94,7 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
             })
         .ToList();
 
-        await domainEventsDispatcher!.DispatchAsync(domainEvents);
+        await domainEventsDispatcher.DispatchAsync(domainEvents);
     }
 
     private static void IgnoreDomainEvents(ModelBuilder modelBuilder)

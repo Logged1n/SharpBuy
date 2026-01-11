@@ -10,7 +10,7 @@ namespace Domain.Users;
 public sealed class DomainUser : Entity
 {
     private readonly List<Address> _addresses = [];
-    //private readonly List<Order> _orders = [];
+    private readonly List<Order> _orders = [];
 
     private DomainUser() { }
 
@@ -24,7 +24,7 @@ public sealed class DomainUser : Entity
     public bool EmailVerified { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public IReadOnlyCollection<Address> Addresses => _addresses.AsReadOnly();
-    //public IReadOnlyCollection<Order> Orders => _orders.AsReadOnly();
+    public IReadOnlyCollection<Order> Orders => _orders.AsReadOnly();
     public string FullName => $"{FirstName} {LastName}";
 
     public static DomainUser Create(
