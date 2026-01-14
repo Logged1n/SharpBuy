@@ -1,3 +1,4 @@
+using Application.Abstractions.Caching;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
 using Domain.Categories;
@@ -6,7 +7,9 @@ using SharedKernel;
 
 namespace Application.Categories.Update;
 
-internal sealed class UpdateCategoryCommandHandler(IApplicationDbContext dbContext)
+internal sealed class UpdateCategoryCommandHandler(
+    IApplicationDbContext dbContext,
+    ICacheInvalidator cacheInvalidator)
     : ICommandHandler<UpdateCategoryCommand>
 {
     public async Task<Result> Handle(UpdateCategoryCommand command, CancellationToken cancellationToken)
@@ -29,6 +32,15 @@ internal sealed class UpdateCategoryCommandHandler(IApplicationDbContext dbConte
 
         category.Update(command.Name);
         await dbContext.SaveChangesAsync(cancellationToken);
+
+        // Invalidate specific category cache
+        await cacheInvalidator.InvalidateAsync($"category_{command.Id}", cancellationToken);
+
+        // Invalidate category list caches (all variations)
+        await cacheInvalidator.InvalidateByPatternAsync("categories_*", cancellationToken);
+
+        // Invalidate product list caches (since they may include category names)
+        await cacheInvalidator.InvalidateByPatternAsync("products_*", cancellationToken);
 
         return Result.Success();
     }

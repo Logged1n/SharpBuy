@@ -1,3 +1,4 @@
+using Application.Abstractions.Caching;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
 using Domain.Products;
@@ -6,7 +7,9 @@ using SharedKernel;
 
 namespace Application.Products.Update;
 
-internal sealed class UpdateProductCommandHandler(IApplicationDbContext dbContext)
+internal sealed class UpdateProductCommandHandler(
+    IApplicationDbContext dbContext,
+    ICacheInvalidator cacheInvalidator)
     : ICommandHandler<UpdateProductCommand>
 {
     public async Task<Result> Handle(UpdateProductCommand command, CancellationToken cancellationToken)
@@ -31,6 +34,12 @@ internal sealed class UpdateProductCommandHandler(IApplicationDbContext dbContex
         }
 
         await dbContext.SaveChangesAsync(cancellationToken);
+
+        // Invalidate specific product cache
+        await cacheInvalidator.InvalidateAsync($"product_{command.Id}", cancellationToken);
+
+        // Invalidate product list caches (all variations)
+        await cacheInvalidator.InvalidateByPatternAsync("products_*", cancellationToken);
 
         return Result.Success();
     }

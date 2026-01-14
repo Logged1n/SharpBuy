@@ -60,6 +60,11 @@ public static class DependencyInjection
 
         services.AddTransient<IDomainEventsDispatcher, DomainEventsDispatcher>();
 
+        services.AddCors(options => options.AddDefaultPolicy(policy => policy
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .WithOrigins("http://localhost:3000")));
+
         return services;
     }
 
@@ -105,8 +110,7 @@ public static class DependencyInjection
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-            .AddCookie();
+        }).AddCookie();
 
         // Only add Google auth if credentials are configured
         if (!string.IsNullOrEmpty(googleClientId) && !string.IsNullOrEmpty(googleClientSecret))
@@ -119,7 +123,6 @@ public static class DependencyInjection
             });
         }
 
-        // Only add JWT bearer if secret is configured
         if (!string.IsNullOrEmpty(jwtSecret))
         {
             authBuilder.AddJwtBearer(o =>
@@ -186,7 +189,11 @@ public static class DependencyInjection
             options.InstanceName = "SharpBuy:";
         });
 
+        // Register IConnectionMultiplexer for cache invalidation
+        services.AddSingleton<StackExchange.Redis.IConnectionMultiplexer>(sp => StackExchange.Redis.ConnectionMultiplexer.Connect(redisConnection!));
+
         services.AddScoped<ICacheService, CacheService>();
+        services.AddScoped<ICacheInvalidator, CacheInvalidator>();
 
         return services;
     }

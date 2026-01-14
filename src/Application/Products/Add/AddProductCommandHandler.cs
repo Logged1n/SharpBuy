@@ -1,3 +1,4 @@
+using Application.Abstractions.Caching;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
 using Domain.Categories;
@@ -6,7 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
 namespace Application.Products.Add;
-internal sealed class AddProductCommandHandler(IApplicationDbContext dbContext) : ICommandHandler<AddProductCommand, Guid>
+internal sealed class AddProductCommandHandler(
+    IApplicationDbContext dbContext,
+    ICacheInvalidator cacheInvalidator) : ICommandHandler<AddProductCommand, Guid>
 {
     public async Task<Result<Guid>> Handle(AddProductCommand command, CancellationToken cancellationToken)
     {
@@ -35,6 +38,16 @@ internal sealed class AddProductCommandHandler(IApplicationDbContext dbContext) 
 
         dbContext.Products.Add(product);
         await dbContext.SaveChangesAsync(cancellationToken);
+
+        // Invalidate product list caches (all variations)
+        await cacheInvalidator.InvalidateByPatternAsync("products_*", cancellationToken);
+
+        // Invalidate affected category caches
+        foreach (Guid categoryId in command.CategoryIds)
+        {
+            await cacheInvalidator.InvalidateAsync($"category_{categoryId}", cancellationToken);
+        }
+        await cacheInvalidator.InvalidateByPatternAsync("categories_*", cancellationToken);
 
         return product.Id;
     }

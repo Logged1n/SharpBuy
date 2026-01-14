@@ -19,12 +19,6 @@ builder.Services
 
 builder.Services.AddEndpoints(Assembly.GetExecutingAssembly());
 
-//TODO: Move to infra project
-builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy
-        .AllowAnyHeader()
-        .AllowAnyMethod()
-        .WithOrigins("http://localhost:3000")));
-
 WebApplication app = builder.Build();
 
 app.MapDefaultEndpoints();

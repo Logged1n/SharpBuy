@@ -20,6 +20,7 @@ public abstract class BaseIntegrationTest : IAsyncLifetime
         .Build();
 
     private WebApplicationFactory<Program> _factory = null!;
+    private IServiceScope _scope = null!;
     protected HttpClient HttpClient { get; private set; } = null!;
     protected ApplicationDbContext DbContext { get; private set; } = null!;
 
@@ -57,8 +58,8 @@ public abstract class BaseIntegrationTest : IAsyncLifetime
 
         HttpClient = _factory.CreateClient();
 
-        using IServiceScope scope = _factory.Services.CreateScope();
-        DbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        _scope = _factory.Services.CreateScope();
+        DbContext = _scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         await DbContext.Database.EnsureCreatedAsync();
     }
 
@@ -66,18 +67,22 @@ public abstract class BaseIntegrationTest : IAsyncLifetime
     {
         await DbContext.Database.EnsureDeletedAsync();
         await DbContext.DisposeAsync();
+        _scope.Dispose();
         HttpClient.Dispose();
         await _factory.DisposeAsync();
         await _dbContainer.DisposeAsync();
     }
 
-    // Metody pomocnicze dla testów
+    // Metody pomocnicze dla testï¿½w
     protected async Task<Guid> RegisterUserAsync(
-        string email = "test@example.com",
+        string? email = null,
         string password = "Password123!",
         string firstName = "Test",
         string lastName = "User")
     {
+        // Generate unique email if not provided
+        email ??= $"test-{Guid.NewGuid()}@example.com";
+
         var registerRequest = new
         {
             Email = email,

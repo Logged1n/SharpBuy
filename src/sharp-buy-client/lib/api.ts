@@ -216,6 +216,21 @@ export interface AddReviewRequest {
   description?: string | null;
 }
 
+// User Management types
+export interface UserListItem {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber?: string | null;
+  emailConfirmed: boolean;
+  roles: string[];
+}
+
+export interface AddRoleRequest {
+  roleName: string;
+}
+
 // Analytics types
 export type Granularity = 'Day' | 'Week' | 'Month';
 
@@ -830,6 +845,35 @@ class ApiClient {
     }
 
     throw new Error('PDF generation timeout');
+  }
+
+  // User Management
+  async getAllUsers(page: number = 1, pageSize: number = 20): Promise<PagedResult<UserListItem>> {
+    const response = await fetch(`${this.baseUrl}/users?page=${page}&pageSize=${pageSize}`, {
+      method: 'GET',
+      headers: this.getHeaders(true),
+    });
+
+    return this.handleResponse<PagedResult<UserListItem>>(response);
+  }
+
+  async addRoleToUser(userId: string, roleName: string): Promise<void> {
+    const response = await fetch(`${this.baseUrl}/users/${userId}/roles`, {
+      method: 'POST',
+      headers: this.getHeaders(true),
+      body: JSON.stringify({ roleName }),
+    });
+
+    return this.handleResponse<void>(response);
+  }
+
+  async removeRoleFromUser(userId: string, roleName: string): Promise<void> {
+    const response = await fetch(`${this.baseUrl}/users/${userId}/roles/${roleName}`, {
+      method: 'DELETE',
+      headers: this.getHeaders(true),
+    });
+
+    return this.handleResponse<void>(response);
   }
 }
 

@@ -18,7 +18,6 @@ namespace Infrastructure.Database.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("public")
                 .HasAnnotation("ProductVersion", "9.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
@@ -92,7 +91,7 @@ namespace Infrastructure.Database.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.ToTable("AspNetUsers", "public");
+                    b.ToTable("AspNetUsers", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Addresses.Address", b =>
@@ -132,7 +131,7 @@ namespace Infrastructure.Database.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Addresses", "public");
+                    b.ToTable("Addresses");
                 });
 
             modelBuilder.Entity("Domain.Carts.Cart", b =>
@@ -142,7 +141,7 @@ namespace Infrastructure.Database.Migrations
 
                     b.HasKey("OwnerId");
 
-                    b.ToTable("Carts", "public");
+                    b.ToTable("Carts");
                 });
 
             modelBuilder.Entity("Domain.Carts.CartItem", b =>
@@ -180,7 +179,7 @@ namespace Infrastructure.Database.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("CartItems", "public", t =>
+                    b.ToTable("CartItems", t =>
                         {
                             t.HasCheckConstraint("CK_CartItem_Quantity", "\"Quantity\" > 0");
                         });
@@ -198,7 +197,7 @@ namespace Infrastructure.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", "public");
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("Domain.Inventories.Inventory", b =>
@@ -225,7 +224,7 @@ namespace Infrastructure.Database.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Inventories", "public", t =>
+                    b.ToTable("Inventories", t =>
                         {
                             t.HasCheckConstraint("CK_Inventory_Quantity", "\"Quantity\" >= 0");
 
@@ -266,7 +265,7 @@ namespace Infrastructure.Database.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders", "public");
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("Domain.Orders.OrderItem", b =>
@@ -298,7 +297,7 @@ namespace Infrastructure.Database.Migrations
                     b.HasIndex("OrderId", "ProductId")
                         .IsUnique();
 
-                    b.ToTable("OrderItems", "public", t =>
+                    b.ToTable("OrderItems", t =>
                         {
                             t.HasCheckConstraint("CK_OrderItem_Quantity", "\"Quantity\" > 0");
                         });
@@ -318,7 +317,7 @@ namespace Infrastructure.Database.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductCategories", "public");
+                    b.ToTable("ProductCategories");
                 });
 
             modelBuilder.Entity("Domain.Products.Product", b =>
@@ -352,7 +351,7 @@ namespace Infrastructure.Database.Migrations
 
                     b.HasIndex("Name");
 
-                    b.ToTable("Products", "public");
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("Domain.Reviews.Review", b =>
@@ -393,7 +392,7 @@ namespace Infrastructure.Database.Migrations
                     b.HasIndex("ProductId", "UserId")
                         .IsUnique();
 
-                    b.ToTable("Reviews", "public", t =>
+                    b.ToTable("Reviews", t =>
                         {
                             t.HasCheckConstraint("CK_Review_Score", "\"Score\" >= 0 AND \"Score\" <= 5");
                         });
@@ -441,7 +440,7 @@ namespace Infrastructure.Database.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("DomainUsers", "public");
+                    b.ToTable("DomainUsers");
                 });
 
             modelBuilder.Entity("Domain.Users.EmailVerificationToken", b =>
@@ -463,7 +462,7 @@ namespace Infrastructure.Database.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("EmailVerificationTokens", "public");
+                    b.ToTable("EmailVerificationTokens");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
@@ -490,7 +489,7 @@ namespace Infrastructure.Database.Migrations
                         .IsUnique()
                         .HasDatabaseName("RoleNameIndex");
 
-                    b.ToTable("AspNetRoles", "public");
+                    b.ToTable("AspNetRoles", (string)null);
 
                     b.HasData(
                         new
@@ -502,12 +501,18 @@ namespace Infrastructure.Database.Migrations
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000002"),
+                            Name = "SalesManager",
+                            NormalizedName = "SALESMANAGER"
+                        },
+                        new
+                        {
+                            Id = new Guid("10000000-0000-0000-0000-000000000003"),
                             Name = "Salesman",
                             NormalizedName = "SALESMAN"
                         },
                         new
                         {
-                            Id = new Guid("10000000-0000-0000-0000-000000000003"),
+                            Id = new Guid("10000000-0000-0000-0000-000000000004"),
                             Name = "Client",
                             NormalizedName = "CLIENT"
                         });
@@ -534,7 +539,7 @@ namespace Infrastructure.Database.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims", "public");
+                    b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
@@ -558,7 +563,7 @@ namespace Infrastructure.Database.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims", "public");
+                    b.ToTable("AspNetUserClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
@@ -579,7 +584,7 @@ namespace Infrastructure.Database.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins", "public");
+                    b.ToTable("AspNetUserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
@@ -594,7 +599,7 @@ namespace Infrastructure.Database.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles", "public");
+                    b.ToTable("AspNetUserRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
@@ -613,7 +618,7 @@ namespace Infrastructure.Database.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens", "public");
+                    b.ToTable("AspNetUserTokens", (string)null);
                 });
 
             modelBuilder.Entity("Application.Abstractions.Authentication.ApplicationUser", b =>
@@ -686,7 +691,7 @@ namespace Infrastructure.Database.Migrations
 
                             b1.HasKey("OrderId");
 
-                            b1.ToTable("Orders", "public");
+                            b1.ToTable("Orders");
 
                             b1.WithOwner()
                                 .HasForeignKey("OrderId");
@@ -728,7 +733,7 @@ namespace Infrastructure.Database.Migrations
 
                             b1.HasKey("OrderItemId");
 
-                            b1.ToTable("OrderItems", "public");
+                            b1.ToTable("OrderItems");
 
                             b1.WithOwner()
                                 .HasForeignKey("OrderItemId");
@@ -779,7 +784,7 @@ namespace Infrastructure.Database.Migrations
 
                             b1.HasKey("ProductId");
 
-                            b1.ToTable("Products", "public");
+                            b1.ToTable("Products");
 
                             b1.WithOwner()
                                 .HasForeignKey("ProductId");

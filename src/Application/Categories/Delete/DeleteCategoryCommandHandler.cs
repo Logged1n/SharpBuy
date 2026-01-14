@@ -1,3 +1,4 @@
+using Application.Abstractions.Caching;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
 using Domain.Categories;
@@ -6,7 +7,9 @@ using SharedKernel;
 
 namespace Application.Categories.Delete;
 
-internal sealed class DeleteCategoryCommandHandler(IApplicationDbContext dbContext)
+internal sealed class DeleteCategoryCommandHandler(
+    IApplicationDbContext dbContext,
+    ICacheInvalidator cacheInvalidator)
     : ICommandHandler<DeleteCategoryCommand>
 {
     public async Task<Result> Handle(DeleteCategoryCommand command, CancellationToken cancellationToken)
@@ -27,6 +30,12 @@ internal sealed class DeleteCategoryCommandHandler(IApplicationDbContext dbConte
 
         dbContext.Categories.Remove(category);
         await dbContext.SaveChangesAsync(cancellationToken);
+
+        // Invalidate specific category cache
+        await cacheInvalidator.InvalidateAsync($"category_{command.Id}", cancellationToken);
+
+        // Invalidate category list caches (all variations)
+        await cacheInvalidator.InvalidateByPatternAsync("categories_*", cancellationToken);
 
         return Result.Success();
     }

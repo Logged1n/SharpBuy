@@ -9,7 +9,7 @@ namespace Web.Api.Endpoints.Users;
 
 internal sealed class Register : IEndpoint
 {
-    public sealed record Request(string Email, string FirstName, string LastName, string Password, string PhoneNumber, AddressDto PrimaryAddress, AddressDto[] Addresses);
+    public sealed record Request(string Email, string FirstName, string LastName, string Password, string PhoneNumber, AddressDto? PrimaryAddress = null, AddressDto[]? Addresses = null);
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
@@ -29,7 +29,9 @@ internal sealed class Register : IEndpoint
 
             Result<Guid> result = await handler.Handle(command, cancellationToken);
 
-            return result.Match(Results.Created, CustomResults.Problem);
+            return result.Match(
+                userId => Results.Created($"/users/{userId}", userId),
+                CustomResults.Problem);
         })
         .WithTags(Tags.Users);
     }

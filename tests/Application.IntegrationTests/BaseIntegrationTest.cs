@@ -1,3 +1,4 @@
+using Infrastructure.Caching;
 using Infrastructure.Database;
 using Infrastructure.DomainEvents;
 using Microsoft.EntityFrameworkCore;

@@ -12,6 +12,7 @@ import { Package, Plus, AlertCircle, CheckCircle, Trash2, Edit, X } from 'lucide
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AdminOrdersTab } from '@/components/admin-orders-tab';
 import { AdminAnalyticsTab } from '@/components/admin-analytics-tab';
+import { AdminUsersTab } from '@/components/admin-users-tab';
 
 function AdminContent() {
   const { user } = useAuth();
@@ -332,12 +333,13 @@ function AdminContent() {
             </div>
           )}
 
-          {/* Tabs for Products, Categories, Orders, and Analytics */}
+          {/* Tabs for Products, Categories, Orders, Users, and Analytics */}
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="products">Products</TabsTrigger>
               <TabsTrigger value="categories">Categories</TabsTrigger>
               <TabsTrigger value="orders">Orders</TabsTrigger>
+              <TabsTrigger value="users">Users</TabsTrigger>
               <TabsTrigger value="analytics">Analytics</TabsTrigger>
             </TabsList>
 
@@ -702,6 +704,11 @@ function AdminContent() {
             {/* Orders Tab */}
             <TabsContent value="orders" className="space-y-4">
               <AdminOrdersTab />
+            </TabsContent>
+
+            {/* Users Tab */}
+            <TabsContent value="users" className="space-y-4">
+              <AdminUsersTab />
             </TabsContent>
 
             {/* Analytics Tab */}

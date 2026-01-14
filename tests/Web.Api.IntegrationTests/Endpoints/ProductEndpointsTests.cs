@@ -7,8 +7,9 @@ public class ProductEndpointsTests : BaseIntegrationTest
     public async Task AddProduct_WithAuthentication_ShouldReturn201Created()
     {
         // Arrange
-        await RegisterUserAsync();
-        string token = await GetAuthTokenAsync("test@example.com", "Password123!");
+        string email = "product-test1@example.com";
+        await RegisterUserAsync(email);
+        string token = await GetAuthTokenAsync(email, "Password123!");
         HttpClient.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
@@ -60,8 +61,9 @@ public class ProductEndpointsTests : BaseIntegrationTest
     public async Task AddProduct_WithInvalidCategoryIds_ShouldReturn400BadRequest()
     {
         // Arrange
-        await RegisterUserAsync();
-        string token = await GetAuthTokenAsync("test@example.com", "Password123!");
+        string email = "product-test2@example.com";
+        await RegisterUserAsync(email);
+        string token = await GetAuthTokenAsync(email, "Password123!");
         HttpClient.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
@@ -91,8 +93,9 @@ public class ProductEndpointsTests : BaseIntegrationTest
         string name, string description, int quantity, decimal price)
     {
         // Arrange
-        await RegisterUserAsync();
-        string token = await GetAuthTokenAsync("test@example.com", "Password123!");
+        string email = $"product-test-{Guid.NewGuid()}@example.com";
+        await RegisterUserAsync(email);
+        string token = await GetAuthTokenAsync(email, "Password123!");
         HttpClient.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 

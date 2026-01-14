@@ -41,6 +41,8 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
     {
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+        SeedDatabase(builder);
+        IgnoreDomainEvents(builder);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -53,8 +55,9 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
     private void SeedDatabase(ModelBuilder builder)
     {
         var adminRoleId = Guid.Parse("10000000-0000-0000-0000-000000000001");
-        var salesmanRoleId = Guid.Parse("10000000-0000-0000-0000-000000000002");
-        var clientRoleId = Guid.Parse("10000000-0000-0000-0000-000000000003");
+        var salesManagerRoleId = Guid.Parse("10000000-0000-0000-0000-000000000002");
+        var salesmanRoleId = Guid.Parse("10000000-0000-0000-0000-000000000003");
+        var clientRoleId = Guid.Parse("10000000-0000-0000-0000-000000000004");
 
         builder.Entity<IdentityRole<Guid>>().HasData(
             new IdentityRole<Guid>
@@ -62,6 +65,12 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
                 Id = adminRoleId,
                 Name = "Admin",
                 NormalizedName = "ADMIN"
+            },
+            new IdentityRole<Guid>
+            {
+                Id = salesManagerRoleId,
+                Name = "SalesManager",
+                NormalizedName = "SALESMANAGER"
             },
             new IdentityRole<Guid>
             {

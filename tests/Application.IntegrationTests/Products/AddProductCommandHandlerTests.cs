@@ -1,7 +1,9 @@
+using Application.Abstractions.Caching;
 using Application.Products.Add;
 using Domain.Categories;
 using Domain.Products;
 using Microsoft.EntityFrameworkCore;
+using NSubstitute;
 using Shouldly;
 using SharedKernel;
 using SharedKernel.ValueObjects;
@@ -21,7 +23,8 @@ public class AddProductCommandHandlerTests : IntegrationTestBase
         DbContext.Categories.AddRange(category1, category2);
         await DbContext.SaveChangesAsync();
 
-        var handler = new AddProductCommandHandler(DbContext);
+        ICacheInvalidator mockCacheInvalidator = Substitute.For<ICacheInvalidator>();
+        var handler = new AddProductCommandHandler(DbContext, mockCacheInvalidator);
         var command = new AddProductCommand(
             "Gaming Laptop",
             "High-performance gaming laptop",
@@ -36,8 +39,6 @@ public class AddProductCommandHandlerTests : IntegrationTestBase
         // Assert
         result.IsSuccess.ShouldBeTrue();
         result.Value.ShouldNotBe(Guid.Empty);
-
-        // Verify product was created in database
         Product? product = await DbContext.Products.FindAsync(result.Value);
         product.ShouldNotBeNull();
         product.Name.ShouldBe("Gaming Laptop");
@@ -55,7 +56,8 @@ public class AddProductCommandHandlerTests : IntegrationTestBase
         DbContext.Categories.Add(category);
         await DbContext.SaveChangesAsync();
 
-        var handler = new AddProductCommandHandler(DbContext);
+        ICacheInvalidator mockCacheInvalidator = Substitute.For<ICacheInvalidator>();
+        var handler = new AddProductCommandHandler(DbContext, mockCacheInvalidator);
         var command = new AddProductCommand(
             "",
             "Description",
@@ -77,7 +79,8 @@ public class AddProductCommandHandlerTests : IntegrationTestBase
         DbContext.Categories.Add(category);
         await DbContext.SaveChangesAsync();
 
-        var handler = new AddProductCommandHandler(DbContext);
+        ICacheInvalidator mockCacheInvalidator = Substitute.For<ICacheInvalidator>();
+        var handler = new AddProductCommandHandler(DbContext, mockCacheInvalidator);
         var command = new AddProductCommand(
             "Product",
             "Description",
@@ -99,7 +102,8 @@ public class AddProductCommandHandlerTests : IntegrationTestBase
         DbContext.Categories.Add(category);
         await DbContext.SaveChangesAsync();
 
-        var handler = new AddProductCommandHandler(DbContext);
+        ICacheInvalidator mockCacheInvalidator = Substitute.For<ICacheInvalidator>();
+        var handler = new AddProductCommandHandler(DbContext, mockCacheInvalidator);
         var command = new AddProductCommand(
             "Product",
             "Description",
@@ -121,7 +125,8 @@ public class AddProductCommandHandlerTests : IntegrationTestBase
         DbContext.Categories.Add(category);
         await DbContext.SaveChangesAsync();
 
-        var handler = new AddProductCommandHandler(DbContext);
+        ICacheInvalidator mockCacheInvalidator = Substitute.For<ICacheInvalidator>();
+        var handler = new AddProductCommandHandler(DbContext, mockCacheInvalidator);
         var command = new AddProductCommand(
             "Product",
             "Description",
@@ -143,7 +148,8 @@ public class AddProductCommandHandlerTests : IntegrationTestBase
         DbContext.Categories.Add(category);
         await DbContext.SaveChangesAsync();
 
-        var handler = new AddProductCommandHandler(DbContext);
+        ICacheInvalidator mockCacheInvalidator = Substitute.For<ICacheInvalidator>();
+        var handler = new AddProductCommandHandler(DbContext, mockCacheInvalidator);
 
         // Act
         Result<Guid> result1 = await handler.Handle(new AddProductCommand(

@@ -14,12 +14,8 @@ namespace Infrastructure.Database.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.EnsureSchema(
-                name: "public");
-
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
-                schema: "public",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -34,7 +30,6 @@ namespace Infrastructure.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Categories",
-                schema: "public",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -47,14 +42,13 @@ namespace Infrastructure.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "DomainUsers",
-                schema: "public",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
                     FirstName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     LastName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    PhoneNumber = table.Column<string>(type: "character varying(9)", maxLength: 9, nullable: false),
+                    PhoneNumber = table.Column<string>(type: "character varying(12)", maxLength: 12, nullable: false),
                     PrimaryAddressId = table.Column<Guid>(type: "uuid", nullable: true),
                     EmailVerified = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
@@ -66,7 +60,6 @@ namespace Infrastructure.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Inventories",
-                schema: "public",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -84,29 +77,7 @@ namespace Infrastructure.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Orders",
-                schema: "public",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    CompletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    ModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ShippingAddressId = table.Column<Guid>(type: "uuid", nullable: true),
-                    BillingAddressId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Total = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
-                    Currency = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Orders", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
-                schema: "public",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -121,7 +92,6 @@ namespace Infrastructure.Database.Migrations
                     table.ForeignKey(
                         name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
                         column: x => x.RoleId,
-                        principalSchema: "public",
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -129,7 +99,6 @@ namespace Infrastructure.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Addresses",
-                schema: "public",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -146,7 +115,6 @@ namespace Infrastructure.Database.Migrations
                     table.ForeignKey(
                         name: "FK_Addresses_DomainUsers_UserId",
                         column: x => x.UserId,
-                        principalSchema: "public",
                         principalTable: "DomainUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -154,7 +122,6 @@ namespace Infrastructure.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "AspNetUsers",
-                schema: "public",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -180,7 +147,6 @@ namespace Infrastructure.Database.Migrations
                     table.ForeignKey(
                         name: "FK_AspNetUsers_DomainUsers_DomainUserId",
                         column: x => x.DomainUserId,
-                        principalSchema: "public",
                         principalTable: "DomainUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -188,7 +154,6 @@ namespace Infrastructure.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Carts",
-                schema: "public",
                 columns: table => new
                 {
                     OwnerId = table.Column<Guid>(type: "uuid", nullable: false)
@@ -199,7 +164,6 @@ namespace Infrastructure.Database.Migrations
                     table.ForeignKey(
                         name: "FK_Carts_DomainUsers_OwnerId",
                         column: x => x.OwnerId,
-                        principalSchema: "public",
                         principalTable: "DomainUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -207,7 +171,6 @@ namespace Infrastructure.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "EmailVerificationTokens",
-                schema: "public",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -221,15 +184,38 @@ namespace Infrastructure.Database.Migrations
                     table.ForeignKey(
                         name: "FK_EmailVerificationTokens_DomainUsers_UserId",
                         column: x => x.UserId,
-                        principalSchema: "public",
                         principalTable: "DomainUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
+                name: "Orders",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CompletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    ModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ShippingAddressId = table.Column<Guid>(type: "uuid", nullable: true),
+                    BillingAddressId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Total = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
+                    Currency = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Orders", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Orders_DomainUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "DomainUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Products",
-                schema: "public",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -238,8 +224,7 @@ namespace Infrastructure.Database.Migrations
                     PriceAmount = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
                     PriceCurrency = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false),
                     InventoryId = table.Column<Guid>(type: "uuid", nullable: false),
-                    MainPhotoPath = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    PhotoPaths = table.Column<string>(type: "text", nullable: false)
+                    MainPhotoPath = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -247,7 +232,6 @@ namespace Infrastructure.Database.Migrations
                     table.ForeignKey(
                         name: "FK_Products_Inventories_InventoryId",
                         column: x => x.InventoryId,
-                        principalSchema: "public",
                         principalTable: "Inventories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -255,7 +239,6 @@ namespace Infrastructure.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "AspNetUserClaims",
-                schema: "public",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -270,7 +253,6 @@ namespace Infrastructure.Database.Migrations
                     table.ForeignKey(
                         name: "FK_AspNetUserClaims_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalSchema: "public",
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -278,7 +260,6 @@ namespace Infrastructure.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "AspNetUserLogins",
-                schema: "public",
                 columns: table => new
                 {
                     LoginProvider = table.Column<string>(type: "text", nullable: false),
@@ -292,7 +273,6 @@ namespace Infrastructure.Database.Migrations
                     table.ForeignKey(
                         name: "FK_AspNetUserLogins_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalSchema: "public",
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -300,7 +280,6 @@ namespace Infrastructure.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "AspNetUserRoles",
-                schema: "public",
                 columns: table => new
                 {
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
@@ -312,14 +291,12 @@ namespace Infrastructure.Database.Migrations
                     table.ForeignKey(
                         name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
                         column: x => x.RoleId,
-                        principalSchema: "public",
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_AspNetUserRoles_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalSchema: "public",
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -327,7 +304,6 @@ namespace Infrastructure.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "AspNetUserTokens",
-                schema: "public",
                 columns: table => new
                 {
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
@@ -341,7 +317,6 @@ namespace Infrastructure.Database.Migrations
                     table.ForeignKey(
                         name: "FK_AspNetUserTokens_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalSchema: "public",
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -349,7 +324,6 @@ namespace Infrastructure.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "CartItems",
-                schema: "public",
                 columns: table => new
                 {
                     CartId = table.Column<Guid>(type: "uuid", nullable: false),
@@ -367,14 +341,12 @@ namespace Infrastructure.Database.Migrations
                     table.ForeignKey(
                         name: "FK_CartItems_Carts_CartId",
                         column: x => x.CartId,
-                        principalSchema: "public",
                         principalTable: "Carts",
                         principalColumn: "OwnerId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_CartItems_Products_ProductId",
                         column: x => x.ProductId,
-                        principalSchema: "public",
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -382,7 +354,6 @@ namespace Infrastructure.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "OrderItems",
-                schema: "public",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -400,14 +371,12 @@ namespace Infrastructure.Database.Migrations
                     table.ForeignKey(
                         name: "FK_OrderItems_Orders_OrderId",
                         column: x => x.OrderId,
-                        principalSchema: "public",
                         principalTable: "Orders",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_OrderItems_Products_ProductId",
                         column: x => x.ProductId,
-                        principalSchema: "public",
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -415,7 +384,6 @@ namespace Infrastructure.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "ProductCategories",
-                schema: "public",
                 columns: table => new
                 {
                     ProductId = table.Column<Guid>(type: "uuid", nullable: false),
@@ -427,14 +395,12 @@ namespace Infrastructure.Database.Migrations
                     table.ForeignKey(
                         name: "FK_ProductCategories_Categories_CategoryId",
                         column: x => x.CategoryId,
-                        principalSchema: "public",
                         principalTable: "Categories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ProductCategories_Products_ProductId",
                         column: x => x.ProductId,
-                        principalSchema: "public",
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -442,7 +408,6 @@ namespace Infrastructure.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Reviews",
-                schema: "public",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -460,190 +425,162 @@ namespace Infrastructure.Database.Migrations
                     table.ForeignKey(
                         name: "FK_Reviews_DomainUsers_UserId",
                         column: x => x.UserId,
-                        principalSchema: "public",
                         principalTable: "DomainUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Reviews_Products_ProductId",
                         column: x => x.ProductId,
-                        principalSchema: "public",
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
-                schema: "public",
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
                     { new Guid("10000000-0000-0000-0000-000000000001"), null, "Admin", "ADMIN" },
-                    { new Guid("10000000-0000-0000-0000-000000000002"), null, "Salesman", "SALESMAN" },
-                    { new Guid("10000000-0000-0000-0000-000000000003"), null, "Client", "CLIENT" }
+                    { new Guid("10000000-0000-0000-0000-000000000002"), null, "SalesManager", "SALESMANAGER" },
+                    { new Guid("10000000-0000-0000-0000-000000000003"), null, "Salesman", "SALESMAN" },
+                    { new Guid("10000000-0000-0000-0000-000000000004"), null, "Client", "CLIENT" }
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Addresses_UserId",
-                schema: "public",
                 table: "Addresses",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
-                schema: "public",
                 table: "AspNetRoleClaims",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",
-                schema: "public",
                 table: "AspNetRoles",
                 column: "NormalizedName",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserClaims_UserId",
-                schema: "public",
                 table: "AspNetUserClaims",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserLogins_UserId",
-                schema: "public",
                 table: "AspNetUserLogins",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserRoles_RoleId",
-                schema: "public",
                 table: "AspNetUserRoles",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
-                schema: "public",
                 table: "AspNetUsers",
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUsers_DomainUserId",
-                schema: "public",
                 table: "AspNetUsers",
                 column: "DomainUserId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
-                schema: "public",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_CartItems_AddedAt",
-                schema: "public",
                 table: "CartItems",
                 column: "AddedAt");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CartItems_ProductId",
-                schema: "public",
                 table: "CartItems",
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DomainUsers_CreatedAt",
-                schema: "public",
-                table: "DomainUsers",
-                column: "CreatedAt");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_DomainUsers_Email",
-                schema: "public",
                 table: "DomainUsers",
                 column: "Email",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_EmailVerificationTokens_UserId",
-                schema: "public",
                 table: "EmailVerificationTokens",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Inventories_ProductId",
-                schema: "public",
                 table: "Inventories",
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderItems_OrderId",
-                schema: "public",
                 table: "OrderItems",
                 column: "OrderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderItems_OrderId_ProductId",
-                schema: "public",
                 table: "OrderItems",
                 columns: new[] { "OrderId", "ProductId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderItems_ProductId",
-                schema: "public",
                 table: "OrderItems",
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Orders_UserId",
+                table: "Orders",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProductCategories_CategoryId",
-                schema: "public",
                 table: "ProductCategories",
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductCategories_ProductId",
-                schema: "public",
                 table: "ProductCategories",
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_InventoryId",
-                schema: "public",
                 table: "Products",
                 column: "InventoryId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_Name",
-                schema: "public",
                 table: "Products",
                 column: "Name");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reviews_CreatedAt",
-                schema: "public",
                 table: "Reviews",
                 column: "CreatedAt");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reviews_ProductId",
-                schema: "public",
                 table: "Reviews",
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reviews_ProductId_UserId",
-                schema: "public",
                 table: "Reviews",
                 columns: new[] { "ProductId", "UserId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reviews_UserId",
-                schema: "public",
                 table: "Reviews",
                 column: "UserId");
         }
@@ -652,80 +589,61 @@ namespace Infrastructure.Database.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Addresses",
-                schema: "public");
+                name: "Addresses");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoleClaims",
-                schema: "public");
+                name: "AspNetRoleClaims");
 
             migrationBuilder.DropTable(
-                name: "AspNetUserClaims",
-                schema: "public");
+                name: "AspNetUserClaims");
 
             migrationBuilder.DropTable(
-                name: "AspNetUserLogins",
-                schema: "public");
+                name: "AspNetUserLogins");
 
             migrationBuilder.DropTable(
-                name: "AspNetUserRoles",
-                schema: "public");
+                name: "AspNetUserRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUserTokens",
-                schema: "public");
+                name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "CartItems",
-                schema: "public");
+                name: "CartItems");
 
             migrationBuilder.DropTable(
-                name: "EmailVerificationTokens",
-                schema: "public");
+                name: "EmailVerificationTokens");
 
             migrationBuilder.DropTable(
-                name: "OrderItems",
-                schema: "public");
+                name: "OrderItems");
 
             migrationBuilder.DropTable(
-                name: "ProductCategories",
-                schema: "public");
+                name: "ProductCategories");
 
             migrationBuilder.DropTable(
-                name: "Reviews",
-                schema: "public");
+                name: "Reviews");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles",
-                schema: "public");
+                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers",
-                schema: "public");
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Carts",
-                schema: "public");
+                name: "Carts");
 
             migrationBuilder.DropTable(
-                name: "Orders",
-                schema: "public");
+                name: "Orders");
 
             migrationBuilder.DropTable(
-                name: "Categories",
-                schema: "public");
+                name: "Categories");
 
             migrationBuilder.DropTable(
-                name: "Products",
-                schema: "public");
+                name: "Products");
 
             migrationBuilder.DropTable(
-                name: "DomainUsers",
-                schema: "public");
+                name: "DomainUsers");
 
             migrationBuilder.DropTable(
-                name: "Inventories",
-                schema: "public");
+                name: "Inventories");
         }
     }
 }

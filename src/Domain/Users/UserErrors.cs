@@ -39,4 +39,16 @@ public static class UserErrors
     public static readonly Error InvalidLastName = Error.Problem(
         "Users.InvalidLastName",
         "Last name is required");
+
+    public static Error RoleNotFound(string roleName) => Error.NotFound(
+        "Users.RoleNotFound",
+        $"The role '{roleName}' does not exist.");
+
+    public static Error AlreadyHasRole(string roleName) => Error.Conflict(
+        "Users.AlreadyHasRole",
+        $"The user already has the role '{roleName}'.");
+
+    public static Error DoesNotHaveRole(string roleName) => Error.Problem(
+        "Users.DoesNotHaveRole",
+        $"The user does not have the role '{roleName}'.");
 }
